@@ -20,6 +20,6 @@ export default function Home() {
       <h1>{t("LandingPage.title")}</h1>
       {t("LandingPage.message")} {session?.user?.email} <br />
       <Button onClick={() => signOut()}>{t("LandingPage.sign-out")}</Button>
-    </>
+      </>
   );
 }
