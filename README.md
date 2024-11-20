@@ -1,18 +1,18 @@
 [![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
 
-# ![Mercedes Logo](./public/favicon_mobile_196x196.png =32x32) Infocus
+![Mercedes Logo](./public/favicon_mobile_196x196.png =64x64)
 
-## About
+# Infocus
 
 **Infocus** is a project management platform developed for Mercedes Benz to streamline the organization of building-related data. Designed to optimize the efficiency and transparency of construction processes, Infocus brings together all relevant project information into a unified digital environment. It draws inspiration from Lean Construction Management practices, similar to tools like Lindner's Lean Construction platform, allowing for a structured, collaborative approach to managing tasks and workflows. With Infocus, stakeholders can visualize project progress in real time, enhance coordination, and ultimately improve decision-making throughout the entire lifecycle of a construction project.
 
 [[_TOC_]]
 
-## Setup dev environment
+# Setup dev environment
 
 Please follow the following chapters in order to setup your dev environment.
 
-### [PNPM](https://pnpm.io/motivation)
+## [PNPM](https://pnpm.io/motivation)
 
 1. Install nvm via the Symantec Management console. (If already installed skip to the next step)  
   ![Install nvm symantec management console](./resources/install-nvm.png)
@@ -27,14 +27,14 @@ Please follow the following chapters in order to setup your dev environment.
 5. Install pnpm via
   > npm i -g pnpm
 
-### [Docker](https://www.docker.com/)
+## [Docker](https://www.docker.com/)
 
 1. It's super simple just install docker.
 
 
 2. After installation run ```pnpm dev``` to spinup the required docker containers (this will also start the frontend).
 
-### [Keycloak](https://www.keycloak.org/)
+## [Keycloak](https://www.keycloak.org/)
 
 Since we cannot use the Mercedes Benz PingID locally we resort to using another OpenID Connect Identity provider which in its open source form is called keycloak.
 
@@ -82,15 +82,15 @@ KEYCLOAK_ISSUER=http://localhost:8080/realms/MB%20-%20Infocus
 
 13. The last important step is that you have to create a user in keycloak (don't forget to set a password as well).
 
-### Build process
+## Build process
 
 To be determined.
 
-## Conventions
+# Conventions
 
-### Commits
+## Commits
 
-## Base Techstack
+# Base Techstack
 
 - Communication - [tRPC](https://trpc.io/docs)
 
@@ -102,7 +102,7 @@ To be determined.
 
 - Validation - [zod](https://zod.dev/?id=basic-usage)
 
-### Todo's
+# Todo's
 
 Document this:
 
