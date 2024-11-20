@@ -1,6 +1,6 @@
 [![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
 
-# Infocus
+# ![Mercedes Logo](./public/favicon_mobile_196x196.png =64x64) Infocus
 
 ## About
 
