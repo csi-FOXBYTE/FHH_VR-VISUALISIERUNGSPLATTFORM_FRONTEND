@@ -1,6 +1,7 @@
 "use client";
 
 import { trpc } from "@/trpc/client";
+import { Button } from "@mui/material";
 import { useSession, signOut } from "next-auth/react";
 import { useTranslations } from "next-intl";
 import { redirect } from "next/navigation";
@@ -18,7 +19,7 @@ export default function Home() {
     <>
       <h1>{t("LandingPage.title")}</h1>
       {t("LandingPage.message")} {session?.user?.email} <br />
-      <button onClick={() => signOut()}>{t("LandingPage.sign-out")}</button>
+      <Button onClick={() => signOut()}>{t("LandingPage.sign-out")}</Button>
     </>
   );
 }

@@ -2,8 +2,16 @@ import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
-import Providers from "@/providers";
+import Providers from "@/appProviders";
 import { getServerSession } from "next-auth";
+import { Roboto } from "next/font/google";
+
+const roboto = Roboto({
+  weight: ["300", "400", "500", "700"],
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-roboto",
+});
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
@@ -34,7 +42,7 @@ export default async function LocaleLayout({
       <head>
         <link rel="icon" href="/favicon_mobile_196x196.png" sizes="any" />
       </head>
-      <body>
+      <body className={roboto.variable}>
         <NextIntlClientProvider messages={messages}>
           <Providers session={session}>{children}</Providers>
         </NextIntlClientProvider>
