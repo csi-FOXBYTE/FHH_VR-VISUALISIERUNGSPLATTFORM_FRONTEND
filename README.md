@@ -2,11 +2,13 @@
 
 ![Mercedes Logo](./public/favicon_mobile_196x196.png =64x64)
 
-# Infocus
+# About
 
 **Infocus** is a project management platform developed for Mercedes Benz to streamline the organization of building-related data. Designed to optimize the efficiency and transparency of construction processes, Infocus brings together all relevant project information into a unified digital environment. It draws inspiration from Lean Construction Management practices, similar to tools like Lindner's Lean Construction platform, allowing for a structured, collaborative approach to managing tasks and workflows. With Infocus, stakeholders can visualize project progress in real time, enhance coordination, and ultimately improve decision-making throughout the entire lifecycle of a construction project.
 
 [[_TOC_]]
+
+---
 
 # Setup dev environment
 
@@ -86,9 +88,13 @@ KEYCLOAK_ISSUER=http://localhost:8080/realms/MB%20-%20Infocus
 
 To be determined.
 
+---
+
 # Conventions
 
 ## Commits
+
+---
 
 # Base Techstack
 
@@ -101,6 +107,8 @@ To be determined.
 - UI-Framework - [MUI](https://mui.com/material-ui/all-components/)
 
 - Validation - [zod](https://zod.dev/?id=basic-usage)
+
+---
 
 # Todo's
 
