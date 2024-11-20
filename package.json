@@ -1,12 +1,19 @@
 {
-  "name": "Infocus",
+  "name": "infocus",
   "version": "0.0.1",
   "private": true,
+  "husky": {
+    "hooks": {
+      "prepare-commit-msg": "exec < /dev/tty && npx cz --hook || true"
+    }
+  },
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "prepare": "husky",
+    "commit": "cz"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",
@@ -19,6 +26,7 @@
     "next": "15.0.3",
     "next-auth": "^4.24.10",
     "next-intl": "^3.25.1",
+    "nuqs": "^2.2.1",
     "prisma": "^5.22.0",
     "react": "19.0.0-rc-66855b96-20241106",
     "react-dom": "19.0.0-rc-66855b96-20241106",
@@ -30,8 +38,16 @@
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "commitizen": "^4.3.1",
+    "cz-conventional-changelog": "^3.3.0",
     "eslint": "^8",
     "eslint-config-next": "15.0.3",
+    "husky": "^9.1.7",
     "typescript": "^5"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
   }
 }

@@ -1,3 +1,6 @@
+[![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
+
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
@@ -33,8 +36,9 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 
 Document this:
 
+- [ ] Implement husky checks for clean code and commits
 - [ ] Dev environment setup
 - [ ] Docker setup
 - [ ] Keycloak setup
 - [ ] Prisma setup
-- [ ] Explanation internationalization / authentication etc.
+- [ ] Explanation internationalization / authentication / nuqs etc.
