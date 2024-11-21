@@ -1,12 +1,6 @@
 ---
 trigger:
-  branches:
-    include:
-      - release
-pr:
-  branches:
-    include:
-      - release
+  - release
 pool:
   vmImage: windows-latest
 jobs:
@@ -27,7 +21,7 @@ jobs:
 
           git config --global user.name "$env:BUILD_REQUESTEDFOR"
 
-          $commitMessage = "$(Build.SourceVersionMessage) [skip ci]"
+          $commitMessage = "$(Build.SourceVersionMessage)"
 
           git fetch --all
 
@@ -36,7 +30,7 @@ jobs:
           npm i -g commit-and-tag-version
 
           try {
-            commit-and-tag-version
+            commit-and-tag-version --releaseCommitMessageFormat "$commitMessage [skip ci]"
             git push --follow-tags origin release
           } catch {
             Write-Host "An error occured"
