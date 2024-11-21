@@ -1,0 +1,42 @@
+---
+trigger: none
+pr:
+  branches:
+    include:
+      - release
+pool:
+  vmImage: windows-latest
+jobs:
+  - job: releasePlease
+    displayName: Release Please 🚀
+    steps:
+      - checkout: self
+        persistCredentials: true
+        clean: true
+      - task: NodeTool@0
+        inputs:
+          versionSource: spec
+          versionSpec: 20.x
+          checkLatest: true
+        displayName: Install Node
+      - pwsh: >
+          git config --global user.email $BUILD_REQUESTEDFOREMAIL
+
+          git config --global user.name "$BUILD_REQUESTEDFOR"
+
+          $commitMessage = "$(Build.SourceVersionMessage)"
+
+          git fetch --all
+
+          git switch $(basename $(Build.SourceBranch))
+
+          npm i -g commit-and-tag-version
+
+          try {
+            commit-and-tag-version
+            git push --follow-tags origin master
+          } catch {
+            Write-Host "An error occured"
+          }
+        displayName: Release
+        continueOnError: true
