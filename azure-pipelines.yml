@@ -34,7 +34,7 @@ jobs:
 
           try {
             commit-and-tag-version
-            git push --follow-tags origin master
+            git push --follow-tags origin release
           } catch {
             Write-Host "An error occured"
           }
