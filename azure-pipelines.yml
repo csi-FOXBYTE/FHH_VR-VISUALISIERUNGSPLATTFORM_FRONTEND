@@ -20,9 +20,9 @@ jobs:
           checkLatest: true
         displayName: Install Node
       - pwsh: >
-          git config --global user.email $BUILD_REQUESTEDFOREMAIL
+          git config --global user.email $env:BUILD_REQUESTEDFOREMAIL
 
-          git config --global user.name "$BUILD_REQUESTEDFOR"
+          git config --global user.name "$env:BUILD_REQUESTEDFOR"
 
           $commitMessage = "$(Build.SourceVersionMessage)"
 
