@@ -1,5 +1,5 @@
 ---
-pr:
+trigger:
   branches:
     include:
       - release
