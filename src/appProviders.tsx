@@ -19,7 +19,9 @@ export default function AppProviders({
     <AppRouterCacheProvider>
       <ThemeProvider theme={theme}>
         <SessionProvider session={session}>
-          <TRPCProvider>{children}</TRPCProvider>
+          <TRPCProvider>
+            {children}
+          </TRPCProvider>
         </SessionProvider>
       </ThemeProvider>
     </AppRouterCacheProvider>

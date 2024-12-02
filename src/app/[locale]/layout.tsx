@@ -5,6 +5,7 @@ import { routing } from "@/i18n/routing";
 import Providers from "@/appProviders";
 import { getServerSession } from "next-auth";
 import { Roboto } from "next/font/google";
+import { HydrateClient, trpc } from "@/trpc/server";
 
 const roboto = Roboto({
   weight: ["300", "400", "500", "700"],
@@ -37,6 +38,8 @@ export default async function LocaleLayout({
 
   const session = await getServerSession();
 
+  await trpc.testRouter.test.prefetch();
+
   return (
     <html lang={locale}>
       <head>
@@ -44,7 +47,9 @@ export default async function LocaleLayout({
       </head>
       <body className={roboto.variable}>
         <NextIntlClientProvider messages={messages}>
-          <Providers session={session}>{children}</Providers>
+          <Providers session={session}>
+            <HydrateClient>{children}</HydrateClient>
+          </Providers>
         </NextIntlClientProvider>
       </body>
     </html>

@@ -12,9 +12,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "prepare": "husky",
-    "commit": "cz",
-    "release": "commit-and-tag-version"
+    "prepare": "husky"
   },
   "dependencies": {
     "@emotion/cache": "^11.13.5",
