@@ -4,13 +4,7 @@ import { createTheme } from "@mui/material/styles";
 import {
   DarkTheme,
   LightTheme,
-  generateTheme,
 } from "@mercedes-benz/mui5-theme";
-
-const generatedTheme = generateTheme({
-  typographyVariant: "default",
-  variant: "dark",
-});
 
 const theme = createTheme(
   {

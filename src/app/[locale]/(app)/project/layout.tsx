@@ -1,4 +1,4 @@
-import { HydrateClient, trpc } from "@/trpc/server";
+import { HydrateClient, trpc } from "@/server/trpc/server";
 import { ReactNode } from "react";
 
 export default async function ProjectLayout({

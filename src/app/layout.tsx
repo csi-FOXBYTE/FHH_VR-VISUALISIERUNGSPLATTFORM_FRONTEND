@@ -1,6 +1,6 @@
-import { authOptions } from "@/auth/authOptions";
+import { authOptions } from "@/server/auth/authOptions";
 import LoginRedirect from "@/components/common/LoginRedirect";
-import { routing } from "@/i18n/routing";
+import { routing } from "@/server/i18n/routing";
 import type { Metadata } from "next";
 import { getServerSession } from "next-auth";
 

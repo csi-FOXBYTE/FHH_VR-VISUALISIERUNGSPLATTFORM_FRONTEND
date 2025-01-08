@@ -30,24 +30,23 @@ Please follow the following chapters in order to setup your dev environment.
 ## [PNPM](https://pnpm.io/motivation)
 
 1. Install nvm via the Symantec Management console. (If already installed skip to the next step)  
-  ![Install nvm symantec management console](./resources/install-nvm.png)
+   ![Install nvm symantec management console](./resources/install-nvm.png)
 
 2. Install/Switch Node version 20.x.x  
-  ![Install / switch node version symantec management console](./resources/switch-node-version.png)
+   ![Install / switch node version symantec management console](./resources/switch-node-version.png)
 
 3. !!!VERY IMPORTANT!!! Restart Computer
 
 4. Check node install by entering node -v, it should return v20.x.x
 
 5. Install pnpm via
-  > npm i -g pnpm
+   > npm i -g pnpm
 
 ## [Docker](https://www.docker.com/)
 
 1. It's super simple just install docker.
 
-
-2. After installation run ```pnpm dev``` to spinup the required docker containers (this will also start the frontend).
+2. After installation run `pnpm dev` to spinup the required docker containers (this will also start the frontend).
 
 ## [Keycloak](https://www.keycloak.org/)
 
@@ -138,6 +137,7 @@ infocus
     └── components/ -> put your custom Components / Modules in here
         └── <...if module create a separate folder else just create a file>
 ```
+
 ---
 
 # Build process
@@ -148,8 +148,7 @@ TODO
 
 # Release
 
-To trigger a new release do a pull request to the ```release``` branch. After completion merge the release branch into the master branch.
----
+## To trigger a new release do a pull request to the `release` branch. After completion merge the release branch into the master branch.
 
 # Conventions
 
@@ -163,29 +162,27 @@ For more informations please see [Conventional Commits](https://www.conventional
 
 ## [State management]()
 
-It is important to stay stateless in Next.js applications to achieve scalability and maintain reload-friendly functionality. To manage state effectively, we utilize ```nuqs``` to leverage the URL's search parameters for state storage and Next.js path parameters for contextual state, such as querying specific documents using IDs. This approach ensures that all application state is tied to the route parameters or query states, avoiding the pitfalls of classic React state management (```useState```). By embedding state in the URL through path or query parameters, we create applications that are inherently reload-friendly, scalable, and shareable, while fully utilizing Next.js's routing and dynamic capabilities.
+It is important to stay stateless in Next.js applications to achieve scalability and maintain reload-friendly functionality. To manage state effectively, we utilize `nuqs` to leverage the URL's search parameters for state storage and Next.js path parameters for contextual state, such as querying specific documents using IDs. This approach ensures that all application state is tied to the route parameters or query states, avoiding the pitfalls of classic React state management (`useState`). By embedding state in the URL through path or query parameters, we create applications that are inherently reload-friendly, scalable, and shareable, while fully utilizing Next.js's routing and dynamic capabilities.
 
 ✔️ Do's:
 
 Use URL-based state management to maintain a fully reloadable and shareable application state:
 
-
-
 ❌ Dont's:
 
-Avoid using React’s local state (```useState```) for managing application-critical state:
+Avoid using React’s local state (`useState`) for managing application-critical state:
 
-If you need more informations on how to use ```nuqs``` please follow this guide https://nuqs.47ng.com/
+If you need more informations on how to use `nuqs` please follow this guide https://nuqs.47ng.com/
 
 ---
 
 ## [tRPC](https://trpc.io/docs/quickstart)
 
-If you need more informations, than provided in the following chapters please read the guide under https://trpc.io/docs/quickstart 
+If you need more informations, than provided in the following chapters please read the guide under https://trpc.io/docs/quickstart
 
 ### Client usage
 
-Just import ```trpc``` from ```@/trpc/client``` and use it like the tRPC documentation suggests.
+Just import `trpc` from `@/trpc/client` and use it like the tRPC documentation suggests.
 
 For example:
 
@@ -203,7 +200,7 @@ export function ClientComponent() {
 
 ### Server usage
 
-Just import ```trpc``` from ```@/trpc/server``` and use it like in the example. 
+Just import `trpc` from `@/trpc/server` and use it like in the example.
 
 This prefetches the query on the server and hydrates it on the client. Be sure to wrap you client component in HydrateClient otherwise it won't work.
 
@@ -212,7 +209,7 @@ For example:
 ```tsx
 // inside server component
 
-const { trpc, HydrateClient } from "@/trpc/server"; 
+const { trpc, HydrateClient } from "@/trpc/server";
 
 export async function ServerComponent({ children }: { children: ReactNode }) {
   // your other component stuff
@@ -229,7 +226,7 @@ export async function ServerComponent({ children }: { children: ReactNode }) {
 
 ### Routers
 
-New routers are created inside ```src/trpc/routers``` they always have the following structure:
+New routers are created inside `src/trpc/routers` they always have the following structure:
 
 ```tsx
 import { router, protectedProcedure } from "..";
@@ -240,13 +237,13 @@ const testRouter = router({
   }),
   testMutation: protectedProcedure.mutation(async () => {
     // your mutation logic -> should also always return something
-  })
+  }),
 });
 
 export default testRouter;
 ```
 
-To connect a new router update the ```index.ts``` file as follows:
+To connect a new router update the `index.ts` file as follows:
 
 ```tsx
 import "server-only";
@@ -270,15 +267,15 @@ export type AppRouter = typeof appRouter;
 
 Follow this guide if you need help https://next-intl-docs.vercel.app/docs/usage
 
-The locale Provider is already setup, the only thing you should have to use is the ```useTranslations``` hook. Locale messages are present under ```messages/*.json```.
+The locale Provider is already setup, the only thing you should have to use is the `useTranslations` hook. Locale messages are present under `messages/*.json`.
 
 ---
 
 ## [next-auth](https://next-auth.js.org/)
 
-You should only use the ```useSession()``` hook, and if you need the session inside of a server component. If you need more infos please read the following guide https://next-auth.js.org/
+You should only use the `useSession()` hook, and if you need the session inside of a server component. If you need more infos please read the following guide https://next-auth.js.org/
 
-> ["Never roll your own auth!"](https://www.youtube.com/watch?v=VA2RS9WN9us) (or suffer)
+> "Never roll your own auth!" (or suffer)
 
 ---
 
@@ -326,7 +323,8 @@ For more informations on MaterialUI please follow this guide https://mui.com/mat
 
 The following extensions should be used to make developing easier:
 
-* Mandatory:
+- Mandatory:
+
   - ESLint (for tracking warnings and possible errors)
   - Prettier - Code formatter (for automatic codestyling)
   - Prisma (for easier editing of prisma.schema file)
@@ -334,9 +332,7 @@ The following extensions should be used to make developing easier:
   - i18n Ally (for internationalisation)
   - Visual Studio Code Commitizen Support (for easier usage of conventional commits)
 
-* Optional:
+- Optional:
   - Pretty typescript errors (for better typescript error readability)
 
 ---
-
-

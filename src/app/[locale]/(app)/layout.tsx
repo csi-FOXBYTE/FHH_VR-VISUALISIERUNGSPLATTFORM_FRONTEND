@@ -22,7 +22,7 @@ import {
 import { signOut, useSession } from "next-auth/react";
 import { useState, MouseEvent } from "react";
 import Logout from "@mui/icons-material/Logout";
-import { Link as NextLink } from "@/i18n/routing";
+import { Link as NextLink } from "@/server/i18n/routing";
 import { MBFooter } from "@mercedes-benz/mbui-comps";
 import { useLocale } from "next-intl";
 import {

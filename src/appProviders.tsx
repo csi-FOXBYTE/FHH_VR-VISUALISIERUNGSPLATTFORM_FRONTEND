@@ -2,15 +2,14 @@
 
 import { SessionProvider } from "next-auth/react";
 import { ReactNode } from "react";
-import { TRPCProvider } from "./trpc/client";
+import { TRPCProvider } from "./server/trpc/client";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
 import { Theme, ThemeProvider, createTheme } from "@mui/material";
-import theme from "./theme";
+import theme from "./constants/theme";
 import { Session } from "next-auth";
-import { routing } from "./i18n/routing";
+import { routing } from "./server/i18n/routing";
 import { deDE, enUS } from "@mui/material/locale";
 import { deDE as xdeDE, enUS as xenUS } from "@mui/x-data-grid/locales";
-import { NuqsAdapter } from "nuqs/adapters/next/app";
 
 const supportedLocales: Record<typeof routing.locales[number], Theme> = {
   "de": createTheme(deDE, xdeDE),

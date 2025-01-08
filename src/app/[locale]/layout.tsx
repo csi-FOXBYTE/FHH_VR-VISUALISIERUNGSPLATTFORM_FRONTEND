@@ -1,5 +1,5 @@
-import { authOptions } from "@/auth/authOptions";
-import { routing } from "@/i18n/routing";
+import { authOptions } from "@/server/auth/authOptions";
+import { routing } from "@/server/i18n/routing";
 import { getServerSession } from "next-auth";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";

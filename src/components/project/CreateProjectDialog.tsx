@@ -245,14 +245,14 @@ export default function CreateProjectDialog({
                     <FormControl fullWidth>
                       <TextField
                         multiline
-                        rows={4}
+                        minRows={4}
                         maxRows={6}
                         required
                         value={props.values.projectName}
                         onChange={props.handleChange}
                         onBlur={props.handleBlur}
                         name="endDate"
-                        label="Zusaätzliche Informationen"
+                        label="Zusätzliche Informationen"
                         variant="filled"
                       />
                     </FormControl>
