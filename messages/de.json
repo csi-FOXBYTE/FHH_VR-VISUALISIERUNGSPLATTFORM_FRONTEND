@@ -4,6 +4,20 @@
       "sites": "Standorte",
       "projects": "Projekte"
     },
-    "/projects": {}
+    "/projects": {},
+    "/project": {
+      "title": "Hallo, ",
+      "subTitle": "Schön, dass du da bist!",
+      "cardsHeader": "Deine Optionen",
+      "cardsButtonText": "Öffnen",
+      "card1Title": "Meine Projekte",
+      "card1Text": "Zu deinen zugewiesenen Projekten",
+      "card2Title": "Meine Aufgaben",
+      "card2Text": "Zu deinen zugewiesenen Aufgaben",
+      "card3Title": "Platzhalter",
+      "card3Text": "Kurzbeschreibung",
+      "card4Title": "Platzhalter",
+      "card4Text": "Kurzbeschreibung"
+    }
   }
 }

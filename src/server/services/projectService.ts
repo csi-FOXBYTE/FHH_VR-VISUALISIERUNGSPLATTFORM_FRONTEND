@@ -2,6 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import { AbstractService } from "./abstractService";
 import { Session } from "next-auth";
 import { EventBus } from "../events";
+import { faker } from "@faker-js/faker";
 
 export class ProjectService implements AbstractService {
   readonly name = "project";
@@ -23,5 +24,12 @@ export class ProjectService implements AbstractService {
     }));
 
     return projects.slice(0, limit);
+  }
+
+  async getProjects() {
+    return new Array(100).fill(0).map(() => ({
+      title: faker.word.words(),
+      id: crypto.randomUUID(),
+    }))
   }
 }
