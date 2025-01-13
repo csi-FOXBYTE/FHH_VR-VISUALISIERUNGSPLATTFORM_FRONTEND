@@ -3,6 +3,21 @@
     "/": {
       "projects": "Projects",
       "sites": "Locations"
+    },
+    "/projects": {},
+    "/project": {
+      "card1Text": "To your assigned projects",
+      "card1Title": "My projects",
+      "card2Text": "To your assigned tasks",
+      "card2Title": "My tasks",
+      "card3Text": "Short description",
+      "card3Title": "Placeholder",
+      "card4Text": "Short description",
+      "card4Title": "Placeholder",
+      "cardsButtonText": "Open",
+      "cardsHeader": "Your options",
+      "subTitle": "Nice that you're here!",
+      "title": "Hello, {userName}!"
     }
   }
 }

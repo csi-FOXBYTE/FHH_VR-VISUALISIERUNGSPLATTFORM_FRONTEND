@@ -6,7 +6,7 @@
     },
     "/projects": {},
     "/project": {
-      "title": "Hallo, ",
+      "title": "Hallo, {userName}!",
       "subTitle": "Schön, dass du da bist!",
       "cardsHeader": "Deine Optionen",
       "cardsButtonText": "Öffnen",
