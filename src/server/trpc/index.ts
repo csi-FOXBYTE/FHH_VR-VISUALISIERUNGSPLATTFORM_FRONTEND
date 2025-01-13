@@ -36,7 +36,9 @@ export const createTRPCContext = cache(async () => {
 
 const otelPlugin = createOTelPlugin();
 
-export function protectedProcedure(requiredPermissions: GeneratedPermissions[] = []) {
+export function protectedProcedure(
+  requiredPermissions: GeneratedPermissions[] = []
+) {
   return procedure
     .use(async ({ next, ctx }) => {
       const session = ctx.session;

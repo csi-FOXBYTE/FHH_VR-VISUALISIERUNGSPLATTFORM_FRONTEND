@@ -3,7 +3,6 @@
 import MenuIcon from "@mui/icons-material/Menu";
 import {
   AppBar,
-  Avatar,
   CssBaseline,
   Divider,
   IconButton,
@@ -14,7 +13,6 @@ import {
   Toolbar,
   Tooltip,
   Link,
-  useColorScheme,
   Typography,
   ButtonGroup,
   Grid2,
@@ -25,13 +23,9 @@ import Logout from "@mui/icons-material/Logout";
 import { Link as NextLink } from "@/server/i18n/routing";
 import { MBFooter } from "@mercedes-benz/mbui-comps";
 import { useLocale } from "next-intl";
-import {
-  DarkMode,
-  LightMode,
-  Notifications,
-  Person2Rounded,
-} from "@mui/icons-material";
+import { AccountCircle, Language, Mail } from "@mui/icons-material";
 import SideBar from "@/components/common/SideBar";
+import { parseAsBoolean, useQueryState } from "nuqs";
 
 export default function LocaleLayout({
   children,
@@ -40,7 +34,10 @@ export default function LocaleLayout({
 }) {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
-  const { colorScheme, setColorScheme } = useColorScheme();
+  const [, setSideBarOpen] = useQueryState(
+    "sideBarOpen",
+    parseAsBoolean.withDefault(false)
+  );
 
   const open = Boolean(anchorEl);
 
@@ -61,7 +58,15 @@ export default function LocaleLayout({
   const session = useSession();
 
   return (
-    <>
+    <div
+      style={{
+        height: "100vh",
+        width: "100vw",
+        overflow: "hidden",
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
       <CssBaseline />
       <AppBar
         position="sticky"
@@ -75,6 +80,7 @@ export default function LocaleLayout({
       >
         <Toolbar style={{ paddingLeft: 0 }}>
           <IconButton
+            onClick={() => setSideBarOpen((sideBarOpen) => !sideBarOpen)}
             style={{ color: "white", padding: 16, borderRadius: 0, margin: 0 }}
           >
             <MenuIcon />
@@ -91,48 +97,16 @@ export default function LocaleLayout({
               Infocus
             </Typography>
           </Link>
-          <div
-            style={{
-              flex: "1",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: 16,
-            }}
-          >
-            <Link
-              underline="none"
-              color="white"
-              component={NextLink}
-              href="/site"
-            >
-              Standorte
-            </Link>
-            <Link
-              underline="none"
-              color="white"
-              component={NextLink}
-              href="/project"
-            >
-              Projekte
-            </Link>
-          </div>
+          <div style={{ flex: 1 }} />
           <ButtonGroup>
-            <Tooltip
-              title={colorScheme === "dark" ? "Dark Mode" : "Light Mode"}
-            >
-              <IconButton
-                onClick={() =>
-                  setColorScheme(colorScheme === "dark" ? "light" : "dark")
-                }
-                color="inherit"
-              >
-                {colorScheme === "dark" ? <DarkMode /> : <LightMode />}
-              </IconButton>
-            </Tooltip>
             <Tooltip title="Notifications">
               <IconButton color="inherit">
-                <Notifications />
+                <Mail />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Language">
+              <IconButton color="inherit">
+                <Language />
               </IconButton>
             </Tooltip>
             <Tooltip title="Account settings">
@@ -141,7 +115,7 @@ export default function LocaleLayout({
                 onClick={handleClick}
                 color="inherit"
               >
-                <Person2Rounded />
+                <AccountCircle />
               </IconButton>
             </Tooltip>
           </ButtonGroup>
@@ -154,7 +128,7 @@ export default function LocaleLayout({
             anchorEl={anchorEl}
           >
             <MenuItem LinkComponent={NextLink} href="/profile">
-              <Avatar />
+              <AccountCircle />
               &nbsp;Profile
             </MenuItem>
             <Divider />
@@ -168,9 +142,22 @@ export default function LocaleLayout({
           </Menu>
         </Toolbar>
       </AppBar>
-      <Grid2 style={{ flex: 1 }} container flexDirection="row" wrap="nowrap">
+      <Grid2
+        style={{ flex: 1, overflow: "hidden" }}
+        container
+        flexDirection="row"
+        wrap="nowrap"
+      >
         <SideBar />
-        <Paper elevation={0} sx={{ flex: 1, padding: "32px 64px", boxSizing: "border-box" }}>
+        <Paper
+          elevation={0}
+          sx={{
+            flex: 1,
+            overflow: "hidden",
+            padding: "32px 64px",
+            boxSizing: "border-box",
+          }}
+        >
           {children}
         </Paper>
       </Grid2>
@@ -180,6 +167,6 @@ export default function LocaleLayout({
         legalNoticeInfoLink=""
         providerInfoLink=""
       />
-    </>
+    </div>
   );
 }
