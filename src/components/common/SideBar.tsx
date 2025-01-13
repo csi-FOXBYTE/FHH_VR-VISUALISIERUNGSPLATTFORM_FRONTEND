@@ -91,19 +91,19 @@ export default function SideBar() {
       children: [
         {
           name: "Übersicht",
-          path: "/project/overview",
+          path: "/projects/project/overview",
         },
         {
           name: "Anforderungen",
-          path: "/project/overview",
+          path: "/projects/project/overview",
         },
         {
           name: "Ziele",
-          path: "/project/overview",
+          path: "/projects/project/overview",
         },
         {
           name: "Beteiligte",
-          path: "/project/overview",
+          path: "/projects/project/overview",
         },
       ],
     },

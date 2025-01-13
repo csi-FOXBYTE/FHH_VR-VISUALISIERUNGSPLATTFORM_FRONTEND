@@ -51,7 +51,7 @@ export default function LandingPage() {
 
         {/* Card 2 */}
         <StyledDiv>
-          <StyledCard onClick={() => router.push("/project")}>
+          <StyledCard onClick={() => router.push("/projects")}>
             <CardHeader title={t("routes./.projects")} />
           </StyledCard>
         </StyledDiv>

@@ -1,7 +1,6 @@
 "use client";
 
 import { useRouter } from "@/server/i18n/routing";
-import { trpc } from "@/server/trpc/client";
 import {
   Box,
   Button,
@@ -40,7 +39,7 @@ const GreyText = styled(Typography)({
 //TODO: replace email with name!
 
 export default function ProjectPage() {
-  const { data = [] } = trpc.projectOverviewRouter.getProjects.useQuery();
+  // const { data = [] } = trpc.projectOverviewRouter.getProjects.useQuery();
   const t = useTranslations();
   const router = useRouter();
   const session = useSession();
@@ -70,7 +69,7 @@ export default function ProjectPage() {
                 <Grid2 size={6}>
                   <Card
                     component={Card}
-                    onClick={() => router.push("/project/overview")}
+                    onClick={() => router.push("/projects/overview")}
                   >
                     <CardHeader title={t("routes./project.card1Title")} />
                     <CardContent>

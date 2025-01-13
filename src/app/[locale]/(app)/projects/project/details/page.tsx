@@ -23,7 +23,7 @@ const Root = styled(Box)({
   height: "100%",
 });
 
-const Header = styled(Box)({
+const Headline = styled(Box)({
   display: "flex",
 });
 
@@ -70,16 +70,16 @@ const Box3 = styled(Box)({
   margin: "1rem",
 });
 
-export default function LandingPage() {
+export default function Details() {
   const t = useTranslations();
 
   return (
     <Root>
-      <Header>
+      <Headline>
         <Typography variant="h1">
           {t("routes./project/details.title")}
         </Typography>
-      </Header>
+      </Headline>
       <Content>
         <LeftContainer>
           <Accordion>

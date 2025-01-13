@@ -58,13 +58,13 @@ export default function ProjectOverviewLayout({
         <Typography variant="h2">Übersicht Projekte</Typography>
         <Tabs value={pathname}>
           <Tab
-            onClick={() => router.push("/project/overview/tiles")}
-            value="/project/overview/tiles"
+            onClick={() => router.push("/projects/overview/tiles")}
+            value="/projects/overview/tiles"
             label="Kachel"
           />
           <Tab
-            onClick={() => router.push("/project/overview/list")}
-            value="/project/overview/list"
+            onClick={() => router.push("/projects/overview/list")}
+            value="/projects/overview/list"
             label="Liste"
           />
         </Tabs>

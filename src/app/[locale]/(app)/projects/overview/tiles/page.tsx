@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "@/server/i18n/routing";
 import { trpc } from "@/server/trpc/client";
 import {
   Autorenew,
@@ -33,6 +34,8 @@ const StyledCardHeader = styled(CardHeader)`
 `;
 
 export default function ProjectOverviewTilesPage() {
+  const router = useRouter();
+
   const [skip, setSkip] = useQueryState("skip", parseAsFloat.withDefault(0));
 
   const [filter] = useQueryState(
@@ -51,9 +54,7 @@ export default function ProjectOverviewTilesPage() {
       }
     );
 
-  useEffect(() => {
-
-  }, []);
+  useEffect(() => {}, []);
 
   return (
     <Grid2
@@ -79,6 +80,7 @@ export default function ProjectOverviewTilesPage() {
             key={project.id}
             container
             flexDirection="column"
+            onClick={() => router.push("/projects/project")}
           >
             <StyledCardHeader
               titleTypographyProps={{
