@@ -45,7 +45,10 @@
       "column2": "Verantworlicher",
       "column3": "Kategorie",
       "column4": "Erstellt am",
-      "addButton": "Anforderung hinzufügen"
+      "addButton": "Anforderung hinzufügen",
+      "edit": "Bearbeiten",
+      "history": "Verlauf",
+      "delete": "Löschen"
     },
     "/common": {
       "saveButton": "Speichern",

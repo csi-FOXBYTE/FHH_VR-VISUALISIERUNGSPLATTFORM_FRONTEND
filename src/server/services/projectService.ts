@@ -4,6 +4,23 @@ import { Session } from "next-auth";
 import { EventBus } from "../events";
 import { faker } from "@faker-js/faker";
 import dayjs from "dayjs";
+interface IProject {
+  id: string;
+  title: string;
+  buildingNumber: number;
+  description: string;
+  state: 'active' | 'critical' | 'delayed';
+  projectLead: string;
+  assignedDate: Date;
+  requirements: IRequirement[];
+}
+interface IRequirement {
+  id: string;
+  title: string;
+  responsibleUser: string;
+  category: 'Tec' | 'Org';
+  assignedDate: Date;
+}
 
 const mockProjects = new Array(3).fill(0).map(() => ({
   title: `${faker.company.catchPhraseAdjective()} ${faker.company.catchPhraseNoun()}`,
@@ -20,7 +37,7 @@ const mockProjects = new Array(3).fill(0).map(() => ({
     id: crypto.randomUUID(),
     title: faker.company.catchPhrase(),
     responsibleUser: faker.person.firstName(),
-    category: faker.helpers.arrayElement(["active", "critical", "delayed"] as const),
+    category: faker.helpers.arrayElement(["Tec", "Org"] as const),
     assignedDate: faker.date.between({
       from: dayjs().toISOString(),
       to: dayjs().add(7, "day").toISOString(),
@@ -124,5 +141,64 @@ export class ProjectService implements AbstractService {
 
     return project;
   }
+
+  //# region Requirements
+  async getRequirement(projectId: string, requirementId: string) {
+    const project = mockProjects.find((proj) => proj.id === projectId);
+    if (!project) {
+      throw new Error(`Project with ID ${projectId} not found`);
+    }
+
+    const requirement = project.requirements.find((req: IRequirement) => req.id === requirementId);
+    if (!requirement) {
+      throw new Error(`Requirement with ID ${requirementId} not found in project ${projectId}`);
+    }
+
+    return requirement;
+  }
+
+  async deleteRequirement(projectId: string, requirementId: string): Promise<void> {
+    const project = mockProjects.find((proj) => proj.id === projectId);
+    if (!project) {
+      throw new Error(`Project with ID ${projectId} not found`);
+    }
+
+    const requirementIndex = project.requirements.findIndex((req: IRequirement) => req.id === requirementId);
+    if (requirementIndex === -1) {
+      throw new Error(`Requirement with ID ${requirementId} not found in project ${projectId}`);
+    }
+
+    project.requirements.splice(requirementIndex, 1);
+    console.log(`Requirement with ID ${requirementId} deleted successfully from project ${projectId}.`);
+  }
+
+  async editRequirement(projectId: string, requirementId: string, data: Partial<IRequirement>) {
+    const project = mockProjects.find((proj) => proj.id === projectId);
+    if (!project) {
+      throw new Error(`Project with ID ${projectId} not found`);
+    }
+
+    const requirement = project.requirements.find((req: IRequirement) => req.id === requirementId);
+    if (!requirement) {
+      throw new Error(`Requirement with ID ${requirementId} not found in project ${projectId}`);
+    }
+
+    Object.assign(requirement, data);
+    return requirement;
+  }
+
+  async addRequirement(projectId: string, data: Omit<IRequirement, 'id'>) {
+    const project = mockProjects.find((proj: IProject) => proj.id === projectId);
+
+    if (!project) {
+      throw new Error(`Project with ID ${projectId} not found`);
+    }
+
+    const newRequirement = { id: crypto.randomUUID(), ...data };
+    project.requirements.push(newRequirement);
+    return newRequirement;
+  }
+
+  //# endregion
 
 }

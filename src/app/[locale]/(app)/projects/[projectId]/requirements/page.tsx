@@ -16,8 +16,16 @@ import { useParams } from "next/navigation";
 import { parseAsFloat, parseAsJson, parseAsString, useQueryState } from "nuqs";
 import { useCallback, useMemo, useState } from "react";
 import { z } from "zod";
-import { Add, Refresh, SettingsOutlined } from "@mui/icons-material";
+import {
+  Add,
+  Delete,
+  Edit,
+  History,
+  Refresh,
+  SettingsOutlined,
+} from "@mui/icons-material";
 import CreateRequirementDialog from "@/components/project/CreateRequirementDialog";
+import OptionsButton from "@/components/common/OptionsButton";
 
 const StyledBox = styled(Box)({
   display: "flex",
@@ -31,6 +39,49 @@ export default function Requirements() {
   const { projectId } = useParams();
 
   const t = useTranslations();
+
+  const deleteRequirementMutation =
+    trpc.requirementsRouter.deleteRequirement.useMutation({
+      onSuccess: () => {
+        refetch();
+      },
+    });
+
+  const handleEditRequirementClick = useCallback((requirementId: string) => {
+    console.log(`Edit requirement with ID: ${requirementId}`);
+  }, []);
+
+  const handleHistoryRequirementClick = useCallback((requirementId: string) => {
+    console.log(`History for requirement with ID: ${requirementId}`);
+  }, []);
+
+  const handleDeleteRequirementClick = useCallback(
+    (requirementId: string) => {
+      deleteRequirementMutation.mutate({
+        projectId: projectId as string,
+        requirementId,
+      });
+    },
+    [deleteRequirementMutation, projectId]
+  );
+
+  const options = (requirementId: string) => [
+    {
+      name: t("routes./project/requirements.edit"),
+      action: () => handleEditRequirementClick(requirementId),
+      icon: <Edit />,
+    },
+    {
+      name: t("routes./project/requirements.history"),
+      action: () => handleHistoryRequirementClick(requirementId),
+      icon: <History />,
+    },
+    {
+      name: t("routes./project/requirements.delete"),
+      action: () => handleDeleteRequirementClick(requirementId),
+      icon: <Delete />,
+    },
+  ];
 
   const [createModalOpened, setCreateModalOpened] = useState(false);
 
@@ -68,14 +119,17 @@ export default function Requirements() {
     parseAsString.withDefault("")
   );
 
-  const { data: project, isPending: isProjectsPending } =
-    trpc.projectRouter.getProject.useQuery(
-      { projectId: projectId as string },
-      {
-        enabled: !!projectId,
-        placeholderData: keepPreviousData,
-      }
-    );
+  const {
+    data: project,
+    isPending: isProjectsPending,
+    refetch,
+  } = trpc.projectRouter.getProject.useQuery(
+    { projectId: projectId as string },
+    {
+      enabled: !!projectId,
+      placeholderData: keepPreviousData,
+    }
+  );
 
   const handleSortModelChange = useCallback(
     (model: GridSortModel) => {
@@ -131,6 +185,7 @@ export default function Requirements() {
             <Button
               variant="text"
               startIcon={<Refresh />}
+              onClick={() => refetch()}
               sx={{
                 justifyContent: "center",
                 marginRight: "16px",
@@ -190,7 +245,9 @@ export default function Requirements() {
               {
                 field: "settings",
                 renderHeader: () => <SettingsOutlined />,
-                renderCell: () => <Button>...</Button>,
+                renderCell: (params) => (
+                  <OptionsButton options={options(params.row.id)} />
+                ),
               },
             ]}
           />

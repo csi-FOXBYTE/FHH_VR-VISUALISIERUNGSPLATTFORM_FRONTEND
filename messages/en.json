@@ -45,7 +45,10 @@
       "column2": "Responsible person",
       "column3": "Category",
       "column4": "Created on",
-      "addButton": "Add requirement"
+      "addButton": "Add requirement",
+      "edit": "Edit",
+      "history": "History",
+      "delete": "Delete"
     },
     "/common": {
       "addButton": "Add",
