@@ -7,20 +7,41 @@ import CreateProjectDialog from "@/components/project/CreateProjectDialog";
 import { useTranslations } from "next-intl";
 import { useParams } from "next/navigation";
 
-export default function ProjectOverviewLayout({
-  children,
-}: {
-  children: ReactNode;
-}) {
+export default function ProjectPage({ children }: { children: ReactNode }) {
   const { projectId } = useParams();
-
   const t = useTranslations();
-
   const pathname = usePathname() ?? "";
-
   const router = useRouter();
-
   const [createModalOpened, setCreateModalOpened] = useState(false);
+
+  // const {
+  //   data: { data: projects, count } = { count: 0, data: [] },
+  //   isPending: isProjectsPending,
+  // } = trpc.projectOverviewRouter.getProjects.useQuery(
+  //   {
+  //     filter: {},
+  //     limit: 100,
+  //     skip: 0,
+  //     search: {},
+  //     sortBy: "title",
+  //     sortOrder: "asc",
+  //   },
+  //   {
+  //     placeholderData: keepPreviousData,
+  //   }
+  // );
+
+  // const selectedProject = projects.find((p) => p.id === projectId);
+
+  // const handleProjectChange = (event: SelectChangeEvent<string>) => {
+  //   const selectedProjectId = projects.find(
+  //     (project) => project.title === event.target.value
+  //   )?.id;
+
+  //   if (selectedProjectId) {
+  //     router.push(`/projects/${selectedProjectId}/details`);
+  //   }
+  // };
 
   return (
     <Grid2
@@ -30,7 +51,25 @@ export default function ProjectOverviewLayout({
       flexWrap="nowrap"
       overflow="hidden"
     >
-      <Grid2 marginBottom={"1rem"}>
+      {/* <Grid2 paddingTop={"1rem"}>
+        <FormControl fullWidth>
+          <InputLabel id="selected-project-label">Selected project</InputLabel>
+          <Select
+            labelId="selected-project-label"
+            id="selected-project-input"
+            value={selectedProject?.title || ""}
+            label="Selected project"
+            onChange={handleProjectChange}
+          >
+            {projects.map((project) => (
+              <MenuItem key={project.id} value={project.title}>
+                {project.title}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      </Grid2> */}
+      <Grid2 paddingBottom={"1rem"}>
         <Tabs value={pathname}>
           <Tab
             onClick={() => router.push(`/projects/${projectId}/details`)}
