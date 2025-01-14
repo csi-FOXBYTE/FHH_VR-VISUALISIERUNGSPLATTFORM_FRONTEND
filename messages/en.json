@@ -38,6 +38,14 @@
       "FormikStatus": "Status",
       "FormikTestBenchNumber": "Test stand no.",
       "title": "Project details"
+    },
+    "/project/requirements": {
+      "title": "Requirements",
+      "column1": "Requirement title",
+      "column2": "Responsible person",
+      "column3": "Category",
+      "column4": "Created on",
+      "addButton": "Add requirement"
     }
   }
 }

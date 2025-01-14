@@ -80,7 +80,7 @@ export default function ProjectOverviewTilesPage() {
             key={project.id}
             container
             flexDirection="column"
-            onClick={() => router.push("/projects/project")}
+            onClick={() => router.push(`/projects/${project.id}`)}
           >
             <StyledCardHeader
               titleTypographyProps={{

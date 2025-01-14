@@ -5,7 +5,7 @@ import { EventBus } from "../events";
 import { faker } from "@faker-js/faker";
 import dayjs from "dayjs";
 
-const mockProjects = new Array(1000).fill(0).map(() => ({
+const mockProjects = new Array(3).fill(0).map(() => ({
   title: `${faker.company.catchPhraseAdjective()} ${faker.company.catchPhraseNoun()}`,
   id: crypto.randomUUID(),
   buildingNumber: faker.number.int({ min: 1, max: 500 }),
@@ -16,6 +16,16 @@ const mockProjects = new Array(1000).fill(0).map(() => ({
     from: dayjs().toISOString(),
     to: dayjs().add(7, "day").toISOString(),
   }),
+  requirements: new Array(faker.number.int({ min: 1, max: 10 })).fill(0).map(() => ({
+    id: crypto.randomUUID(),
+    title: faker.company.catchPhrase(),
+    responsibleUser: faker.person.firstName(),
+    category: faker.helpers.arrayElement(["active", "critical", "delayed"] as const),
+    assignedDate: faker.date.between({
+      from: dayjs().toISOString(),
+      to: dayjs().add(7, "day").toISOString(),
+    }),
+  })),
 }));
 
 export class ProjectService implements AbstractService {
@@ -105,4 +115,14 @@ export class ProjectService implements AbstractService {
       count: data.length,
     };
   }
+
+  async getProject(projectId: string) {
+    const project = mockProjects.find((mockProject) => mockProject.id === projectId);
+    if (!project) {
+      throw new Error(`Project with ID ${projectId} not found.`);
+    }
+
+    return project;
+  }
+
 }

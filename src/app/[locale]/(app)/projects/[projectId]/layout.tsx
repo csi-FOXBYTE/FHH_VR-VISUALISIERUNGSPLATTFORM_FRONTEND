@@ -1,41 +1,19 @@
 "use client";
 
-import { Add, Clear, Refresh } from "@mui/icons-material";
-import {
-  Autocomplete,
-  Button,
-  ButtonGroup,
-  FormControlLabel,
-  Grid2,
-  IconButton,
-  InputAdornment,
-  MenuItem,
-  Select,
-  SelectChangeEvent,
-  Switch,
-  Tab,
-  Tabs,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Grid2, Tab, Tabs } from "@mui/material";
 import { usePathname, useRouter } from "@/server/i18n/routing";
 import { ReactNode, useState } from "react";
 import CreateProjectDialog from "@/components/project/CreateProjectDialog";
-import { parseAsJson, useQueryState } from "nuqs";
-import { z } from "zod";
 import { useTranslations } from "next-intl";
-
-const stateOptions = [
-  { label: "Verzögert", value: "delayed" },
-  { label: "Kritisch", value: "critical" },
-  { label: "In Arbeit", value: "active" },
-];
+import { useParams } from "next/navigation";
 
 export default function ProjectOverviewLayout({
   children,
 }: {
   children: ReactNode;
 }) {
+  const { projectId } = useParams();
+
   const t = useTranslations();
 
   const pathname = usePathname() ?? "";
@@ -43,11 +21,6 @@ export default function ProjectOverviewLayout({
   const router = useRouter();
 
   const [createModalOpened, setCreateModalOpened] = useState(false);
-
-  const [filter, setFilter] = useQueryState(
-    "filter",
-    parseAsJson(z.record(z.string(), z.string()).default({}).parse)
-  );
 
   return (
     <Grid2
@@ -60,23 +33,23 @@ export default function ProjectOverviewLayout({
       <Grid2 marginBottom={"1rem"}>
         <Tabs value={pathname}>
           <Tab
-            onClick={() => router.push("/projects/project/details")}
-            value="/projects/project/details"
+            onClick={() => router.push(`/projects/${projectId}/details`)}
+            value={`/projects/${projectId}/details`}
             label={t("routes./project.tabbar1")}
           />
           <Tab
-            onClick={() => router.push("/projects/project/requirements")}
-            value="/projects/project/requirements"
+            onClick={() => router.push(`/projects/${projectId}/requirements`)}
+            value={`/projects/${projectId}/requirements`}
             label={t("routes./project.tabbar2")}
           />
           <Tab
-            onClick={() => router.push("/projects/project/goals")}
-            value="/projects/project/goals"
+            onClick={() => router.push(`/projects/${projectId}/goals`)}
+            value={`/projects/${projectId}/goals`}
             label={t("routes./project.tabbar3")}
           />
           <Tab
-            onClick={() => router.push("/projects/project/participant")}
-            value="/projects/project/participant"
+            onClick={() => router.push(`/projects/${projectId}/participant`)}
+            value={`/projects/${projectId}/participant`}
             label={t("routes./project.tabbar4")}
           />
         </Tabs>

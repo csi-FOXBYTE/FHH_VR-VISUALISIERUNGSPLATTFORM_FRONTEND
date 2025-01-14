@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { protectedProcedure, router } from "..";
 
-const projectOverviewRouter = router({
+const projectsOverviewRouter = router({
   getProjects: protectedProcedure([])
     .input(
       z.object({
@@ -25,4 +25,4 @@ const projectOverviewRouter = router({
     }),
 });
 
-export default projectOverviewRouter;
+export default projectsOverviewRouter;

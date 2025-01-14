@@ -1,9 +1,7 @@
 import {
   Collapse,
   Divider,
-  Drawer,
   List,
-  ListItem,
   ListItemButton,
   ListItemIcon,
   ListItemText,
@@ -14,7 +12,6 @@ import {
   Add,
   CalendarMonth,
   ChecklistRtl,
-  Code,
   ContentPaste,
   Dashboard,
   DeveloperBoard,
@@ -26,6 +23,7 @@ import {
 import { usePathname, useRouter } from "@/server/i18n/routing";
 import { Fragment, ReactNode, useEffect, useState } from "react";
 import { parseAsBoolean, useQueryState } from "nuqs";
+import { useParams } from "next/navigation";
 
 type SideBarItem =
   | {
@@ -57,6 +55,8 @@ const StyledListItemText = styled(ListItemText)`
 
 export default function SideBar() {
   const pathname = usePathname();
+
+  const { projectId } = useParams();
 
   const [sideBarOpen] = useQueryState(
     "sideBarOpen",
@@ -91,19 +91,19 @@ export default function SideBar() {
       children: [
         {
           name: "Übersicht",
-          path: "/projects/project/overview",
+          path: "/projects/overview",
         },
         {
           name: "Anforderungen",
-          path: "/projects/project/overview",
+          path: `/projects/${projectId}/requirements`,
         },
         {
           name: "Ziele",
-          path: "/projects/project/overview",
+          path: `/projects/${projectId}/goals`,
         },
         {
           name: "Beteiligte",
-          path: "/projects/project/overview",
+          path: `/projects/${projectId}/participant`,
         },
       ],
     },

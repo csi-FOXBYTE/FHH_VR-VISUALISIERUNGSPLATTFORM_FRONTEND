@@ -1,11 +1,13 @@
-"use server";
+import { redirect } from "@/server/i18n/routing";
+import { getLocale } from "next-intl/server";
 
-export default async function ProjectWithIdPage({
+export default async function ProjectOverviewPage({
   params,
 }: {
-  params: Promise<{ projectId: string }>;
+  params: { projectId: string };
 }) {
+  const locale = await getLocale();
   const { projectId } = await params;
 
-  return <>{projectId}</>;
+  return redirect({ href: `/projects/${projectId}/details`, locale });
 }

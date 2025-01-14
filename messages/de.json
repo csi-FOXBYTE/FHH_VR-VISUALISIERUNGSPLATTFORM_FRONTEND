@@ -38,6 +38,14 @@
       "tabbar2": "Anforderungen",
       "tabbar3": "Ziele",
       "tabbar4": "Beteiligten"
+    },
+    "/project/requirements": {
+      "title": "Anforderungen",
+      "column1": "Anforderung Titel",
+      "column2": "Verantworlicher",
+      "column3": "Kategorie",
+      "column4": "Erstellt am",
+      "addButton": "Anforderung hinzufügen"
     }
   }
 }
