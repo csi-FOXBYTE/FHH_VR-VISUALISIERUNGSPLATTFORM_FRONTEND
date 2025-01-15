@@ -21,7 +21,7 @@
       "tabbar1": "Project details",
       "tabbar2": "Requirements",
       "tabbar3": "Goals",
-      "tabbar4": "Participant"
+      "tabbar4": "Participants"
     },
     "/project/details": {
       "Accordion1Title": "Info",
@@ -61,6 +61,19 @@
       "history": "History",
       "delete": "Delete"
     },
+    "/project/participants": {
+      "title": "Participants",
+      "column1": "Name",
+      "column2": "Last name",
+      "column3": "E-Mail Address",
+      "column4": "Phone number",
+      "column5": "Role",
+      "column6": "Department",
+      "column7": "Int/Ext",
+      "addButton": "Add participant",
+      "addTaskOption": "Add task",
+      "deleteOption": "Delete"
+    },
     "/common": {
       "addButton": "Add",
       "backButton": "Back",
@@ -97,5 +110,10 @@
     "performanceRadioBtn": "Performance",
     "save": "Save",
     "scheduleRadioBtn": "Schedule"
+  },
+  "participantDialog": {
+    "cancel": "Cancel",
+    "save": "Save",
+    "title": "Add participant"
   }
 }

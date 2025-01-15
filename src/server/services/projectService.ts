@@ -5,6 +5,7 @@ import { EventBus } from "../events";
 import { faker } from "@faker-js/faker";
 import dayjs from "dayjs";
 import { IUser } from "./userService";
+
 export interface IProject {
   id: string;
   title: string;
@@ -15,8 +16,9 @@ export interface IProject {
   assignedDate: Date;
   requirements: IRequirement[];
   goals: IGoal[];
-  members: IUser[];
+  participants: IUser[];
 }
+
 export interface IRequirement {
   id: string;
   title: string;
@@ -25,6 +27,7 @@ export interface IRequirement {
   assignedDate: Date;
   history: IRequirementHistory[];
 }
+
 export interface IGoal {
   id: string;
   title: string;
@@ -37,6 +40,7 @@ export interface IGoal {
 export interface IRequirementHistory extends Omit<IRequirement, 'id' | 'assignedDate' | 'history'> {
   changeDate: Date;
 }
+
 export interface IGoalHistory extends Omit<IGoal, 'id' | 'assignedDate' | 'history'> {
   changeDate: Date;
 }
@@ -52,13 +56,13 @@ const mockProjects: IProject[] = new Array(3).fill(0).map(() => ({
     from: dayjs().toISOString(),
     to: dayjs().add(7, "day").toISOString(),
   }),
-  members: new Array(faker.number.int({ min: 1, max: 10 })).fill(0).map(() => ({
+  participants: new Array(faker.number.int({ min: 1, max: 10 })).fill(0).map(() => ({
     id: crypto.randomUUID(),
     name: faker.person.fullName(),
     email: faker.internet.email(),
     role: faker.helpers.arrayElement(["admin", "user"] as const),
   })),
-  requirements: new Array(faker.number.int({ min: 1, max: 10 })).fill(0).map(() => ({
+  requirements: new Array(faker.number.int({ min: 1, max: 10 })).fill(0).map((): IRequirement => ({
     id: crypto.randomUUID(),
     title: faker.company.catchPhrase(),
     responsibleUser: faker.person.firstName(),
@@ -69,7 +73,7 @@ const mockProjects: IProject[] = new Array(3).fill(0).map(() => ({
     }),
     history: [],
   })),
-  goals: new Array(faker.number.int({ min: 1, max: 10 })).fill(0).map(() => ({
+  goals: new Array(faker.number.int({ min: 1, max: 10 })).fill(0).map((): IGoal => ({
     id: crypto.randomUUID(),
     title: faker.company.catchPhrase(),
     responsibleUser: faker.person.firstName(),
@@ -153,7 +157,7 @@ export class ProjectService implements AbstractService {
     if (sortOrder === "asc" && sortBy)
       data.sort((a, b) =>
         String(a[sortBy as keyof typeof a]).localeCompare(
-          String(b[sortBy as keyof typeof b])
+          String(b[sortBy as keyof typeof a])
         )
       );
 
@@ -293,6 +297,49 @@ export class ProjectService implements AbstractService {
     const newGoal = { id: crypto.randomUUID(), ...data };
     project.goals.push(newGoal);
     return newGoal;
+  }
+
+  // #endregion
+
+  // #region Participants
+  async getParticipant(projectId: string, participantId: string) {
+    const project = mockProjects.find((proj) => proj.id === projectId);
+    if (!project) {
+      throw new Error(`Project with ID ${projectId} not found`);
+    }
+
+    const participant = project.participants.find((part: IUser) => part.id === participantId);
+    if (!participant) {
+      throw new Error(`Participant with ID ${participantId} not found in project ${projectId}`);
+    }
+
+    return participant;
+  }
+
+  async deleteParticipant(projectId: string, participantId: string): Promise<void> {
+    const project = mockProjects.find((proj) => proj.id === projectId);
+    if (!project) {
+      throw new Error(`Project with ID ${projectId} not found`);
+    }
+
+    const participantIndex = project.participants.findIndex((part: IUser) => part.id === participantId);
+    if (participantIndex === -1) {
+      throw new Error(`Participant with ID ${participantId} not found in project ${projectId}`);
+    }
+
+    project.participants.splice(participantIndex, 1);
+  }
+
+  async addParticipant(projectId: string, data: Omit<IUser, 'id'>) {
+    const project = mockProjects.find((proj: IProject) => proj.id === projectId);
+
+    if (!project) {
+      throw new Error(`Project with ID ${projectId} not found`);
+    }
+
+    const newParticipant = { id: crypto.randomUUID(), ...data };
+    project.participants.push(newParticipant);
+    return newParticipant;
   }
 
   // #endregion

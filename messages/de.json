@@ -61,7 +61,7 @@
       "history": "Verlauf",
       "delete": "Löschen"
     },
-    "/project/participant": {
+    "/project/participants": {
       "title": "Beteiligten",
       "column1": "Vorname",
       "column2": "Nachname",
@@ -71,7 +71,6 @@
       "column6": "Firma",
       "column7": "Int/Ext",
       "addButton": "Beteiligten hinzufügen",
-      "editOption": "Bearbeiten",
       "addTaskOption": "Aufgabe zuweisen",
       "deleteOption": "Löschen"
     },

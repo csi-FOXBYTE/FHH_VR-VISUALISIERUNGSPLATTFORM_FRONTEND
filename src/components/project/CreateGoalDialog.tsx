@@ -124,10 +124,13 @@ export default function CreateGoalDialog({
                   onChange={handleChange}
                   variant="filled"
                 >
-                  {project.members.map((member) => {
+                  {project.participants.map((participant) => {
                     return (
-                      <MenuItem key={member.email} value={member.email}>
-                        {member.email}
+                      <MenuItem
+                        key={participant.email}
+                        value={participant.email}
+                      >
+                        {participant.email}
                       </MenuItem>
                     );
                   })}
