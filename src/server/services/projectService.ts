@@ -14,6 +14,7 @@ export interface IProject {
   projectLead: string;
   assignedDate: Date;
   requirements: IRequirement[];
+  goals: IGoal[];
   members: IUser[];
 }
 export interface IRequirement {
@@ -24,9 +25,20 @@ export interface IRequirement {
   assignedDate: Date;
   history: IRequirementHistory[];
 }
+export interface IGoal {
+  id: string;
+  title: string;
+  responsibleUser: string;
+  category: 'Schedule' | 'Cost' | 'Performance';
+  assignedDate: Date;
+  history: IGoalHistory[];
+}
 
 export interface IRequirementHistory extends Omit<IRequirement, 'id' | 'assignedDate' | 'history'> {
-  changed: Date;
+  changeDate: Date;
+}
+export interface IGoalHistory extends Omit<IGoal, 'id' | 'assignedDate' | 'history'> {
+  changeDate: Date;
 }
 
 const mockProjects: IProject[] = new Array(3).fill(0).map(() => ({
@@ -51,6 +63,17 @@ const mockProjects: IProject[] = new Array(3).fill(0).map(() => ({
     title: faker.company.catchPhrase(),
     responsibleUser: faker.person.firstName(),
     category: faker.helpers.arrayElement(["Tec", "Org"] as const),
+    assignedDate: faker.date.between({
+      from: dayjs().toISOString(),
+      to: dayjs().add(7, "day").toISOString(),
+    }),
+    history: [],
+  })),
+  goals: new Array(faker.number.int({ min: 1, max: 10 })).fill(0).map(() => ({
+    id: crypto.randomUUID(),
+    title: faker.company.catchPhrase(),
+    responsibleUser: faker.person.firstName(),
+    category: faker.helpers.arrayElement(['Schedule', 'Cost', 'Performance'] as const),
     assignedDate: faker.date.between({
       from: dayjs().toISOString(),
       to: dayjs().add(7, "day").toISOString(),
@@ -156,7 +179,7 @@ export class ProjectService implements AbstractService {
     return project;
   }
 
-  //# region Requirements
+  // #region Requirements
   async getRequirement(projectId: string, requirementId: string) {
     const project = mockProjects.find((proj) => proj.id === projectId);
     if (!project) {
@@ -213,6 +236,65 @@ export class ProjectService implements AbstractService {
     return newRequirement;
   }
 
-  //# endregion
+  // #endregion
+
+  // #region Goals
+  async getGoal(projectId: string, goalId: string) {
+    const project = mockProjects.find((proj) => proj.id === projectId);
+    if (!project) {
+      throw new Error(`Project with ID ${projectId} not found`);
+    }
+
+    const goal = project.goals.find((req: IGoal) => req.id === goalId);
+    if (!goal) {
+      throw new Error(`Goal with ID ${goalId} not found in project ${projectId}`);
+    }
+
+    return goal;
+  }
+
+  async deleteGoal(projectId: string, goalId: string): Promise<void> {
+    const project = mockProjects.find((proj) => proj.id === projectId);
+    if (!project) {
+      throw new Error(`Project with ID ${projectId} not found`);
+    }
+
+    const goalIndex = project.goals.findIndex((req: IGoal) => req.id === goalId);
+    if (goalIndex === -1) {
+      throw new Error(`Goal with ID ${goalId} not found in project ${projectId}`);
+    }
+
+    project.goals.splice(goalIndex, 1);
+    console.log(`Goal with ID ${goalId} deleted successfully from project ${projectId}.`);
+  }
+
+  async editGoal(projectId: string, goalId: string, data: Partial<IGoal>) {
+    const project = mockProjects.find((proj) => proj.id === projectId);
+    if (!project) {
+      throw new Error(`Project with ID ${projectId} not found`);
+    }
+
+    const goal = project.goals.find((req: IGoal) => req.id === goalId);
+    if (!goal) {
+      throw new Error(`Goal with ID ${goalId} not found in project ${projectId}`);
+    }
+
+    Object.assign(goal, data);
+    return goal;
+  }
+
+  async addGoal(projectId: string, data: Omit<IGoal, 'id'>) {
+    const project = mockProjects.find((proj: IProject) => proj.id === projectId);
+
+    if (!project) {
+      throw new Error(`Project with ID ${projectId} not found`);
+    }
+
+    const newGoal = { id: crypto.randomUUID(), ...data };
+    project.goals.push(newGoal);
+    return newGoal;
+  }
+
+  // #endregion
 
 }

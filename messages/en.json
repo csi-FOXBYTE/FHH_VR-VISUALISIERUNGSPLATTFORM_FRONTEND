@@ -45,6 +45,17 @@
       "column2": "Responsible person",
       "column3": "Category",
       "column4": "Created on",
+      "addButton": "Add goal",
+      "edit": "Edit",
+      "history": "History",
+      "delete": "Delete"
+    },
+    "/project/goals": {
+      "title": "Goals",
+      "column1": "Goals",
+      "column2": "Responsible person",
+      "column3": "Category",
+      "column4": "Created on",
       "addButton": "Add requirement",
       "edit": "Edit",
       "history": "History",
@@ -70,6 +81,21 @@
     "assignedTo": "Assigned to",
     "requirementText": "Requirement",
     "addTitle": "Add requirement",
-    "editTitle": "Edit requirement"
+    "editTitle": "Edit requirement",
+    "historyTitle": "History"
+  },
+  "goalDialog": {
+    "addTitle": "Add destination",
+    "assignedTo": "Assigned to",
+    "cancel": "Cancel",
+    "category": "category",
+    "costRadioBtn": "Cost",
+    "createdAt": "Created on",
+    "editTitle": "Edit target",
+    "goalText": "Goal",
+    "historyTitle": "Change history",
+    "performanceRadioBtn": "Performance",
+    "save": "Save",
+    "scheduleRadioBtn": "Schedule"
   }
 }

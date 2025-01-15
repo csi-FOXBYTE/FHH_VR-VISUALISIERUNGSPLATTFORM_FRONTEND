@@ -50,6 +50,31 @@
       "history": "Verlauf",
       "delete": "Löschen"
     },
+    "/project/goals": {
+      "title": "Ziele",
+      "column1": "Ziele",
+      "column2": "Verantworlicher",
+      "column3": "Kategorie",
+      "column4": "Erstellt am",
+      "addButton": "Anforderung hinzufügen",
+      "edit": "Bearbeiten",
+      "history": "Verlauf",
+      "delete": "Löschen"
+    },
+    "/project/participant": {
+      "title": "Beteiligten",
+      "column1": "Vorname",
+      "column2": "Nachname",
+      "column3": "E-Mail Adresse",
+      "column4": "Rufnummer",
+      "column5": "Rolle",
+      "column6": "Firma",
+      "column7": "Int/Ext",
+      "addButton": "Beteiligten hinzufügen",
+      "editOption": "Bearbeiten",
+      "addTaskOption": "Aufgabe zuweisen",
+      "deleteOption": "Löschen"
+    },
     "/common": {
       "saveButton": "Speichern",
       "cancelButton": "Abbrechen",
@@ -70,6 +95,26 @@
     "assignedTo": "Zugewiesen an",
     "requirementText": "Anforderung",
     "addTitle": "Anforderung hinzufügen",
-    "editTitle": "Anforderung bearbeiten"
+    "editTitle": "Anforderung bearbeiten",
+    "historyTitle": "Änderungshistorie"
+  },
+  "goalDialog": {
+    "cancel": "Abbrechen",
+    "save": "Speichern",
+    "createdAt": "Erstellt am",
+    "scheduleRadioBtn": "Termin",
+    "costRadioBtn": "Kosten",
+    "performanceRadioBtn": "Leistung",
+    "category": "Kategorie",
+    "assignedTo": "Zugeordnet an",
+    "goalText": "Ziel",
+    "addTitle": "Ziel hinzufügen",
+    "editTitle": "Ziel bearbeiten",
+    "historyTitle": "Änderungshistorie"
+  },
+  "participantDialog": {
+    "cancel": "Abbrechen",
+    "save": "Speichern",
+    "title": "Beteiligten hinzufügen"
   }
 }

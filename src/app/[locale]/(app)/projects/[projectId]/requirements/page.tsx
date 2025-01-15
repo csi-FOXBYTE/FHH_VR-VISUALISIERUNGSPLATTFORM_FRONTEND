@@ -27,6 +27,7 @@ import {
 import CreateRequirementDialog from "@/components/project/CreateRequirementDialog";
 import OptionsButton from "@/components/common/OptionsButton";
 import { IRequirement } from "@/server/services/projectService";
+import RequirementHistoryDialog from "@/components/project/RequirementHistoryDialog";
 
 const StyledBox = styled(Box)({
   display: "flex",
@@ -36,15 +37,21 @@ const StyledBox = styled(Box)({
   height: "100%",
 });
 
-//TODO: sorting currently not working, because not getting requirments via extra server request like projects
+// #region Component
 
 export default function Requirements() {
   const { projectId } = useParams();
   const [editRequirement, setEditRequirement] = useState<IRequirement | null>(
     null
   );
+  const [historyRequirement, setHistoryRequirement] =
+    useState<IRequirement | null>(null);
+  const [createModalOpened, setCreateModalOpened] = useState(false);
+  const [historyModalOpened, setHistoryModalOpened] = useState(false);
 
   const t = useTranslations();
+
+  // #region Data Fetching
 
   const {
     data: project,
@@ -65,6 +72,10 @@ export default function Requirements() {
       },
     });
 
+  // #endregion
+
+  // #region Handlers
+
   const handleEditRequirementClick = useCallback(
     (requirementId: string) => {
       const requirement = project?.requirements.find(
@@ -83,9 +94,23 @@ export default function Requirements() {
     setCreateModalOpened(false);
   }, []);
 
-  const handleHistoryRequirementClick = useCallback((requirementId: string) => {
-    console.log(`History for requirement with ID: ${requirementId}`);
+  const resetHistoryMode = useCallback(() => {
+    setHistoryRequirement(null);
+    setHistoryModalOpened(false);
   }, []);
+
+  const handleHistoryRequirementClick = useCallback(
+    (requirementId: string) => {
+      const requirement = project?.requirements.find(
+        (req) => req.id === requirementId
+      );
+      if (requirement) {
+        setHistoryRequirement(requirement);
+        setHistoryModalOpened(true);
+      }
+    },
+    [project]
+  );
 
   const handleDeleteRequirementClick = useCallback(
     (requirementId: string) => {
@@ -96,6 +121,10 @@ export default function Requirements() {
     },
     [deleteRequirementMutation, projectId]
   );
+
+  // #endregion
+
+  // #region Options
 
   const options = (requirementId: string) => [
     {
@@ -115,9 +144,9 @@ export default function Requirements() {
     },
   ];
 
-  const [createModalOpened, setCreateModalOpened] = useState(false);
+  // #endregion
 
-  // #region Pagination
+  // #region Pagination and Sorting
 
   const [pageSize, setPageSize] = useQueryState(
     "pageSize",
@@ -176,6 +205,9 @@ export default function Requirements() {
   }, [sortBy, sortOrder]);
 
   // #endregion
+
+  // #region Render
+
   if (!project) return null;
   return (
     <StyledBox>
@@ -276,14 +308,22 @@ export default function Requirements() {
           open={createModalOpened}
           close={() => {
             resetEditMode();
-            setCreateModalOpened(false);
           }}
           project={project}
           refetch={refetch}
           initialValues={editRequirement}
           isEdit={!!editRequirement}
         />
+        <RequirementHistoryDialog
+          open={historyModalOpened}
+          close={() => {
+            resetHistoryMode();
+          }}
+          requirement={historyRequirement}
+        />
       </Grid2>
     </StyledBox>
   );
+  // #endregion
 }
+// #endregion
