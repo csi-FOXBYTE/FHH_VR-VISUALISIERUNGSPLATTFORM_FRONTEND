@@ -255,6 +255,8 @@ export default function Requirements() {
         <CreateRequirementDialog
           close={() => setCreateModalOpened(false)}
           open={createModalOpened}
+          projectId={projectId as string}
+          refetch={refetch}
         />
       </Grid2>
     </StyledBox>

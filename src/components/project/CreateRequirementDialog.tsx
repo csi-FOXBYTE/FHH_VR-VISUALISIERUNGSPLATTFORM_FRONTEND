@@ -19,12 +19,30 @@ import {
 } from "@mui/material";
 import { Formik } from "formik";
 import { useTranslations } from "next-intl";
+import { trpc } from "@/server/trpc/client";
 
 export default function CreateRequirementDialog({
   close,
   open,
-}: DialogProps & { close: () => void }) {
+  refetch,
+  projectId,
+}: DialogProps & {
+  close: () => void;
+  refetch: () => void;
+  projectId: string;
+}) {
   const t = useTranslations();
+
+  const addRequirementMutation =
+    trpc.requirementsRouter.addRequirement.useMutation({
+      onSuccess: () => {
+        refetch();
+        close();
+      },
+      onError: (error) => {
+        console.error("addRequirementMutation failed:" + error);
+      },
+    });
 
   return (
     <Dialog open={open} onClose={close} fullWidth maxWidth="sm">
@@ -33,12 +51,19 @@ export default function CreateRequirementDialog({
         initialValues={{
           requirement: "",
           assignedTo: "",
-          category: "",
+          category: "Org" as "Tec" | "Org",
           createdAt: new Date().toLocaleDateString(),
         }}
         onSubmit={(values) => {
-          console.log(values);
-          close();
+          addRequirementMutation.mutate({
+            projectId,
+            data: {
+              title: values.requirement,
+              responsibleUser: values.assignedTo,
+              category: values.category,
+              assignedDate: new Date(values.createdAt),
+            },
+          });
         }}
       >
         {({ values, handleChange, handleSubmit }) => (
@@ -94,16 +119,19 @@ export default function CreateRequirementDialog({
                   />
                 </RadioGroup>
               </FormControl>
+              <Divider />
               <FormControl fullWidth margin="normal">
                 <TextField
                   name="createdAt"
                   label={t("requirementDialog.createdAt")}
                   variant="filled"
                   value={values.createdAt}
+                  InputProps={{
+                    readOnly: true,
+                  }}
                 />
               </FormControl>
             </DialogContent>
-            <Divider />
             <DialogActions>
               <Button variant="outlined" color="inherit" onClick={close}>
                 {t("requirementDialog.cancel")}
