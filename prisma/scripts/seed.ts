@@ -127,9 +127,10 @@ import {
   });
 
   const totalRequirements: Requirement[] = [];
+  // const totalParticipants: User[] = [];
   const totalTargets: Target[] = [];
 
-  console.log("Creating requirements and targets...");
+  console.log("Creating requirements, participants and targets...");
 
   for (const project of projects) {
     const requirements = await prisma.requirement.createManyAndReturn({
@@ -146,7 +147,20 @@ import {
       ),
     });
 
+    await prisma.project.update({
+      where: { id: project.id },
+      data: {
+        participants: {
+          connect: faker.helpers.arrayElements(users, { min: 2, max: 20 }).map(user => ({
+            id: user.id
+          }))
+        }
+      },
+    });
+
     totalRequirements.push(...requirements);
+
+    // totalParticipants.push(...participants);
 
     const targets = await prisma.target.createManyAndReturn({
       data: faker.helpers.multiple(() => ({

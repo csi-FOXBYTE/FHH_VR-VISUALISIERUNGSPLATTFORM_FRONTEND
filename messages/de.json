@@ -73,16 +73,16 @@
       "addButton": "Beteiligten hinzufügen",
       "addTaskOption": "Aufgabe zuweisen",
       "deleteOption": "Löschen"
-    },
-    "/common": {
-      "saveButton": "Speichern",
-      "cancelButton": "Abbrechen",
-      "deleteButton": "Löschen",
-      "editButton": "Bearbeiten",
-      "addButton": "Hinzufügen",
-      "backButton": "Zurück",
-      "refreshButton": "Daten aktualisieren"
     }
+  },
+  "common": {
+    "saveButton": "Speichern",
+    "cancelButton": "Abbrechen",
+    "deleteButton": "Löschen",
+    "editButton": "Bearbeiten",
+    "addButton": "Hinzufügen",
+    "backButton": "Zurück",
+    "refreshButton": "Daten aktualisieren"
   },
   "requirementDialog": {
     "cancel": "Abbrechen",
@@ -91,7 +91,7 @@
     "techRequirement": "Technische Anforderung",
     "orgRequirement": "Organisatorische Anforderung",
     "category": "Kategorie",
-    "assignedTo": "Zugewiesen an",
+    "assignedToUserEmail": "Zugewiesen an",
     "requirementText": "Anforderung",
     "addTitle": "Anforderung hinzufügen",
     "editTitle": "Anforderung bearbeiten",

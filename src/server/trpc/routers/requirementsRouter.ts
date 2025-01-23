@@ -11,21 +11,42 @@ const requirementsRouter = router({
     )
     .query(async (opts) => {
       const { projectId, requirementId } = opts.input;
-      return opts.ctx.services.project.getRequirement(projectId, requirementId);
+      return opts.ctx.db.requirement.findFirstOrThrow({
+        where: {
+          id: requirementId,
+          projectId
+        },
+        select: {
+          id: true,
+          createdAt: true,
+          updatedAt: true,
+          creator: true,
+          name: true,
+          description: true,
+          assignedToUser: true,
+          requirementCategory: true,
+        }
+      });
     }),
 
   deleteRequirement: protectedProcedure([])
     .input(
       z.object({
-        projectId: z.string(),
         requirementId: z.string(),
       })
     )
     .mutation(async (opts) => {
-      const { projectId, requirementId } = opts.input;
-      await opts.ctx.services.project.deleteRequirement(projectId, requirementId);
+      const { requirementId } = opts.input;
+
+      await opts.ctx.db.requirement.delete({
+        where: {
+          id: requirementId,
+        },
+      });
+
       return { success: true };
     }),
+
 
   editRequirement: protectedProcedure([])
     .input(
@@ -33,43 +54,69 @@ const requirementsRouter = router({
         projectId: z.string(),
         requirementId: z.string(),
         data: z.object({
-          title: z.string().optional(),
-          responsibleUser: z.string().optional(),
-          category: z.enum(["Tec", "Org"]),
-          assignedDate: z.date(),
+          name: z.string().optional(),
+          description: z.string().optional(),
+          assignedToUserId: z.string().optional(),
+          requirementCategory: z.enum(['ORGANIZATIONAL', 'TECHNICAL']),
+          updatedAt: z.date(),
         }),
       })
     )
     .mutation(async (opts) => {
       const { projectId, requirementId, data } = opts.input;
-      return opts.ctx.services.project.editRequirement(projectId, requirementId, data);
+
+      const updatedRequirement = await opts.ctx.db.requirement.update({
+        where: {
+          id: requirementId,
+          projectId: projectId,
+        },
+        data: {
+          name: data.name,
+          description: data.description,
+          assignedToUserId: data.assignedToUserId,
+          requirementCategory: data.requirementCategory,
+          updatedAt: data.updatedAt,
+        },
+      });
+
+      return updatedRequirement;
     }),
+
 
   addRequirement: protectedProcedure([])
     .input(
       z.object({
         projectId: z.string(),
         data: z.object({
-          title: z.string(),
-          responsibleUser: z.string(),
-          category: z.enum(["Tec", "Org"]),
-          assignedDate: z.date(),
-          history: z.array(
-            z.object({
-              date: z.date(),
-              changed: z.date(),
-              title: z.string(),
-              responsibleUser: z.string(),
-              category: z.enum(["Tec", "Org"]),
-            })
-          ).default([]),
+          name: z.string(),
+          description: z.string(),
+          assignedToUserId: z.string(),
+          requirementCategory: z.enum(['ORGANIZATIONAL', 'TECHNICAL']),
+          createdAt: z.date(),
+          creatorId: z.string(),
         }),
       })
     )
     .mutation(async (opts) => {
       const { projectId, data } = opts.input;
-      return opts.ctx.services.project.addRequirement(projectId, data);
+
+      const newRequirement = await opts.ctx.db.requirement.create({
+        data: {
+          projectId,
+          name: data.name,
+          description: data.description,
+          assignedToUserId: data.assignedToUserId,
+          requirementCategory: data.requirementCategory,
+          createdAt: data.createdAt,
+          creatorId: data.creatorId,
+        },
+      });
+
+      return newRequirement;
     }),
+
+
+
 });
 
 export default requirementsRouter;

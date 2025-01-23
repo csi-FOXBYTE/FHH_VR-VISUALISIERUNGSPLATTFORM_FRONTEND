@@ -24,7 +24,6 @@ import {
   SettingsOutlined,
 } from "@mui/icons-material";
 import OptionsButton from "@/components/common/OptionsButton";
-import AddParticipantDialog from "@/components/project/AddParticipantDialog";
 
 const StyledBox = styled(Box)({
   display: "flex",
@@ -194,7 +193,7 @@ export default function Participants() {
                 marginRight: "16px",
               }}
             >
-              {t("routes./common.refreshButton")}
+              {t("common.refreshButton")}
             </Button>
             <Button
               onClick={() => setCreateModalOpened(true)}

@@ -220,7 +220,7 @@ export default function Goals() {
                 marginRight: "16px",
               }}
             >
-              {t("routes./common.refreshButton")}
+              {t("common.refreshButton")}
             </Button>
             <Button
               onClick={() => setCreateModalOpened(true)}

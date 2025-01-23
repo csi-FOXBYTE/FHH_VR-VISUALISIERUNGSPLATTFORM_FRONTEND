@@ -7,12 +7,12 @@ import {
   IconButton,
 } from "@mui/material";
 import { useTranslations } from "next-intl";
-import { IRequirement } from "@/server/services/projectService";
 import CloseIcon from "@mui/icons-material/Close";
+import { User } from "@prisma/client";
 
 interface IRequirementHistoryDialogProps extends DialogProps {
   close: () => void;
-  requirement: IRequirement | null;
+  requirement: User | null;
 }
 
 export default function RequirementHistoryDialog({

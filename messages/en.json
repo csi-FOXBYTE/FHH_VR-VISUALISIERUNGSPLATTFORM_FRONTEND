@@ -73,16 +73,16 @@
       "addButton": "Add participant",
       "addTaskOption": "Add task",
       "deleteOption": "Delete"
-    },
-    "/common": {
-      "addButton": "Add",
-      "backButton": "Back",
-      "cancelButton": "Cancel",
-      "deleteButton": "Delete",
-      "editButton": "Edit",
-      "refreshButton": "Update data",
-      "saveButton": "Save"
     }
+  },
+  "common": {
+    "addButton": "Add",
+    "backButton": "Back",
+    "cancelButton": "Cancel",
+    "deleteButton": "Delete",
+    "editButton": "Edit",
+    "refreshButton": "Update data",
+    "saveButton": "Save"
   },
   "requirementDialog": {
     "cancel": "Cancel",
@@ -91,7 +91,7 @@
     "techRequirement": "Technical requirement",
     "orgRequirement": "Organizational requirement",
     "category": "Category",
-    "assignedTo": "Assigned to",
+    "assignedToUserEmail": "Assigned to",
     "requirementText": "Requirement",
     "addTitle": "Add requirement",
     "editTitle": "Edit requirement",
