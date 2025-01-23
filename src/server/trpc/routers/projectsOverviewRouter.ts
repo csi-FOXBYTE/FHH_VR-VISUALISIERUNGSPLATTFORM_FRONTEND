@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { protectedProcedure, router } from "..";
 import { createOrderBy } from "@/server/prisma/utils";
+import { projectOverviewFilter } from "@/components/project/ProjectOverviewFilter";
 
 const projectsOverviewRouter = router({
   getProjects: protectedProcedure([])
@@ -8,7 +9,7 @@ const projectsOverviewRouter = router({
       z.object({
         limit: z.number().optional(),
         skip: z.number().optional(),
-        filter: z.record(z.string(), z.string()).optional(),
+        filter: projectOverviewFilter.nullable(),
         search: z.record(z.string(), z.string()).optional(),
         sortBy: z.string().optional(),
         sortOrder: z.enum(["asc", "desc"]).optional(),
@@ -24,7 +25,12 @@ const projectsOverviewRouter = router({
           opts.input.sortOrder
         ),
         where: {
-
+          projectManagerId:
+            (opts.input.filter?.myProjects
+              ? opts.ctx.session.user.id
+              : undefined) ?? opts.input.filter?.projectManagerId,
+          buildingId: opts.input.filter?.buildingId,
+          status: opts.input.filter?.status,
         },
         select: {
           name: true,
@@ -48,7 +54,21 @@ const projectsOverviewRouter = router({
 
       return {
         data,
-        count: await opts.ctx.db.project.count({}),
+        count: await opts.ctx.db.project.count({
+          orderBy: createOrderBy(
+            "Project",
+            opts.input.sortBy,
+            opts.input.sortOrder
+          ),
+          where: {
+            projectManagerId:
+              (opts.input.filter?.myProjects
+                ? opts.ctx.session.user.id
+                : undefined) ?? opts.input.filter?.projectManagerId,
+            buildingId: opts.input.filter?.buildingId,
+            status: opts.input.filter?.status,
+          },
+        }),
       };
     }),
 });

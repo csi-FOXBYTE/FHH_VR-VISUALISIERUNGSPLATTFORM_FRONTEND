@@ -86,9 +86,15 @@ importers:
       '@trpc/server':
         specifier: 11.0.0-rc.682
         version: 11.0.0-rc.682(typescript@5.6.3)
+      '@types/autosuggest-highlight':
+        specifier: ^3.2.3
+        version: 3.2.3
       '@vercel/otel':
         specifier: ^1.10.0
         version: 1.10.0(@opentelemetry/api@1.9.0)(@opentelemetry/instrumentation@0.56.0(@opentelemetry/api@1.9.0))(@opentelemetry/resources@1.29.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-logs@0.56.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-metrics@1.29.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@1.29.0(@opentelemetry/api@1.9.0))
+      autosuggest-highlight:
+        specifier: ^3.3.4
+        version: 3.3.4
       client-only:
         specifier: ^0.0.1
         version: 0.0.1
@@ -137,6 +143,9 @@ importers:
       zod:
         specifier: ^3.23.8
         version: 3.23.8
+      zod-formik-adapter:
+        specifier: ^1.3.0
+        version: 1.3.0(formik@2.4.6(react@19.0.0-rc-66855b96-20241106))(zod@3.23.8)
     devDependencies:
       '@commitlint/cli':
         specifier: ^19.6.0
@@ -1090,6 +1099,9 @@ packages:
     peerDependencies:
       typescript: '>=5.7.2'
 
+  '@types/autosuggest-highlight@3.2.3':
+    resolution: {integrity: sha512-8Mb21KWtpn6PvRQXjsKhrXIcxbSloGqNH50RntwGeJsGPW4xvNhfml+3kKulaKpO/7pgZfOmzsJz7VbepArlGQ==}
+
   '@types/conventional-commits-parser@5.0.0':
     resolution: {integrity: sha512-loB369iXNmAZglwWATL+WRe+CRMmmBPtpolYzIebFaX4YA3x+BEfLqhUAV9WanycKI3TG1IMr5bMJDajDKLlUQ==}
 
@@ -1287,6 +1299,9 @@ packages:
   at-least-node@1.0.0:
     resolution: {integrity: sha512-+q/t7Ekv1EDY2l6Gda6LLiX14rU9TV20Wa3ofeQmwPFZbOMo9DXrLbOjFaaclkXKWidIaopwAObQDqwWtGUjqg==}
     engines: {node: '>= 4.0.0'}
+
+  autosuggest-highlight@3.3.4:
+    resolution: {integrity: sha512-j6RETBD2xYnrVcoV1S5R4t3WxOlWZKyDQjkwnggDPSjF5L4jV98ZltBpvPvbkM1HtoSe5o+bNrTHyjPbieGeYA==}
 
   available-typed-arrays@1.0.7:
     resolution: {integrity: sha512-wvUjBtSGN7+7SjNpq/9M2Tg350UZD3q62IFZLbRAR1bSMlCo1ZaeW+BJ+D090e4hIIZLBcTDWe4Mh4jvUDajzQ==}
@@ -2619,6 +2634,9 @@ packages:
     resolution: {integrity: sha512-vqlC04+RQoFalODCbCumG2xIOvapzVMHwsyIGM/SIE8fRhFFsXeH8/QQ+s0T0kDAhKc4k30s73/0ydkHQz6HlQ==}
     engines: {node: '>= 0.4'}
 
+  remove-accents@0.4.4:
+    resolution: {integrity: sha512-EpFcOa/ISetVHEXqu+VwI96KZBmq+a8LJnGkaeFw45epGlxIZz5dhEEnNZMsQXgORu3qaMoLX4qJCzOik6ytAg==}
+
   require-directory@2.1.1:
     resolution: {integrity: sha512-fGxEI7+wsG9xrvdjsrlmL22OMTTiHRwAMroiEeMgq8gzoLC/PQr7RsRDSTLUg/bZAZtF+TVIkHc6/4RIKrui+Q==}
     engines: {node: '>=0.10.0'}
@@ -3008,6 +3026,12 @@ packages:
   yocto-queue@1.1.1:
     resolution: {integrity: sha512-b4JR1PFR10y1mKjhHY9LaGo6tmrgjit7hxVIeAmyMw3jegXR4dhYqLaQF5zMXZxY7tLpMyJeLjr1C4rLmkVe8g==}
     engines: {node: '>=12.20'}
+
+  zod-formik-adapter@1.3.0:
+    resolution: {integrity: sha512-qWsVwRYqpRod5BL35pRXHD6UOugiyaEyLPO04rCN/uKTCFCR+VElPEG26+3wNrxGP7y5XmJM+4/0MrABnRYZrw==}
+    peerDependencies:
+      formik: ^2.2.9
+      zod: ^3.22.4
 
   zod@3.23.8:
     resolution: {integrity: sha512-XBx9AXhXktjUqnepgTiE5flcKIYWi/rme0Eaj+5Y0lftuGBq+jyRu/md4WnuxqgP1ubdpNCsYEYPxrzVHD8d6g==}
@@ -3877,6 +3901,8 @@ snapshots:
     dependencies:
       typescript: 5.6.3
 
+  '@types/autosuggest-highlight@3.2.3': {}
+
   '@types/conventional-commits-parser@5.0.0':
     dependencies:
       '@types/node': 20.17.6
@@ -4124,6 +4150,10 @@ snapshots:
   asynckit@0.4.0: {}
 
   at-least-node@1.0.0: {}
+
+  autosuggest-highlight@3.3.4:
+    dependencies:
+      remove-accents: 0.4.4
 
   available-typed-arrays@1.0.7:
     dependencies:
@@ -5623,6 +5653,8 @@ snapshots:
       es-errors: 1.3.0
       set-function-name: 2.0.2
 
+  remove-accents@0.4.4: {}
+
   require-directory@2.1.1: {}
 
   require-from-string@2.0.2: {}
@@ -6057,5 +6089,10 @@ snapshots:
   yocto-queue@0.1.0: {}
 
   yocto-queue@1.1.1: {}
+
+  zod-formik-adapter@1.3.0(formik@2.4.6(react@19.0.0-rc-66855b96-20241106))(zod@3.23.8):
+    dependencies:
+      formik: 2.4.6(react@19.0.0-rc-66855b96-20241106)
+      zod: 3.23.8
 
   zod@3.23.8: {}

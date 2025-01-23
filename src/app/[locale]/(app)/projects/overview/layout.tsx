@@ -2,7 +2,6 @@
 
 import { Add, Clear, Refresh } from "@mui/icons-material";
 import {
-  Autocomplete,
   Button,
   ButtonGroup,
   FormControlLabel,
@@ -15,15 +14,17 @@ import {
   Switch,
   Tab,
   Tabs,
-  TextField,
   Typography,
 } from "@mui/material";
 import { usePathname, useRouter } from "@/server/i18n/routing";
 import { ReactNode, useState } from "react";
 import CreateProjectDialog from "@/components/project/CreateProjectDialog";
 import { parseAsJson, useQueryState } from "nuqs";
-import { z } from "zod";
 import { PROJECT_STATUS } from "@prisma/client";
+import SearchInput from "@/components/common/SearchInput";
+import { trpc } from "@/server/trpc/client";
+import { projectOverviewFilterWithDefaults } from "@/components/project/ProjectOverviewFilter";
+import { useTranslations } from "next-intl";
 
 export default function ProjectOverviewLayout({
   children,
@@ -34,11 +35,13 @@ export default function ProjectOverviewLayout({
 
   const router = useRouter();
 
+  const t = useTranslations();
+
   const [createModalOpened, setCreateModalOpened] = useState(false);
 
   const [filter, setFilter] = useQueryState(
     "filter",
-    parseAsJson(z.record(z.string(), z.string()).default({}).parse)
+    parseAsJson(projectOverviewFilterWithDefaults)
   );
 
   return (
@@ -51,7 +54,15 @@ export default function ProjectOverviewLayout({
     >
       <Grid2>
         <Typography variant="h2">Übersicht Projekte</Typography>
-        <Tabs value={pathname}>
+        <Tabs
+          value={
+            ["/projects/overview/tiles", "/projects/overview/list"].includes(
+              pathname
+            )
+              ? pathname
+              : false
+          }
+        >
           <Tab
             onClick={() => router.push("/projects/overview/tiles")}
             value="/projects/overview/tiles"
@@ -65,37 +76,35 @@ export default function ProjectOverviewLayout({
         </Tabs>
         <Grid2 container spacing={2}>
           <Grid2 container spacing={2} flexGrow={1}>
-            <Autocomplete
+            <SearchInput
+              label="Gebäudenummer"
+              extraInput={{}}
               style={{ flex: 1 }}
-              options={[]}
-              renderInput={(params) => (
-                <TextField {...params} label="Gebäudenummer" />
-              )}
+              value={filter?.buildingId}
+              onChange={(value) => setFilter({ ...filter, buildingId: value })}
+              useQuery={trpc.projectRouter.searchBuildingNumber.useQuery}
             />
-            <Autocomplete
+            <SearchInput
+              label="Projektleiter"
+              extraInput={{}}
               style={{ flex: 1 }}
-              options={[]}
-              renderInput={(params) => (
-                <TextField {...params} label="Projektleiter" />
-              )}
+              value={filter?.projectManagerId}
+              onChange={(value) =>
+                setFilter({ ...filter, projectManagerId: value })
+              }
+              useQuery={trpc.projectRouter.searchProjectManager.useQuery}
             />
             <Select
               value={filter?.status ?? ""}
               style={{ flex: 1 }}
               onChange={(event: SelectChangeEvent<string>) => {
-                setFilter((filter) => {
-                  const newFilter = { ...filter };
-                  if (event.target.value === "") {
-                    delete newFilter["status"];
-                  } else {
-                    newFilter["status"] = event.target.value;
-                  }
-
-                  return newFilter;
+                setFilter({
+                  ...filter,
+                  status: event.target.value as PROJECT_STATUS,
                 });
               }}
               endAdornment={
-                Object.entries(filter ?? {}).length > 0 && (
+                (filter?.status ?? "") !== "" ? (
                   <InputAdornment sx={{ marginRight: "10px" }} position="end">
                     <IconButton
                       onClick={() => {
@@ -105,18 +114,22 @@ export default function ProjectOverviewLayout({
                       <Clear />
                     </IconButton>
                   </InputAdornment>
-                )
+                ) : null
               }
             >
               {Array.from(Object.keys(PROJECT_STATUS)).map((projectStatus) => (
                 <MenuItem key={projectStatus} value={projectStatus}>
-                  {projectStatus}
+                  {t(`enums.PROJECT_STATUS.${projectStatus}`)}
                 </MenuItem>
               ))}
             </Select>
             <FormControlLabel
               control={<Switch defaultChecked />}
               label="Meine Projekte"
+              checked={Boolean(filter?.myProjects)}
+              onChange={() =>
+                setFilter({ ...filter, myProjects: !filter?.myProjects })
+              }
             />
           </Grid2>
           <Grid2 container spacing={2} justifyContent="stretch">
