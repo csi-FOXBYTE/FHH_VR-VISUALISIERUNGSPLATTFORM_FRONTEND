@@ -5,6 +5,18 @@ import { useEffect, useMemo, useState } from "react";
 import parse from "autosuggest-highlight/parse";
 import match from "autosuggest-highlight/match";
 
+export type SearchInputQuery<
+  TResult extends { label: string; value: string }[],
+  TError,
+  TExtraInput extends Record<string, unknown>
+> = (
+  props:
+    | ({
+      name: string;
+    } & TExtraInput)
+    | SkipToken
+) => UseTRPCQueryResult<TResult, TError>;
+
 export default function SearchInput<
   TError,
   TExtraInput extends Record<string, unknown>
@@ -21,13 +33,11 @@ export default function SearchInput<
 > & {
   extraInput: TExtraInput;
   label?: string;
-  useQuery: (
-    props:
-      | ({
-        name: string;
-      } & TExtraInput)
-      | SkipToken
-  ) => UseTRPCQueryResult<{ label: string; value: string }[], TError>;
+  useQuery: SearchInputQuery<
+    { label: string; value: string }[],
+    TError,
+    TExtraInput
+  >;
   value?: string;
   onChange?: (value: string) => void;
 }) {
