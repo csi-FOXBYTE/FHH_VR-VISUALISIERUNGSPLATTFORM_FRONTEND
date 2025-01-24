@@ -5,7 +5,6 @@ import {
   DialogContent,
   DialogTitle,
   Button,
-  DialogProps,
   TextField,
   FormControl,
   InputLabel,
@@ -15,10 +14,14 @@ import {
   FormControlLabel,
   Radio,
   FormLabel,
+  DialogProps,
+  Typography,
 } from "@mui/material";
 import { Formik, FormikHelpers, FormikValues } from "formik";
-import { useTranslations } from "next-intl";
+import { z } from "zod";
+import { toFormikValidationSchema } from "zod-formik-adapter";
 import ParticipantSelection from "@/components/common/ParticipantsSelection";
+import { useTranslations } from "next-intl";
 
 type FormConfig<T> = {
   [K in keyof T]: {
@@ -33,7 +36,7 @@ interface BaseDialogFactoryProps<T> extends Omit<DialogProps, "onSubmit"> {
   close: () => void;
   onSubmit: (values: T, formikHelpers: FormikHelpers<T>) => void;
   initialValues: T;
-  validationSchema: object;
+  validationSchema: z.ZodType<T>;
   formConfig: FormConfig<T>;
   title: string;
   submitButtonText: string;
@@ -41,6 +44,18 @@ interface BaseDialogFactoryProps<T> extends Omit<DialogProps, "onSubmit"> {
 }
 
 type DialogFactoryProps<T> = BaseDialogFactoryProps<T>;
+
+function renderError(key: string, formikProps: FormikValues) {
+  console.log(formikProps)
+  if (formikProps.touched[key] && formikProps.errors[key]) {
+    return (
+      <Typography variant="caption" color="error" style={{ marginTop: "0.5rem" }}>
+        {formikProps.errors[key] as string}
+      </Typography>
+    );
+  }
+  return null;
+}
 
 export function DialogFactory<T extends FormikValues>({
   close,
@@ -60,9 +75,23 @@ export function DialogFactory<T extends FormikValues>({
       <DialogTitle>{title}</DialogTitle>
       <Formik
         initialValues={initialValues}
-        validationSchema={validationSchema}
+        validate={async (values) => {
+          try {
+            await toFormikValidationSchema(validationSchema).validate(values);
+          } catch (error) {
+            const validationErrors = {};
+            if (error.inner) {
+              error.inner.forEach((err) => {
+                validationErrors[err.path] = err.message;
+              });
+            }
+            console.error("Validation errors:", validationErrors);
+            return validationErrors;
+          }
+        }}
+        validationSchema={toFormikValidationSchema(validationSchema)}
         onSubmit={(values, formikHelpers) => {
-          console.log("test");
+          console.log("Submit Triggered");
           onSubmit(values, formikHelpers);
         }}
       >
@@ -81,26 +110,24 @@ export function DialogFactory<T extends FormikValues>({
                           variant="filled"
                           value={formikProps.values[key]}
                           onChange={formikProps.handleChange}
-                          slotProps={{
-                            input: {
-                              readOnly: config.readOnly,
-                            },
-                          }}
+                          onBlur={formikProps.handleBlur}
+                          error={formikProps.touched[key] && Boolean(formikProps.errors[key])}
+                          helperText={formikProps.touched[key] && typeof formikProps.errors[key] === 'string' ? formikProps.errors[key] : undefined}
+                          InputProps={{ readOnly: config.readOnly }}
                         />
                       </FormControl>
                     );
                   case "select":
                     return (
                       <FormControl fullWidth margin="normal" key={key}>
-                        <InputLabel id={`${key}-label`}>
-                          {config.label}
-                        </InputLabel>
+                        <InputLabel id={`${key}-label`}>{config.label}</InputLabel>
                         <Select
                           labelId={`${key}-label`}
                           name={key}
                           value={formikProps.values[key]}
                           onChange={formikProps.handleChange}
-                          variant="filled"
+                          onBlur={formikProps.handleBlur}
+                          error={formikProps.touched[key] && Boolean(formikProps.errors[key])}
                         >
                           {config.options?.map((option) => (
                             <MenuItem key={option.value} value={option.value}>
@@ -108,38 +135,39 @@ export function DialogFactory<T extends FormikValues>({
                             </MenuItem>
                           ))}
                         </Select>
+                        {renderError(key, formikProps)}
                       </FormControl>
                     );
                   case "participantSelection":
                     if (!projectId) {
-                      console.error(
-                        "projectId is required for participantSelection"
-                      );
+                      console.error("projectId is required for participantSelection");
                       return null;
                     }
                     return (
-                      <ParticipantSelection
-                        key={key}
-                        projectId={projectId}
-                        value={formikProps.values[key]}
-                        onChange={(event, value) => {
-                          formikProps.handleChange(value);
-                        }}
-                        label={config.label}
-                      />
+                      <FormControl fullWidth margin="normal" key={key}>
+                        <ParticipantSelection
+                          projectId={projectId}
+                          value={formikProps.values[key]}
+                          onChange={(event, value) => {
+                            formikProps.handleChange(value);
+
+                            // formikProps.setFieldValue(key, value?.id || "");
+                            formikProps.setFieldTouched(key, true);
+                          }}
+                          label={config.label}
+                        />
+                        {renderError(key, formikProps)}
+                      </FormControl>
                     );
                   case "radio":
                     return (
-                      <FormControl
-                        component="fieldset"
-                        margin="normal"
-                        key={key}
-                      >
+                      <FormControl component="fieldset" margin="normal" key={key}>
                         <FormLabel component="legend">{config.label}</FormLabel>
                         <RadioGroup
                           name={key}
                           value={formikProps.values[key]}
                           onChange={formikProps.handleChange}
+                          onBlur={formikProps.handleBlur}
                         >
                           {config.options?.map((option) => (
                             <FormControlLabel
@@ -150,6 +178,7 @@ export function DialogFactory<T extends FormikValues>({
                             />
                           ))}
                         </RadioGroup>
+                        {renderError(key, formikProps)}
                       </FormControl>
                     );
                   case "date":
@@ -162,11 +191,10 @@ export function DialogFactory<T extends FormikValues>({
                           variant="filled"
                           value={formikProps.values[key]}
                           onChange={formikProps.handleChange}
-                          slotProps={{
-                            input: {
-                              readOnly: config.readOnly,
-                            },
-                          }}
+                          onBlur={formikProps.handleBlur}
+                          error={formikProps.touched[key] && Boolean(formikProps.errors[key])}
+                          helperText={formikProps.touched[key] && typeof formikProps.errors[key] === 'string' ? formikProps.errors[key] : undefined}
+                          InputProps={{ readOnly: config.readOnly }}
                         />
                       </FormControl>
                     );

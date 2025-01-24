@@ -30,7 +30,6 @@ import { Requirement, REQUIREMENT_CATEGORY } from "@prisma/client";
 
 type RequirementFormValues = {
   id?: string;
-  name?: string;
   description: string;
   assignedToUserId: string;
   requirementCategory: REQUIREMENT_CATEGORY;
@@ -49,10 +48,6 @@ const StyledBox = styled(Box)({
 
 // #region Component
 export const requirementFormModel = {
-  name: {
-    initialValue: "",
-    validation: z.string().min(1, "Name is required"),
-  },
   description: {
     initialValue: "",
     validation: z.string().min(1, "Description is required"),
@@ -66,15 +61,16 @@ export const requirementFormModel = {
   },
   requirementCategory: {
     initialValue: "TECHNICAL" as REQUIREMENT_CATEGORY,
-    validation: z.enum(["ORGANIZATIONAL", "TECHNICAL"], {
-      required_error: "Category is required",
-    }),
+    // validation: z.enum(["ORGANIZATIONAL", "TECHNICAL"], {
+    //   required_error: "Category is required",
+    // }),
+    validation: z.string().min(1, "Category is required"),
   },
   createdAt: {
     initialValue: new Date().toISOString().split("T")[0],
     validation: z.string().refine(
       (val) => {
-        return !isNaN(Date.parse(val)); // Ensures it's a valid date
+        return !isNaN(Date.parse(val));
       },
       {
         message: "Creation date is required",
@@ -83,21 +79,18 @@ export const requirementFormModel = {
   },
 };
 
-// Generate validation schema dynamically
 export const generateZodValidationSchema = <
   T extends Record<string, { validation: z.ZodTypeAny }>
 >(
   model: T
-) => {
+): z.ZodObject<{ [K in keyof T]: T[K]["validation"] }> => {
   const shape = Object.keys(model).reduce((acc, key) => {
     acc[key as keyof T] = model[key].validation;
     return acc;
-  }, {} as Record<keyof T, z.ZodTypeAny>);
+  }, {} as { [K in keyof T]: T[K]["validation"] });
   return z.object(shape);
 };
 
-
-// Usage example: validationSchema
 const validationSchema = generateZodValidationSchema(requirementFormModel);
 
 export default function Requirements() {
@@ -181,7 +174,6 @@ export default function Requirements() {
         projectId: projectId as string,
         requirementId: values.id as string,
         data: {
-          name: values.name,
           description: values.description,
           assignedToUserId: values.assignedToUserId,
           requirementCategory: values.requirementCategory,
@@ -194,7 +186,6 @@ export default function Requirements() {
         projectId: projectId as string,
         data: {
           ...values,
-          name: values.name ?? "",
           creatorId: session?.user.id as string,
           createdAt: new Date(values.createdAt),
         },
@@ -215,8 +206,8 @@ export default function Requirements() {
       type: "radio" as const,
       label: t("requirementDialog.category"),
       options: [
-        { value: "Org", label: t("requirementDialog.orgRequirement") },
-        { value: "Tec", label: t("requirementDialog.techRequirement") },
+        { value: "ORGANIZATIONAL", label: t("requirementDialog.orgRequirement") },
+        { value: "TECHNICAL", label: t("requirementDialog.techRequirement") },
       ],
     },
     createdAt: {
