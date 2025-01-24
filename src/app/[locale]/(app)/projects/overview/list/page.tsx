@@ -1,5 +1,6 @@
 "use client";
 
+import { projectOverviewFilter, projectOverviewFilterWithDefaults } from "@/components/project/ProjectOverviewFilter";
 import { trpc } from "@/server/trpc/client";
 import { AccessTime, Autorenew, Person, Error } from "@mui/icons-material";
 import { Chip, Grid2 } from "@mui/material";
@@ -66,7 +67,7 @@ export default function ProjectOverviewListPage() {
 
   const [filter] = useQueryState(
     "filter",
-    parseAsJson(z.record(z.string(), z.string()).default({}).parse)
+    parseAsJson(projectOverviewFilterWithDefaults)
   );
 
   const {
@@ -74,7 +75,7 @@ export default function ProjectOverviewListPage() {
     isPending: isProjectsPending,
   } = trpc.projectOverviewRouter.getProjects.useQuery(
     {
-      filter: filter ?? {},
+      filter: filter,
       limit: pageSize,
       skip: page * pageSize,
       search: {},

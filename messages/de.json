@@ -1,4 +1,11 @@
 {
+  "enums": {
+    "PROJECT_STATUS": {
+      "DELAYED": "Verzögert",
+      "CRITICAL": "Kritisch",
+      "IN_WORK": "In Arbeit"
+    }
+  },
   "routes": {
     "/": {
       "sites": "Standorte",

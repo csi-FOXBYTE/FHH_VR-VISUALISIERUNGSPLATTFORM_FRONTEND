@@ -1,5 +1,9 @@
 "use client";
 
+import {
+  projectOverviewFilter,
+  projectOverviewFilterWithDefaults,
+} from "@/components/project/ProjectOverviewFilter";
 import { useRouter } from "@/server/i18n/routing";
 import { trpc } from "@/server/trpc/client";
 import {
@@ -12,6 +16,7 @@ import {
 } from "@mui/icons-material";
 import {
   Card,
+  CardActionArea,
   CardContent,
   CardHeader,
   Chip,
@@ -26,7 +31,6 @@ import { keepPreviousData } from "@tanstack/react-query";
 import { useFormatter } from "next-intl";
 import { parseAsFloat, parseAsJson, useQueryState } from "nuqs";
 import { useEffect } from "react";
-import { z } from "zod";
 
 const StyledCardHeader = styled(CardHeader)`
   > .MuiCardHeader-content {
@@ -41,7 +45,7 @@ export default function ProjectOverviewTilesPage() {
 
   const [filter] = useQueryState(
     "filter",
-    parseAsJson(z.record(z.string(), z.string()).default({}).parse)
+    parseAsJson(projectOverviewFilterWithDefaults)
   );
   const limit = 18;
 
@@ -81,30 +85,31 @@ export default function ProjectOverviewTilesPage() {
             key={project.id}
             container
             flexDirection="column"
-            onClick={() => router.push(`/projects/${project.id}`)}
           >
-            <StyledCardHeader
-              titleTypographyProps={{
-                variant: "body1",
-                whiteSpace: "nowrap",
-                textOverflow: "ellipsis",
-                overflow: "hidden",
-              }}
-              content="Hallo"
-              title={project.name}
-              sx={{ overflow: "hidden", width: "100%", flexShrink: 1 }}
-              subheader={
-                <Typography
-                  variant="caption"
-                  textOverflow="ellipsis"
-                  whiteSpace="nowrap"
-                  overflow="hidden"
-                >
-                  {project.building.name}
-                </Typography>
-              }
-              action={<MoreVert />}
-            />
+            <CardActionArea
+              onClick={() => router.push(`/projects/${project.id}`)}
+            >
+              <StyledCardHeader
+                titleTypographyProps={{
+                  variant: "body1",
+                  whiteSpace: "nowrap",
+                  textOverflow: "ellipsis",
+                  overflow: "hidden",
+                }}
+                title={project.name}
+                sx={{ overflow: "hidden", width: "100%", flexShrink: 1 }}
+                subheader={
+                  <Typography
+                    variant="caption"
+                    textOverflow="ellipsis"
+                    whiteSpace="nowrap"
+                    overflow="hidden"
+                  >
+                    {project.building.name}
+                  </Typography>
+                }
+              />
+            </CardActionArea>
             <Grid2 maxWidth="100%" component={CardContent} flexGrow={1}>
               <Chip
                 variant="outlined"
