@@ -1,7 +1,55 @@
 import { z } from "zod";
 import { protectedProcedure, router } from "..";
+import { createOrderBy } from "@/server/prisma/utils";
 
 const requirementsRouter = router({
+  getProjectRequirements: protectedProcedure([])
+    .input(
+      z.object({
+        limit: z.number().optional(),
+        skip: z.number().optional(),
+        projectId: z.string(),
+        sortBy: z.string().optional(),
+        sortOrder: z.enum(["asc", "desc"]).optional(),
+      })
+    )
+    .query(async (opts) => {
+      try {
+        const data = await opts.ctx.db.requirement.findMany({
+          take: opts.input.limit,
+          skip: opts.input.skip,
+          orderBy: createOrderBy(
+            "Requirement",
+            opts.input.sortBy,
+            opts.input.sortOrder
+          ),
+          where: {
+            projectId: opts.input.projectId,
+          },
+          select: {
+            id: true,
+            name: true,
+            createdAt: true,
+            assignedToUser: {
+              select: {
+                name: true,
+              },
+            },
+            requirementCategory: true,
+          },
+        });
+        const count = await opts.ctx.db.requirement.count({
+          where: {
+            projectId: opts.input.projectId,
+          },
+        });
+        return { data, count };
+      } catch (error) {
+        console.error("Error fetching project requirements:", error);
+        throw new Error("Error fetching project requirements");
+      }
+    }),
+
   getRequirement: protectedProcedure([])
     .input(
       z.object({

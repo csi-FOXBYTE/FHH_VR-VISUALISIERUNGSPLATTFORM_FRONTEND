@@ -5,24 +5,30 @@ import {
   DialogProps,
   DialogContent,
   IconButton,
+  Box,
+  CircularProgress,
 } from "@mui/material";
 import { useTranslations } from "next-intl";
 import CloseIcon from "@mui/icons-material/Close";
-import { User } from "@prisma/client";
 
-interface IRequirementHistoryDialogProps extends DialogProps {
+interface IRequirementHistoryDialogProps<T> extends DialogProps {
   close: () => void;
-  requirement: User | null;
+  useQuery?: () => {
+    data?: Partial<T>;
+    isLoading: boolean;
+    error?: unknown;
+  };
 }
 
 export default function RequirementHistoryDialog({
   close,
   open,
-  requirement,
-}: IRequirementHistoryDialogProps) {
+  useQuery,
+}: IRequirementHistoryDialogProps<unknown>) {
   const t = useTranslations();
+  const { data: queryData, isLoading } = useQuery?.() ?? {};
 
-  if (!requirement) return null;
+  if (!queryData) return null;
   return (
     <Dialog open={open} onClose={close} fullWidth maxWidth="sm">
       <DialogTitle>
@@ -41,7 +47,13 @@ export default function RequirementHistoryDialog({
         </IconButton>
       </DialogTitle>
       <DialogContent>
-        <p>Coming...</p>
+        {isLoading ? (
+          <Box position="relative" height="200px">
+            <CircularProgress style={{ position: "absolute", top: "50%", left: "50%" }} />
+          </Box>
+        ) : (
+          <p>Coming...</p>
+        )}
       </DialogContent>
     </Dialog>
   );

@@ -2,35 +2,6 @@ import { z } from "zod";
 import { protectedProcedure, router } from "..";
 
 const projectRouter = router({
-  getProjectRequirements: protectedProcedure([])
-    .input(
-      z.object({
-        projectId: z.string(),
-      })
-    )
-    .query(async (opts) => {
-      return opts.ctx.db.project.findFirstOrThrow({
-        where: {
-          id: opts.input.projectId,
-        },
-        select: {
-          id: true,
-          requirements: {
-            select: {
-              id: true,
-              name: true,
-              createdAt: true,
-              assignedToUser: {
-                select: {
-                  name: true,
-                },
-              },
-              requirementCategory: true,
-            },
-          },
-        },
-      });
-    }),
 
   searchBuildingNumber: protectedProcedure([])
     .input(z.object({ name: z.string() }))

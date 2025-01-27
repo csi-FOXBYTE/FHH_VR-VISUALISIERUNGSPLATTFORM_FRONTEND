@@ -9,11 +9,10 @@ import {
   styled,
   Typography,
 } from "@mui/material";
-import { DataGrid, GridPaginationModel, GridSortModel } from "@mui/x-data-grid";
+import { DataGrid, GridColDef, } from "@mui/x-data-grid";
 import { keepPreviousData } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { useParams } from "next/navigation";
-import { parseAsFloat, parseAsJson, parseAsString, useQueryState } from "nuqs";
 import { useCallback, useMemo, useState } from "react";
 import { z } from "zod";
 import {
@@ -26,7 +25,7 @@ import {
 } from "@mui/icons-material";
 import OptionsButton from "@/components/common/OptionsButton";
 import RequirementHistoryDialog from "@/components/project/RequirementHistoryDialog";
-import { Requirement, REQUIREMENT_CATEGORY } from "@prisma/client";
+import { REQUIREMENT_CATEGORY } from "@prisma/client";
 
 type RequirementFormValues = {
   id?: string;
@@ -37,7 +36,10 @@ type RequirementFormValues = {
 };
 import { DialogFactory } from "@/components/project/Dialog/DialogFactory";
 import { useSession } from "next-auth/react";
+import usePaginationAndSorting from "@/components/hooks/usePaginationAndSorting";
 
+
+//#region Utils (external)
 const generateInitialValues = <
   T extends Record<string, { initialValue: string | number | boolean | Date }>
 >(
@@ -55,10 +57,10 @@ const StyledBox = styled(Box)({
   alignContent: "center",
   alignItems: "center",
   justifyContent: "flex-start",
-  height: "100%",
+  height: '100%',
+  overflow: 'hidden',
 });
 
-// #region Component
 export const requirementFormModel = {
   name: {
     initialValue: "",
@@ -96,40 +98,44 @@ export const generateZodValidationSchema = <
 };
 
 const validationSchema = generateZodValidationSchema(requirementFormModel);
+//#endregion
+// #region Component Start
 
-export default function Requirements() {
+export default function RequirementsPage() {
+
+  //#region Hooks
   const { projectId } = useParams();
   const { data: session } = useSession();
-  const [editRequirementId, setEditRequirementId] = useState<string | null>(
-    null
-  );
-  const [historyRequirement, setHistoryRequirement] =
-    useState<Requirement | null>(null);
+  const [editRequirementId, setEditRequirementId] = useState<string | null>(null);
+  const [historyRequirementId, setHistoryRequirementId] = useState<string | null>(null);
   const [createModalOpened, setCreateModalOpened] = useState(false);
   const [historyModalOpened, setHistoryModalOpened] = useState(false);
-
+  const { paginationModel, sortModel, sortBy, sortOrder, handlePaginationModelChange, handleSortModelChange } = usePaginationAndSorting();
   const t = useTranslations();
+  // #endregion
 
-  const initialValues = useMemo(
-    () => generateInitialValues(requirementFormModel),
-    []
-  );
-
-  // #region Data Fetching/Querys
+  // #region Fetching/Queries
   const {
-    data: project,
+    data: { data: requirements, count } = { count: 0, data: [] },
     isPending: isProjectsPending,
     refetch,
-  } = trpc.projectRouter.getProjectRequirements.useQuery(
-    { projectId: projectId as string },
+  } = trpc.requirementsRouter.getProjectRequirements.useQuery(
+    {
+      projectId: projectId as string,
+      limit: paginationModel.pageSize,
+      skip: Math.max(paginationModel.page - 1) * paginationModel.pageSize,
+      sortBy,
+      sortOrder: sortOrder ?? undefined
+    },
     {
       enabled: !!projectId,
       placeholderData: keepPreviousData,
     }
   );
+
   const deleteRequirementMutation = trpc.requirementsRouter.deleteRequirement.useMutation({
     onSuccess: () => {
-      console.log("Requirement deleted successfully");
+      console.info("Requirement deleted successfully");
       refetch();
     },
     onError: (error) => {
@@ -139,7 +145,7 @@ export default function Requirements() {
 
   const editRequirementMutation = trpc.requirementsRouter.editRequirement.useMutation({
     onSuccess: () => {
-      console.log("Requirement edited successfully");
+      console.info("Requirement edited successfully");
       resetEditMode();
       refetch();
     },
@@ -150,7 +156,7 @@ export default function Requirements() {
 
   const addRequirementMutation = trpc.requirementsRouter.addRequirement.useMutation({
     onSuccess: () => {
-      console.log("Requirement added successfully");
+      console.info("Requirement added successfully");
       resetEditMode();
       refetch();
     },
@@ -168,22 +174,14 @@ export default function Requirements() {
   }, []);
 
   const resetHistoryMode = useCallback(() => {
-    setHistoryRequirement(null);
+    setHistoryRequirementId(null);
     setHistoryModalOpened(false);
   }, []);
 
-  const handleHistoryRequirementClick = useCallback(
-    (requirementId: string) => {
-      const requirement = project?.requirements.find(
-        (req) => req.id === requirementId
-      );
-      if (requirement) {
-        setHistoryRequirement(requirement);
-        setHistoryModalOpened(true);
-      }
-    },
-    [project]
-  );
+  const handleHistoryRequirementClick = useCallback((requirementId: string) => {
+    setHistoryRequirementId(requirementId);
+    setHistoryModalOpened(true);
+  }, []);
 
   const handleDeleteRequirementClick = useCallback((requirementId: string) => {
     deleteRequirementMutation.mutate({ requirementId });
@@ -220,6 +218,8 @@ export default function Requirements() {
     }
   }, [projectId, session?.user.id, editRequirementMutation, addRequirementMutation]);
   //#region Dialog Config
+  const initialValues = useMemo(() => generateInitialValues(requirementFormModel), []);
+
   const formConfig = {
     name: {
       type: "text" as const,
@@ -247,9 +247,8 @@ export default function Requirements() {
   //#endregion
   // #endregion
 
-  //#region options
-
-  const options = (requirementId: string) => [
+  //#region Options
+  const options = useCallback((requirementId: string) => [
     {
       name: t("routes./project/requirements.edit"),
       action: () => handleEditRequirementClick(requirementId),
@@ -265,70 +264,45 @@ export default function Requirements() {
       action: () => handleDeleteRequirementClick(requirementId),
       icon: <Delete />,
     },
-  ];
+  ], [handleEditRequirementClick, handleHistoryRequirementClick, handleDeleteRequirementClick, t]);
   //#endregion
 
-  // #region Pagination and Sorting
-
-  const [pageSize, setPageSize] = useQueryState(
-    "pageSize",
-    parseAsFloat.withDefault(25)
-  );
-
-  const [page, setPage] = useQueryState("page", parseAsFloat.withDefault(1));
-
-  const paginationModel = useMemo(() => {
-    return {
-      page,
-      pageSize,
-    };
-  }, [page, pageSize]);
-
-  const handlePaginationModelChange = useCallback(
-    ({ page, pageSize }: GridPaginationModel) => {
-      setPage(page);
-      setPageSize(pageSize);
+  //#region Columns
+  const columns = useMemo<GridColDef<(typeof requirements)[number]>[]>(() => [
+    {
+      field: "name",
+      headerName: t("routes./project/requirements.column1"),
+      flex: 1,
     },
-    [setPage, setPageSize]
-  );
-
-  const [sortOrder, setSortOrder] = useQueryState(
-    "sortOrder",
-    parseAsJson(z.enum(["asc", "desc"]).optional().parse)
-  );
-
-  const [sortBy, setSortyBy] = useQueryState(
-    "sortBy",
-    parseAsString.withDefault("")
-  );
-
-  const handleSortModelChange = useCallback(
-    (model: GridSortModel) => {
-      if (model.length === 0) {
-        setSortyBy(() => "");
-        setSortOrder(() => null);
-      }
-
-      setSortyBy(() => model[0].field);
-      setSortOrder(() => model[0].sort ?? null);
-    },
-    [setSortOrder, setSortyBy]
-  );
-
-  const sortModel = useMemo<GridSortModel>(() => {
-    if (sortBy === "" || sortOrder === null) return [];
-
-    return [
-      {
-        field: sortBy,
-        sort: sortOrder === "asc" ? "asc" : "desc",
+    {
+      field: "assignedToUser.email",
+      headerName: t("routes./project/requirements.column2"),
+      flex: 1,
+      valueGetter: (_, row) => {
+        return row.assignedToUser?.name || "";
       },
-    ];
-  }, [sortBy, sortOrder]);
+    },
+    {
+      field: "requirementCategory",
+      headerName: t("routes./project/requirements.column3"),
+      flex: 1,
+    },
+    {
+      field: "createdAt",
+      headerName: t("routes./project/requirements.column4"),
+      flex: 1,
+    },
+    {
+      field: "settings",
+      renderHeader: () => <SettingsOutlined />,
+      renderCell: (params) => (
+        <OptionsButton options={options(params.row.id)} />
+      ),
+    },
+  ], [options, t]);
+  //#endregion
 
-  // #endregion
-
-  if (!project) return null;
+  //#region Render
   return (
     <StyledBox>
       <Grid2
@@ -340,8 +314,8 @@ export default function Requirements() {
         overflow="hidden"
         paddingTop={2}
         spacing={2}
-        size="grow"
-        height={"100%"}
+        // size="grow"
+        height="100%"
       >
         <Grid2
           container
@@ -377,54 +351,32 @@ export default function Requirements() {
             </Button>
           </ButtonGroup>
         </Grid2>
-
-        <Grid2 size="grow">
+        <Grid2
+          container
+          flexDirection="column"
+          flexGrow="1"
+          flexWrap="nowrap"
+          overflow="hidden"
+          marginTop={2}
+          spacing={2}
+        >
           <DataGrid
-            rows={project?.requirements ?? []}
+            disableVirtualization
+            rows={requirements}
             getRowId={(row) => row.id}
             paginationMode="server"
             paginationModel={paginationModel}
             pagination
             filterMode="server"
             sortingMode="server"
+            disableColumnFilter
             pageSizeOptions={[25, 50, 100]}
             onPaginationModelChange={handlePaginationModelChange}
             onSortModelChange={handleSortModelChange}
             sortModel={sortModel}
             loading={isProjectsPending}
-            rowCount={project?.requirements.length ?? 0}
-            columns={[
-              {
-                field: "name",
-                headerName: t("routes./project/requirements.column1"),
-                flex: 1,
-              },
-              {
-                field: "assignedToUser.email",
-                headerName: t("routes./project/requirements.column2"),
-                flex: 1,
-                valueGetter: (_, row) => {
-                  return row.assignedToUser?.name || "";
-                },
-              },
-              {
-                field: "requirementCategory",
-                headerName: t("routes./project/requirements.column3"),
-                flex: 1,
-              },
-              {
-                field: "createdAt",
-                headerName: t("routes./project/requirements.column4"),
-                flex: 1,
-              },
-              {
-                field: "settings",
-                renderHeader: () => <SettingsOutlined />,
-                renderCell: (params) => (
-                  <OptionsButton options={options(params.row.id)} />
-                ),
-              },
-            ]}
+            rowCount={count}
+            columns={columns}
           />
         </Grid2>
         <DialogFactory<RequirementFormValues>
@@ -451,7 +403,12 @@ export default function Requirements() {
         <RequirementHistoryDialog
           open={historyModalOpened}
           close={resetHistoryMode}
-          requirement={historyRequirement}
+          useQuery={() =>
+            trpc.requirementsRouter.getRequirement.useQuery(
+              { projectId: projectId as string, requirementId: historyRequirementId ?? "" },
+              { enabled: !!editRequirementId }
+            )
+          }
         />
       </Grid2>
     </StyledBox>
