@@ -17,6 +17,9 @@ import { useCallback, useMemo } from "react";
 import { z } from "zod";
 
 export default function ProjectOverviewListPage() {
+
+  //#region Page and Filter 
+
   const [pageSize, setPageSize] = useQueryState(
     "pageSize",
     parseAsFloat.withDefault(25)
@@ -36,7 +39,7 @@ export default function ProjectOverviewListPage() {
       setPage(() => page);
       setPageSize(() => pageSize);
     },
-    []
+    [setPage, setPageSize]
   );
 
   const [sortBy, setSortyBy] = useQueryState(
@@ -68,14 +71,15 @@ export default function ProjectOverviewListPage() {
 
     setSortyBy(() => model[0].field);
     setSortOrder(() => model[0].sort ?? null);
-  }, []);
+  }, [setSortOrder, setSortyBy]);
 
   const [filter] = useQueryState(
     "filter",
     parseAsJson(projectOverviewFilterWithDefaults)
   );
 
-  
+  //#endregion
+  //#region Data Fetching
 
   const {
     data: { data: projects, count } = { count: 0, data: [] },
@@ -93,6 +97,10 @@ export default function ProjectOverviewListPage() {
       placeholderData: keepPreviousData,
     }
   );
+
+  //#endregion
+  //#region Columns
+  const formatter = useFormatter();
 
   const columns = useMemo<GridColDef<(typeof projects)[number]>[]>(
     () => [
@@ -166,11 +174,10 @@ export default function ProjectOverviewListPage() {
         },
       },
     ],
-    []
+    [formatter]
   );
-
-  const formatter = useFormatter();
-
+  //#endregion
+  //#region Render
   return (
     <Grid2
       container
