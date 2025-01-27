@@ -1,7 +1,53 @@
 import { z } from "zod";
 import { protectedProcedure, router } from "..";
+import { createOrderBy } from "@/server/prisma/utils";
 
 const participantsRouter = router({
+
+  getParticipants: protectedProcedure([])
+    .input(
+      z.object({
+        limit: z.number().optional(),
+        skip: z.number().optional(),
+        projectId: z.string(),
+        sortBy: z.string().optional(),
+        sortOrder: z.enum(["asc", "desc"]).optional(),
+      })
+    )
+    .query(async (opts) => {
+      const data = await opts.ctx.db.user.findMany({
+        skip: opts.input.skip,
+        take: opts.input.limit,
+        orderBy: createOrderBy(
+          "User",
+          opts.input.sortBy,
+          opts.input.sortOrder
+        ),
+        where: {
+          participatingProjects: {
+            some: {
+              id: opts.input.projectId,
+            },
+          },
+        },
+        select: {
+          id: true,
+          name: true,
+          lastName: true,
+          email: true,
+          phoneNumber: true,
+          roles: true,
+          department: true,
+          etage: true,
+        },
+      });
+      const count = await opts.ctx.db.requirement.count({
+        where: {
+          projectId: opts.input.projectId,
+        },
+      });
+      return { data, count };
+    }),
 
   searchParticipant: protectedProcedure([])
     .input(z.object({ name: z.string() }))
@@ -30,54 +76,48 @@ const participantsRouter = router({
         option: participant.name
       }));
     }),
-  // getParticipants: protectedProcedure([])
-  //   .input(
-  //     z.object({
-  //       projectId: z.string(),
-  //       participantId: z.string(),
-  //     })
-  //   )
-  //   .query(async (opts) => {
-  //     const { projectId, participantId } = opts.input;
-  //     return opts.ctx.db.user .user.participants.(projectId, participantId);
-  //   }),
 
+  deleteParticipant: protectedProcedure([])
+    .input(
+      z.object({
+        projectId: z.string(),
+        participantId: z.string(),
+      })
+    )
+    .mutation(async (opts) => {
+      const { projectId, participantId } = opts.input;
 
+      try {
+        await opts.ctx.db.$transaction(async (prisma) => {
+          const project = await prisma.project.findFirstOrThrow({
+            where: { id: projectId },
+            include: { participants: true },
+          });
 
-  // deleteParticipant: protectedProcedure([])
-  //   .input(
-  //     z.object({
-  //       projectId: z.string(),
-  //       participantId: z.string(),
-  //     })
-  //   )
-  //   .mutation(async (opts) => {
-  //     const { projectId, participantId } = opts.input;
-  //     await opts.ctx.services.project.deleteParticipant(projectId, participantId);
-  //     return { success: true };
-  //   }),
+          const participantExists = project.participants.some(
+            (participant) => participant.id === participantId
+          );
 
-  // addParticipants: protectedProcedure([])
-  //   .input(
-  //     z.object({
-  //       projectId: z.string(),
-  //       participants: z.array(
-  //         z.object({
-  //           name: z.string(),
-  //           email: z.string(),
-  //           role: z.enum(['admin', 'user']),
-  //         })
-  //       ),
-  //     })
-  //   )
-  //   .mutation(async (opts) => {
-  //     const { projectId, participants } = opts.input;
-  //     const addedParticipants = await Promise.all(
-  //       await opts.ctx.services.project.addParticipants(projectId, participants)
-  //     );
-  //     return addedParticipants;
-  //   }),
+          if (!participantExists) {
+            throw new Error("Participant not found in project");
+          }
 
+          await prisma.project.update({
+            where: { id: projectId },
+            data: {
+              participants: {
+                disconnect: { id: participantId },
+              },
+            },
+          });
+        });
+
+        return { success: true, message: "Participant successfully removed" };
+      } catch (error) {
+        console.error("Error removing participant:", error);
+        return { success: false, message: (error as Error).message || "An error occurred" };
+      }
+    }),
 });
 
 export default participantsRouter;

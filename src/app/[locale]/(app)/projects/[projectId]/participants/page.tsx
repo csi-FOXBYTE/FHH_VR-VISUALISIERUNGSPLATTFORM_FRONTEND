@@ -9,156 +9,152 @@ import {
   styled,
   Typography,
 } from "@mui/material";
-import { DataGrid, GridPaginationModel, GridSortModel } from "@mui/x-data-grid";
+import { DataGrid, GridColDef, } from "@mui/x-data-grid";
 import { keepPreviousData } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { useParams } from "next/navigation";
-import { parseAsFloat, parseAsJson, parseAsString, useQueryState } from "nuqs";
-import { useCallback, useMemo, useState } from "react";
-import { z } from "zod";
+import { useCallback, useMemo } from "react";
 import {
   Add,
-  Delete,
-  History,
   Refresh,
+  Delete,
+  Edit,
   SettingsOutlined,
 } from "@mui/icons-material";
 import OptionsButton from "@/components/common/OptionsButton";
+import usePaginationAndSorting from "@/components/hooks/usePaginationAndSorting";
+
+
+//#region Utils (external)
 
 const StyledBox = styled(Box)({
   display: "flex",
   alignContent: "center",
   alignItems: "center",
   justifyContent: "flex-start",
-  height: "100%",
+  height: '100%',
+  overflow: 'hidden',
 });
 
-// #region Component
+//#endregion
+// #region Component Start
 
-export default function Participants() {
+export default function ParticipantsPage() {
+
+  //#region Hooks
   const { projectId } = useParams();
-  const [createModalOpened, setCreateModalOpened] = useState(false);
-
+  const { paginationModel, sortModel, sortBy, sortOrder, handlePaginationModelChange, handleSortModelChange } = usePaginationAndSorting();
   const t = useTranslations();
+  // #endregion
 
-  // #region Data Fetching
-
+  // #region Fetching/Queries
   const {
-    data: project,
+    data: { data: participants, count } = { count: 0, data: [] },
     isPending: isProjectsPending,
     refetch,
-  } = trpc.projectRouter.getProject.useQuery(
-    { projectId: projectId as string },
+  } = trpc.participantsRouter.getParticipants.useQuery(
+    {
+      projectId: projectId as string,
+      limit: paginationModel.pageSize,
+      skip: Math.max(paginationModel.page - 1) * paginationModel.pageSize,
+      sortBy,
+      sortOrder: sortOrder ?? undefined
+    },
     {
       enabled: !!projectId,
       placeholderData: keepPreviousData,
     }
   );
 
-  const deleteParticipantMutation =
-    trpc.participantsRouter.deleteParticipant.useMutation({
-      onSuccess: () => {
-        refetch();
-      },
-    });
+  const deleteParticipantMutation = trpc.participantsRouter.deleteParticipant.useMutation({
+    onSuccess: () => {
+      console.info("Participant deleted successfully");
+      refetch();
+    },
+    onError: (error) => {
+      console.error("Error deleting participant:", error);
+    },
+  });
 
   // #endregion
 
   // #region Handlers
-  const handleTasksParticipantClick = useCallback((participantId: string) => {
-    console.log("TODO:" + participantId);
-  }, []);
 
-  const handleDeleteParticipantClick = useCallback(
-    (participantId: string) => {
-      deleteParticipantMutation.mutate({
-        projectId: projectId as string,
-        participantId,
-      });
-    },
-    [deleteParticipantMutation, projectId]
-  );
+  const handleDeleteParticipantClick = useCallback((participantId: string) => {
+    deleteParticipantMutation.mutate({ projectId: projectId as string, participantId });
+  }, [deleteParticipantMutation, projectId]);
+
+  const handleAddTaskClick = useCallback((participantId: string) => {
+    console.info("Add task clicked for participant: ", participantId);
+  }, []);
 
   // #endregion
 
-  // #region Options
-
-  const options = (participantId: string) => [
+  //#region Options
+  const options = useCallback((participantId: string) => [
     {
       name: t("routes./project/participants.addTaskOption"),
-      action: () => handleTasksParticipantClick(participantId),
-      icon: <History />,
+      action: () => handleAddTaskClick(participantId),
+      icon: <Edit />,
     },
     {
       name: t("routes./project/participants.deleteOption"),
       action: () => handleDeleteParticipantClick(participantId),
       icon: <Delete />,
     },
-  ];
+  ], [handleAddTaskClick, handleDeleteParticipantClick, t]);
+  //#endregion
 
-  // #endregion
-
-  // #region Pagination and Sorting
-
-  const [pageSize, setPageSize] = useQueryState(
-    "pageSize",
-    parseAsFloat.withDefault(25)
-  );
-
-  const [page, setPage] = useQueryState("page", parseAsFloat.withDefault(1));
-
-  const paginationModel = useMemo(() => {
-    return {
-      page,
-      pageSize,
-    };
-  }, [page, pageSize]);
-
-  const handlePaginationModelChange = useCallback(
-    ({ page, pageSize }: GridPaginationModel) => {
-      setPage(() => page);
-      setPageSize(() => pageSize);
-    },
-    [setPage, setPageSize]
-  );
-
-  const [sortOrder, setSortOrder] = useQueryState(
-    "sortOrder",
-    parseAsJson(z.enum(["asc", "desc"]).optional().parse)
-  );
-
-  const [sortBy, setSortyBy] = useQueryState(
-    "sortBy",
-    parseAsString.withDefault("")
-  );
-
-  const handleSortModelChange = useCallback(
-    (model: GridSortModel) => {
-      if (model.length === 0) {
-        setSortyBy(() => "");
-        setSortOrder(() => null);
-      }
-
-      setSortyBy(() => model[0].field);
-      setSortOrder(() => model[0].sort ?? null);
-    },
-    [setSortOrder, setSortyBy]
-  );
-
-  const sortModel = useMemo<GridSortModel>(() => {
-    if (sortBy === "" || sortOrder === null) return [];
-
+  //#region Columns
+  const columns = useMemo<GridColDef<(typeof participants)[number]>[]>(() => {
     return [
       {
-        field: sortBy,
-        sort: sortOrder === "asc" ? "asc" : "desc",
+        field: "name",
+        headerName: t("routes./project/participants.column1"),
+        flex: 1,
       },
-    ];
-  }, [sortBy, sortOrder]);
+      {
+        field: "lastName",
+        headerName: t("routes./project/participants.column2"),
+        flex: 1,
+      },
+      {
+        field: "email",
+        headerName: t("routes./project/participants.column3"),
+        flex: 1,
+      },
+      {
+        field: "phoneNumber",
+        headerName: t("routes./project/participants.column4"),
+        flex: 1,
+      },
+      {
+        field: "Role",
+        headerName: t("routes./project/participants.column5"),
+        flex: 1,
+      },
+      {
+        field: "Department",
+        headerName: t("routes./project/participants.column6"),
+        flex: 1,
+      },
+      {
+        field: "Etage",
+        headerName: t("routes./project/participants.column7"),
+        flex: 1,
+      },
+      {
+        field: "settings",
+        renderHeader: () => <SettingsOutlined />,
+        renderCell: (params) => (
+          <OptionsButton options={options(params.row.id)} />
+        ),
+      },
+    ]
+  }, [options, t]);
+  //#endregion
 
-  // #endregion
-
-  if (!project) return null;
+  //#region Render
   return (
     <StyledBox>
       <Grid2
@@ -170,8 +166,8 @@ export default function Participants() {
         overflow="hidden"
         paddingTop={2}
         spacing={2}
-        size="grow"
-        height={"100%"}
+        // size="grow"
+        height="100%"
       >
         <Grid2
           container
@@ -196,7 +192,7 @@ export default function Participants() {
               {t("common.refreshButton")}
             </Button>
             <Button
-              onClick={() => setCreateModalOpened(true)}
+              onClick={() => console.log("TODO:")}
               variant="contained"
               startIcon={<Add />}
               sx={{
@@ -207,79 +203,35 @@ export default function Participants() {
             </Button>
           </ButtonGroup>
         </Grid2>
-
-        <Grid2 size="grow">
+        <Grid2
+          container
+          flexDirection="column"
+          flexGrow="1"
+          flexWrap="nowrap"
+          overflow="hidden"
+          marginTop={2}
+          spacing={2}
+        >
           <DataGrid
-            rows={project?.participants ?? []}
+            disableVirtualization
+            rows={participants}
             getRowId={(row) => row.id}
             paginationMode="server"
             paginationModel={paginationModel}
             pagination
             filterMode="server"
             sortingMode="server"
+            disableColumnFilter
             pageSizeOptions={[25, 50, 100]}
             onPaginationModelChange={handlePaginationModelChange}
             onSortModelChange={handleSortModelChange}
             sortModel={sortModel}
             loading={isProjectsPending}
-            rowCount={project?.participants.length ?? 0}
-            columns={[
-              {
-                field: "name",
-                headerName: t("routes./project/participants.column1"),
-                flex: 1,
-              },
-              {
-                field: "lastName",
-                headerName: t("routes./project/participants.column2"),
-                flex: 1,
-              },
-              {
-                field: "email",
-                headerName: t("routes./project/participants.column3"),
-                flex: 1,
-              },
-              {
-                field: "phoneNumber",
-                headerName: t("routes./project/participants.column4"),
-                flex: 1,
-              },
-              {
-                field: "role",
-                headerName: t("routes./project/participants.column5"),
-                flex: 1,
-              },
-              {
-                field: "department",
-                headerName: t("routes./project/participants.column6"),
-                flex: 1,
-              },
-              {
-                field: "position",
-                headerName: t("routes./project/participants.column7"),
-                flex: 1,
-              },
-              {
-                field: "settings",
-                renderHeader: () => <SettingsOutlined />,
-                renderCell: (params) => (
-                  <OptionsButton options={options(params.row.id)} />
-                ),
-              },
-            ]}
+            rowCount={count}
+            columns={columns}
           />
         </Grid2>
-        <AddParticipantDialog
-          open={createModalOpened}
-          close={() => {
-            setCreateModalOpened(false);
-          }}
-          project={project}
-          refetch={refetch}
-        />
       </Grid2>
     </StyledBox>
   );
 }
-
-// #endregion
