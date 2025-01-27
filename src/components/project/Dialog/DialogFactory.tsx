@@ -116,7 +116,7 @@ const renderSelectField = (key: string, config: FormConfig<any>[string], formikP
 
   <FormControl fullWidth margin="normal" key={key}>
     <SearchInput
-      label="Participant"
+      label={config.label}
       extraInput={{}}
       style={{ flex: 1 }}
       value={formikProps.values[key]}

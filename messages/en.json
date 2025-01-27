@@ -20,7 +20,7 @@
       "title": "Hello, {userName}!",
       "tabbar1": "Project details",
       "tabbar2": "Requirements",
-      "tabbar3": "Goals",
+      "tabbar3": "Targets",
       "tabbar4": "Participants"
     },
     "/project/details": {
@@ -45,14 +45,14 @@
       "column2": "Responsible person",
       "column3": "Category",
       "column4": "Created on",
-      "addButton": "Add goal",
+      "addButton": "Add target",
       "edit": "Edit",
       "history": "History",
       "delete": "Delete"
     },
-    "/project/goals": {
-      "title": "Goals",
-      "column1": "Goals",
+    "/project/targets": {
+      "title": "Targets",
+      "column1": "Targets",
       "column2": "Responsible person",
       "column3": "Category",
       "column4": "Created on",
@@ -98,19 +98,19 @@
     "editTitle": "Edit requirement",
     "historyTitle": "History"
   },
-  "goalDialog": {
+  "targetDialog": {
     "addTitle": "Add destination",
-    "assignedTo": "Assigned to",
+    "assignedToUserEmail": "Assigned to",
     "cancel": "Cancel",
     "category": "category",
     "costRadioBtn": "Cost",
     "createdAt": "Created on",
     "editTitle": "Edit target",
-    "goalText": "Goal",
+    "targetText": "Target",
     "historyTitle": "Change history",
     "performanceRadioBtn": "Performance",
     "save": "Save",
-    "scheduleRadioBtn": "Schedule"
+    "dateRadioBtn": "Schedule"
   },
   "participantDialog": {
     "cancel": "Cancel",

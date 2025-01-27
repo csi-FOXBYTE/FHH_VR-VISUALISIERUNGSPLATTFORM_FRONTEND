@@ -27,18 +27,18 @@ import { useParams } from "next/navigation";
 
 type SideBarItem =
   | {
+    path: string;
+    name: string;
+    type: "button" | "folder";
+    icon?: ReactNode;
+    disabled?: boolean;
+    children?: {
       path: string;
       name: string;
-      type: "button" | "folder";
       icon?: ReactNode;
       disabled?: boolean;
-      children?: {
-        path: string;
-        name: string;
-        icon?: ReactNode;
-        disabled?: boolean;
-      }[];
-    }
+    }[];
+  }
   | { type: "divider" };
 
 const StyledListItemText = styled(ListItemText)`
@@ -99,7 +99,7 @@ export default function SideBar() {
         },
         {
           name: "Ziele",
-          path: `/projects/${projectId}/goals`,
+          path: `/projects/${projectId}/targets`,
         },
         {
           name: "Beteiligte",

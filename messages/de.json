@@ -57,7 +57,7 @@
       "history": "Verlauf",
       "delete": "Löschen"
     },
-    "/project/goals": {
+    "/project/targets": {
       "title": "Ziele",
       "column1": "Ziele",
       "column2": "Verantworlicher",
@@ -105,16 +105,16 @@
     "editTitle": "Anforderung bearbeiten",
     "historyTitle": "Änderungshistorie"
   },
-  "goalDialog": {
+  "targetDialog": {
     "cancel": "Abbrechen",
     "save": "Speichern",
     "createdAt": "Erstellt am",
-    "scheduleRadioBtn": "Termin",
+    "dateRadioBtn": "Termin",
     "costRadioBtn": "Kosten",
     "performanceRadioBtn": "Leistung",
     "category": "Kategorie",
-    "assignedTo": "Zugeordnet an",
-    "goalText": "Ziel",
+    "assignedToUserEmail": "Zugeordnet an",
+    "targetText": "Ziel",
     "addTitle": "Ziel hinzufügen",
     "editTitle": "Ziel bearbeiten",
     "historyTitle": "Änderungshistorie"

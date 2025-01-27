@@ -24,14 +24,13 @@ import {
   SettingsOutlined,
 } from "@mui/icons-material";
 import OptionsButton from "@/components/common/OptionsButton";
-import RequirementHistoryDialog from "@/components/project/RequirementHistoryDialog";
-import { REQUIREMENT_CATEGORY } from "@prisma/client";
+import { TARGET_CATEGORY } from "@prisma/client";
 
-type RequirementFormValues = {
+type TargetFormValues = {
   id?: string;
   name: string;
   assignedToUserId: string;
-  requirementCategory: REQUIREMENT_CATEGORY;
+  targetCategory: TARGET_CATEGORY;
   createdAt: string;
 };
 import { DialogFactory } from "@/components/project/Dialog/DialogFactory";
@@ -61,7 +60,7 @@ const StyledBox = styled(Box)({
   overflow: 'hidden',
 });
 
-export const requirementFormModel = {
+export const targetFormModel = {
   name: {
     initialValue: "",
     validation: z.string().min(1, "name is required"),
@@ -70,10 +69,10 @@ export const requirementFormModel = {
     initialValue: "",
     validation: z.string().min(1, "User is required"),
   },
-  requirementCategory: {
-    initialValue: "TECHNICAL" as REQUIREMENT_CATEGORY,
-    validation: z.nativeEnum(REQUIREMENT_CATEGORY).refine(
-      (val) => ["ORGANIZATIONAL", "TECHNICAL"].includes(val),
+  targetCategory: {
+    initialValue: "DATE" as TARGET_CATEGORY,
+    validation: z.nativeEnum(TARGET_CATEGORY).refine(
+      (val) => ["DATE", "COST", "PERFORMANCE"].includes(val),
       {
         message: "Category is required",
       }
@@ -97,29 +96,27 @@ export const generateZodValidationSchema = <
   return z.object(shape);
 };
 
-const validationSchema = generateZodValidationSchema(requirementFormModel);
+const validationSchema = generateZodValidationSchema(targetFormModel);
 //#endregion
 // #region Component Start
 
-export default function RequirementsPage() {
+export default function TargetsPage() {
 
   //#region Hooks
   const { projectId } = useParams();
   const { data: session } = useSession();
-  const [editRequirementId, setEditRequirementId] = useState<string | null>(null);
-  const [historyRequirementId, setHistoryRequirementId] = useState<string | null>(null);
+  const [editTargetId, setEditTargetId] = useState<string | null>(null);
   const [createModalOpened, setCreateModalOpened] = useState(false);
-  const [historyModalOpened, setHistoryModalOpened] = useState(false);
   const { paginationModel, sortModel, sortBy, sortOrder, handlePaginationModelChange, handleSortModelChange } = usePaginationAndSorting();
   const t = useTranslations();
   // #endregion
 
   // #region Fetching/Queries
   const {
-    data: { data: requirements, count } = { count: 0, data: [] },
+    data: { data: targets, count } = { count: 0, data: [] },
     isPending: isProjectsPending,
     refetch,
-  } = trpc.requirementsRouter.getProjectRequirements.useQuery(
+  } = trpc.targetsRouter.getProjectTargets.useQuery(
     {
       projectId: projectId as string,
       limit: paginationModel.pageSize,
@@ -133,35 +130,35 @@ export default function RequirementsPage() {
     }
   );
 
-  const deleteRequirementMutation = trpc.requirementsRouter.deleteRequirement.useMutation({
+  const deleteTargetMutation = trpc.targetsRouter.deleteTarget.useMutation({
     onSuccess: () => {
-      console.info("Requirement deleted successfully");
+      console.info("Target deleted successfully");
       refetch();
     },
     onError: (error) => {
-      console.error("Error deleting requirement:", error);
+      console.error("Error deleting target:", error);
     },
   });
 
-  const editRequirementMutation = trpc.requirementsRouter.editRequirement.useMutation({
+  const editTargetMutation = trpc.targetsRouter.editTarget.useMutation({
     onSuccess: () => {
-      console.info("Requirement edited successfully");
+      console.info("Target edited successfully");
       resetEditMode();
       refetch();
     },
     onError: (error) => {
-      console.error("Error editing requirement:", error);
+      console.error("Error editing target:", error);
     },
   });
 
-  const addRequirementMutation = trpc.requirementsRouter.addRequirement.useMutation({
+  const addTargetMutation = trpc.targetsRouter.addTarget.useMutation({
     onSuccess: () => {
-      console.info("Requirement added successfully");
+      console.info("Target added successfully");
       resetEditMode();
       refetch();
     },
     onError: (error) => {
-      console.error("Error adding requirement:", error);
+      console.error("Error adding target:", error);
     },
   });
   // #endregion
@@ -169,44 +166,38 @@ export default function RequirementsPage() {
   // #region Handlers
 
   const resetEditMode = useCallback(() => {
-    setEditRequirementId(null);
+    setEditTargetId(null);
     setCreateModalOpened(false);
   }, []);
 
-  const resetHistoryMode = useCallback(() => {
-    setHistoryRequirementId(null);
-    setHistoryModalOpened(false);
+  const handleHistoryTargetClick = useCallback(() => {
+    console.log("TODO:");
   }, []);
 
-  const handleHistoryRequirementClick = useCallback((requirementId: string) => {
-    setHistoryRequirementId(requirementId);
-    setHistoryModalOpened(true);
-  }, []);
+  const handleDeleteTargetClick = useCallback((targetId: string) => {
+    deleteTargetMutation.mutate({ targetId });
+  }, [deleteTargetMutation]);
 
-  const handleDeleteRequirementClick = useCallback((requirementId: string) => {
-    deleteRequirementMutation.mutate({ requirementId });
-  }, [deleteRequirementMutation]);
-
-  const handleEditRequirementClick = useCallback((requirementId: string) => {
-    setEditRequirementId(requirementId);
+  const handleEditTargetClick = useCallback((targetId: string) => {
+    setEditTargetId(targetId);
     setCreateModalOpened(true);
   }, []);
 
-  const handleSubmit = useCallback((values: RequirementFormValues) => {
+  const handleSubmit = useCallback((values: TargetFormValues) => {
     if (values.id) {
-      editRequirementMutation.mutate({
+      editTargetMutation.mutate({
         projectId: projectId as string,
-        requirementId: values.id as string,
+        targetId: values.id as string,
         data: {
           name: values.name,
           assignedToUserId: values.assignedToUserId,
-          requirementCategory: values.requirementCategory,
+          targetCategory: values.targetCategory,
           updatedAt: new Date(values.createdAt),
           description: "",
         },
       });
     } else {
-      addRequirementMutation.mutate({
+      addTargetMutation.mutate({
         projectId: projectId as string,
         data: {
           ...values,
@@ -216,30 +207,31 @@ export default function RequirementsPage() {
         },
       });
     }
-  }, [projectId, session?.user.id, editRequirementMutation, addRequirementMutation]);
+  }, [projectId, session?.user.id, editTargetMutation, addTargetMutation]);
   //#region Dialog Config
-  const initialValues = useMemo(() => generateInitialValues(requirementFormModel), []);
+  const initialValues = useMemo(() => generateInitialValues(targetFormModel), []);
 
   const formConfig = {
     name: {
       type: "text" as const,
-      label: t("requirementDialog.requirementText"),
+      label: t("targetDialog.targetText"),
     },
     assignedToUserId: {
       type: "participantSelection" as const,
-      label: t("requirementDialog.assignedToUserEmail"),
+      label: t("targetDialog.assignedToUserEmail"),
     },
-    requirementCategory: {
+    targetCategory: {
       type: "radio" as const,
-      label: t("requirementDialog.category"),
+      label: t("targetDialog.category"),
       options: [
-        { value: "ORGANIZATIONAL", label: t("requirementDialog.orgRequirement") },
-        { value: "TECHNICAL", label: t("requirementDialog.techRequirement") },
+        { value: "DATE", label: t("targetDialog.dateRadioBtn") },
+        { value: "COST", label: t("targetDialog.costRadioBtn") },
+        { value: "PERFORMANCE", label: t("targetDialog.performanceRadioBtn") },
       ],
     },
     createdAt: {
       type: "date" as const,
-      label: t("requirementDialog.createdAt"),
+      label: t("targetDialog.createdAt"),
       readOnly: true,
     },
   };
@@ -248,57 +240,57 @@ export default function RequirementsPage() {
   // #endregion
 
   //#region Options
-  const options = useCallback((requirementId: string) => [
+  const options = useCallback((targetId: string) => [
     {
-      name: t("routes./project/requirements.edit"),
-      action: () => handleEditRequirementClick(requirementId),
+      name: t("routes./project/targets.edit"),
+      action: () => handleEditTargetClick(targetId),
       icon: <Edit />,
     },
     {
-      name: t("routes./project/requirements.history"),
-      action: () => handleHistoryRequirementClick(requirementId),
+      name: t("routes./project/targets.history"),
+      action: () => handleHistoryTargetClick(),
       icon: <History />,
     },
     {
-      name: t("routes./project/requirements.delete"),
-      action: () => handleDeleteRequirementClick(requirementId),
+      name: t("routes./project/targets.delete"),
+      action: () => handleDeleteTargetClick(targetId),
       icon: <Delete />,
     },
-  ], [handleEditRequirementClick, handleHistoryRequirementClick, handleDeleteRequirementClick, t]);
+  ], [handleEditTargetClick, handleHistoryTargetClick, handleDeleteTargetClick, t]);
   //#endregion
 
   //#region Columns
-  const columns = useMemo<GridColDef<(typeof requirements)[number]>[]>(() => {
-    const categoryMapping: { [key: string]: string } = {
-      TECHNICAL: t("requirementDialog.techRequirement"),
-      ORGANIZATIONAL: t("requirementDialog.orgRequirement"),
+  const columns = useMemo<GridColDef<(typeof targets)[number]>[]>(() => {
+    const targetsCategoryMapping: { [key: string]: string } = {
+      COST: t("targetDialog.costRadioBtn"),
+      DATE: t("targetDialog.dateRadioBtn"),
+      PERFORMANCE: t("targetDialog.performanceRadioBtn"),
     };
-
     return [
       {
         field: "name",
-        headerName: t("routes./project/requirements.column1"),
+        headerName: t("routes./project/targets.column1"),
         flex: 1,
       },
       {
         field: "assignedToUser.email",
-        headerName: t("routes./project/requirements.column2"),
+        headerName: t("routes./project/targets.column2"),
         flex: 1,
         valueGetter: (_, row) => {
           return row.assignedToUser?.name || "";
         },
       },
       {
-        field: "requirementCategory",
-        headerName: t("routes./project/requirements.column3"),
+        field: "targetCategory",
+        headerName: t("routes./project/targets.column3"),
         flex: 1,
         valueGetter: (_, row) => {
-          return categoryMapping[row.requirementCategory] || "";
+          return targetsCategoryMapping[row.targetCategory] || "";
         },
       },
       {
         field: "createdAt",
-        headerName: t("routes./project/requirements.column4"),
+        headerName: t("routes./project/targets.column4"),
         flex: 1,
       },
       {
@@ -335,7 +327,7 @@ export default function RequirementsPage() {
           justifyContent="space-between"
         >
           <Typography variant="h1">
-            {t("routes./project/requirements.title")}
+            {t("routes./project/targets.title")}
           </Typography>
           <ButtonGroup>
             <Button
@@ -357,7 +349,7 @@ export default function RequirementsPage() {
                 justifyContent: "center",
               }}
             >
-              {t("routes./project/requirements.addButton")}
+              {t("routes./project/targets.addButton")}
             </Button>
           </ButtonGroup>
         </Grid2>
@@ -372,7 +364,7 @@ export default function RequirementsPage() {
         >
           <DataGrid
             disableVirtualization
-            rows={requirements}
+            rows={targets}
             getRowId={(row) => row.id}
             paginationMode="server"
             paginationModel={paginationModel}
@@ -389,7 +381,7 @@ export default function RequirementsPage() {
             columns={columns}
           />
         </Grid2>
-        <DialogFactory<RequirementFormValues>
+        <DialogFactory<TargetFormValues>
           close={resetEditMode}
           projectId={projectId as string}
           open={createModalOpened}
@@ -398,25 +390,15 @@ export default function RequirementsPage() {
           onSubmit={handleSubmit}
           formConfig={formConfig}
           title={
-            editRequirementId
-              ? t("requirementDialog.editTitle")
-              : t("requirementDialog.addTitle")
+            editTargetId
+              ? t("targetDialog.editTitle")
+              : t("targetDialog.addTitle")
           }
-          submitButtonText={t("requirementDialog.save")}
+          submitButtonText={t("targetDialog.save")}
           useQuery={() =>
-            trpc.requirementsRouter.getRequirement.useQuery(
-              { projectId: projectId as string, requirementId: editRequirementId ?? "" },
-              { enabled: !!editRequirementId }
-            )
-          }
-        />
-        <RequirementHistoryDialog
-          open={historyModalOpened}
-          close={resetHistoryMode}
-          useQuery={() =>
-            trpc.requirementsRouter.getRequirement.useQuery(
-              { projectId: projectId as string, requirementId: historyRequirementId ?? "" },
-              { enabled: !!editRequirementId }
+            trpc.targetsRouter.getTarget.useQuery(
+              { projectId: projectId as string, targetId: editTargetId ?? "" },
+              { enabled: !!editTargetId }
             )
           }
         />

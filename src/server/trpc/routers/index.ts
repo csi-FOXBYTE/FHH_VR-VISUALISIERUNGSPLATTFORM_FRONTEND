@@ -6,7 +6,7 @@ import indexRouter from "./indexRouter";
 import projectsOverviewRouter from "./projectsOverviewRouter";
 import projectRouter from "./projectRouter";
 import requirementsRouter from "./requirementsRouter";
-import goalsRouter from "./goalsRouter";
+import targetsRouter from "./targetsRouter";
 import participantsRouter from "./participantsRouter";
 
 export const appRouter = router({
@@ -15,7 +15,7 @@ export const appRouter = router({
   projectOverviewRouter: projectsOverviewRouter,
   projectRouter: projectRouter,
   requirementsRouter: requirementsRouter,
-  goalsRouter: goalsRouter,
+  targetsRouter: targetsRouter,
   participantsRouter: participantsRouter,
 });
 

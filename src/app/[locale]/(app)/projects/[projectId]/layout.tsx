@@ -82,8 +82,8 @@ export default function ProjectPage({ children }: { children: ReactNode }) {
             label={t("routes./project.tabbar2")}
           />
           <Tab
-            onClick={() => router.push(`/projects/${projectId}/goals`)}
-            value={`/projects/${projectId}/goals`}
+            onClick={() => router.push(`/projects/${projectId}/targets`)}
+            value={`/projects/${projectId}/targets`}
             label={t("routes./project.tabbar3")}
           />
           <Tab
