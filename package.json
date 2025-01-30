@@ -10,12 +10,14 @@
   "prisma": {
     "seed": "tsx prisma/scripts/seed.ts"
   },
+  "packageManager": "pnpm@9.5.0",
   "scripts": {
     "dev": "docker compose up -d && next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "prepare": "husky",
+    "db:eject": "pnpm prisma migrate diff --from-empty --to-schema-datamodel ./prisma/schema.prisma --script >> ./prisma/migration.sql",
     "publish:dev": "docker build -t infocus-app:0.1.5 . --secret id=npmrc,src=%USERPROFILE%/.npmrc && docker tag infocus-app:0.1.5 mbinfocus.azurecr.io/infocus-app:0.1.5 && docker push mbinfocus.azurecr.io/infocus-app:0.1.5"
   },
   "dependencies": {
