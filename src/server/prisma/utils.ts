@@ -1,5 +1,4 @@
 import { Prisma } from "@prisma/client";
-import prisma from ".";
 
 type OrderBy = {
   [key: string]: "asc" | "desc" | OrderBy;
@@ -62,22 +61,3 @@ export function createOrderBy(
 
   return result;
 }
-
-
-export function createSelect(modelName: Prisma.ModelName, filter: Record<string, any> = {}) {
-    
-}
-
-
-prisma.user.findMany({
-    where: {
-        createdProjects: {
-            every: {
-                building: {
-                    
-                }
-            }
-        }
-    }
-})
-

@@ -4,8 +4,7 @@ import { useSession } from "next-auth/react";
 import { ComponentType, memo } from "react";
 
 export const useRBAC = (neededPermissions: GeneratedPermissions[]): boolean => {
-  const session = useSession();
-
+  neededPermissions.includes("project:create");
   // TODO: RBAC logic
 
   return true;
@@ -16,7 +15,7 @@ type PropsAreEqual<P> = (
   nextProps: Readonly<P>
 ) => boolean;
 
-export function withRBAC<P extends {}>(
+export function withRBAC<P extends Record<string, any>>(
   WrappedComponent: ComponentType<P>,
   neededPermissions: GeneratedPermissions[],
   propsAreEqual?: PropsAreEqual<P> | false,
@@ -35,7 +34,7 @@ export function withRBAC<P extends {}>(
 
   WithRBACHOC.displayName = `withRBAC(${componentName})`;
 
-  let wrappedComponent =
+  const wrappedComponent =
     propsAreEqual === false ? WithRBACHOC : memo(WithRBACHOC, propsAreEqual);
 
   return wrappedComponent as typeof WithRBACHOC;

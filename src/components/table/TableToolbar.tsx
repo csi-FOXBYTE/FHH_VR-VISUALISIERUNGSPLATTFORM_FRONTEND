@@ -4,7 +4,6 @@ import { Button, ButtonGroup, Grid2 } from "@mui/material";
 export default function TableToolbar({
   openCreateModel,
   refreshData,
-  label,
 }: {
   openCreateModel?: () => void;
   refreshData?: () => void;

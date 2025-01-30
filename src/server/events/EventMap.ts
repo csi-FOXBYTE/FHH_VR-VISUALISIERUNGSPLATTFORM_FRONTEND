@@ -4,7 +4,9 @@ import { Events, TypedEvent } from "./EventBus";
 
 export interface EventMap extends Events {
   example: {
-    sub: TypedEvent<{}>;
+    sub: TypedEvent<{
+      test: string;
+    }>;
   };
   user: {
     chat: TypedEvent<{

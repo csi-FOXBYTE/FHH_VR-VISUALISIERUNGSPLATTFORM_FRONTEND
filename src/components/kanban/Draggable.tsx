@@ -3,7 +3,7 @@ import { CSS } from "@dnd-kit/utilities";
 import { Card, CardContent } from "@mui/material";
 import { Key } from "react";
 
-export function Draggable<D extends Record<any, any>, C extends Column<D>>({
+export function Draggable<D extends Record<string, unknown>, C extends Column<D>>({
   column,
   record,
   id,

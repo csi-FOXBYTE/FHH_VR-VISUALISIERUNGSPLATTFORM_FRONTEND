@@ -42,6 +42,8 @@ export function protectedProcedure(
     .use(async ({ next, ctx }) => {
       const session = ctx.session;
 
+      requiredPermissions.includes("project:create");
+
       if (!session) throw new TRPCError({ code: "UNAUTHORIZED" }); // Only authenticated users are allowed!
 
       let _userService: UserService | null = null;

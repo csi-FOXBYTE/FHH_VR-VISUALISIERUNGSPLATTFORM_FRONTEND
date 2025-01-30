@@ -53,5 +53,5 @@ export function generatePermissions<S extends P>(
 
   extractPermissions(permissions, extractedPermissions, []);
 
-  return extractedPermissions as any;
+  return extractedPermissions as ExtractPermissions<S>[];
 }

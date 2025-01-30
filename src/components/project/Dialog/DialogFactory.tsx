@@ -45,7 +45,10 @@ export const generateZodValidationSchema = <
 };
 
 export const generateInitialValues = <
-  T extends Record<string, { initialValue: string | string[] | number | boolean | Date | undefined }>
+  T extends Record<
+    string,
+    { initialValue: string | string[] | number | boolean | Date | undefined }
+  >
 >(
   model: T
 ) => {
@@ -58,7 +61,14 @@ export const generateInitialValues = <
 
 type FormConfig<T> = {
   [K in keyof T]: {
-    type: "text" | "select" | "searchSelection" | "radio" | "date" | "attachment" | "textArea";
+    type:
+      | "text"
+      | "select"
+      | "searchSelection"
+      | "radio"
+      | "date"
+      | "attachment"
+      | "textArea";
     label: string;
     options?: { value: string; label: string }[];
     readOnly?: boolean;
@@ -84,68 +94,93 @@ interface BaseDialogFactoryProps<T> extends Omit<DialogProps, "onSubmit"> {
 type DialogFactoryProps<T> = BaseDialogFactoryProps<T>;
 
 // Helper: Validierungsfunktion
-const validateFormValues = async<T>(schema: z.ZodType<T>, values: T) => {
+async function validateFormValues<T>(schema: z.ZodType<T>, values: T) {
   try {
     await schema.parseAsync(values);
     return {};
-  } catch (error: any) {
+  } catch (error: unknown) {
     const validationErrors: Record<string, string> = {};
-    error.errors.forEach((err: any) => {
+    error.errors.forEach((err: unknown) => {
       validationErrors[err.path[0]] = err.message;
       console.error(err);
     });
     return validationErrors;
   }
-};
+}
 //#region Renderer Fields
 
 const renderErrorText = (key: string, formikProps: FormikValues) => {
-  return formikProps.touched[key] && formikProps.errors[key]
-    ? (
-      <Typography variant="caption" color="error" style={{ marginTop: "0.5rem" }}>
-        {formikProps.errors[key]}
-      </Typography>
-    )
-    : null;
+  return formikProps.touched[key] && formikProps.errors[key] ? (
+    <Typography variant="caption" color="error" style={{ marginTop: "0.5rem" }}>
+      {formikProps.errors[key]}
+    </Typography>
+  ) : null;
 };
 
-const renderTextField = (key: string, config: FormConfig<any>[string], formikProps: FormikValues, rows?: number) => (
-  <FormControl fullWidth margin="normal" key={key}>
-    <TextField
-      name={key}
-      label={config.label}
-      variant="filled"
-      value={formikProps.values[key]}
-      onChange={formikProps.handleChange}
-      onBlur={formikProps.handleBlur}
-      error={formikProps.touched[key] && Boolean(formikProps.errors[key])}
-      helperText={formikProps.touched[key] && typeof formikProps.errors[key] === "string" ? formikProps.errors[key] : undefined}
-      InputProps={{ readOnly: config.readOnly }}
-      rows={rows}
-    />
-  </FormControl>
-);
+function renderTextField<T>(
+  key: string,
+  config: FormConfig<any>[string],
+  formikProps: FormikValues,
+  rows?: number
+) {
+  return (
+    <FormControl fullWidth margin="normal" key={key}>
+      <TextField
+        name={key}
+        label={config.label}
+        variant="filled"
+        value={formikProps.values[key]}
+        onChange={formikProps.handleChange}
+        onBlur={formikProps.handleBlur}
+        error={formikProps.touched[key] && Boolean(formikProps.errors[key])}
+        helperText={
+          formikProps.touched[key] &&
+          typeof formikProps.errors[key] === "string"
+            ? formikProps.errors[key]
+            : undefined
+        }
+        InputProps={{ readOnly: config.readOnly }}
+        rows={rows}
+      />
+    </FormControl>
+  );
+}
 
-const renderDateField = (key: string, config: FormConfig<any>[string], formikProps: FormikValues) => (
+const renderDateField = (
+  key: string,
+  config: FormConfig<any>[string],
+  formikProps: FormikValues
+) => (
   <FormControl fullWidth margin="normal" key={key}>
     <TextField
       name={key}
       label={config.label}
       type="date"
       variant="filled"
-      value={formikProps.values[key] ? new Date(formikProps.values[key]).toISOString().split("T")[0] : ""}
+      value={
+        formikProps.values[key]
+          ? new Date(formikProps.values[key]).toISOString().split("T")[0]
+          : ""
+      }
       onChange={formikProps.handleChange}
       onBlur={formikProps.handleBlur}
       error={formikProps.touched[key] && Boolean(formikProps.errors[key])}
-      helperText={formikProps.touched[key] && typeof formikProps.errors[key] === "string" ? formikProps.errors[key] : undefined}
+      helperText={
+        formikProps.touched[key] && typeof formikProps.errors[key] === "string"
+          ? formikProps.errors[key]
+          : undefined
+      }
       InputLabelProps={{ shrink: true }}
       inputProps={{ readOnly: config.readOnly }}
     />
   </FormControl>
 );
 
-const renderSelectField = (key: string, config: FormConfig<any>[string], formikProps: FormikValues) => (
-
+const renderSelectField = (
+  key: string,
+  config: FormConfig<any>[string],
+  formikProps: FormikValues
+) => (
   <FormControl fullWidth margin="normal" key={key}>
     <SelectCustom
       label={config.label}
@@ -158,8 +193,12 @@ const renderSelectField = (key: string, config: FormConfig<any>[string], formikP
   </FormControl>
 );
 
-const renderSearchSelectField = (key: string, config: FormConfig<any>[string], formikProps: FormikValues, query: SearchInputQuery<{ label: string; value: string }[], any, any>) => (
-
+const renderSearchSelectField = (
+  key: string,
+  config: FormConfig<any>[string],
+  formikProps: FormikValues,
+  query: SearchInputQuery<{ label: string; value: string }[], any, any>
+) => (
   <FormControl fullWidth margin="normal" key={key}>
     <SearchInput
       label={config.label}
@@ -173,7 +212,11 @@ const renderSearchSelectField = (key: string, config: FormConfig<any>[string], f
   </FormControl>
 );
 
-const renderRadioField = (key: string, config: FormConfig<any>[string], formikProps: FormikValues) => (
+const renderRadioField = (
+  key: string,
+  config: FormConfig<any>[string],
+  formikProps: FormikValues
+) => (
   <FormControl component="fieldset" margin="normal" key={key}>
     <FormLabel component="legend">{config.label}</FormLabel>
     <RadioGroup
@@ -195,7 +238,11 @@ const renderRadioField = (key: string, config: FormConfig<any>[string], formikPr
   </FormControl>
 );
 
-const renderAttachmentField = (key: string, config: FormConfig<any>[string], formikProps: FormikValues) => (
+const renderAttachmentField = (
+  key: string,
+  config: FormConfig<any>[string],
+  formikProps: FormikValues
+) => (
   <FormControl component="fieldset" margin="normal" key={key}>
     <FormLabel component="legend">{config.label}</FormLabel>
     <div>TODO:</div>
@@ -235,7 +282,11 @@ export function DialogFactory<T extends FormikValues>({
 }: DialogFactoryProps<T>) {
   const t = useTranslations();
   const { data: queryData, isLoading } = useQuery?.() ?? {};
-  const renderField = (key: string, config: FormConfig<any>[string], formikProps: FormikValues) => {
+  const renderField = (
+    key: string,
+    config: FormConfig<any>[string],
+    formikProps: FormikValues
+  ) => {
     switch (config.type) {
       case "text":
         return renderTextField(key, config, formikProps);
@@ -246,7 +297,12 @@ export function DialogFactory<T extends FormikValues>({
       case "select":
         return renderSelectField(key, config, formikProps);
       case "searchSelection":
-        return renderSearchSelectField(key, config, formikProps, trpc.participantsRouter.searchParticipant.useQuery);
+        return renderSearchSelectField(
+          key,
+          config,
+          formikProps,
+          trpc.participantsRouter.searchParticipant.useQuery
+        );
       case "radio":
         return renderRadioField(key, config, formikProps);
       case "attachment":
@@ -262,22 +318,29 @@ export function DialogFactory<T extends FormikValues>({
       <DialogTitle>{title}</DialogTitle>
       {isLoading ? (
         <Box position="relative" height="200px">
-          <CircularProgress style={{ position: "absolute", top: "50%", left: "50%" }} />
+          <CircularProgress
+            style={{ position: "absolute", top: "50%", left: "50%" }}
+          />
         </Box>
       ) : (
         <Formik
-          initialValues={formatDateFields(queryData as T ?? initialValues, formConfig)}
+          initialValues={formatDateFields(
+            (queryData as T) ?? initialValues,
+            formConfig
+          )}
           validate={(values) => validateFormValues(validationSchema, values)}
           validationSchema={toFormikValidationSchema(validationSchema)}
           onSubmit={(values, formikHelpers) => {
             console.info("Submit Triggered", values);
-            onSubmit(values, formikHelpers)
+            onSubmit(values, formikHelpers);
           }}
         >
           {(formikProps) => (
             <form onSubmit={formikProps.handleSubmit}>
               <DialogContent>
-                {Object.keys(formConfig).map((key) => renderField(key, formConfig[key], formikProps))}
+                {Object.keys(formConfig).map((key) =>
+                  renderField(key, formConfig[key], formikProps)
+                )}
               </DialogContent>
               <DialogActions>
                 <Button variant="outlined" onClick={close}>

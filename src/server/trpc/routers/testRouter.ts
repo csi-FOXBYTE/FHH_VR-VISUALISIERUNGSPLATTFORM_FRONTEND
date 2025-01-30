@@ -32,8 +32,8 @@ const testRouter = router({
     }),
   errorWorld: protectedProcedure([])
     .input(z.object({ a: z.string(), b: z.boolean() }))
-    .mutation(async (opts) => {}),
-  getProjects: protectedProcedure([]).query(async (opts) => {
+    .mutation(async () => {}),
+  getProjects: protectedProcedure([]).query(async () => {
     return [
       {
         name: "Hallo",

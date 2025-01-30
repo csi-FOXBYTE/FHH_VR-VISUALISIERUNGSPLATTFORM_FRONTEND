@@ -15,7 +15,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "prepare": "husky"
+    "prepare": "husky",
+    "publish:dev": "docker build -t infocus-app:0.1.5 . --secret id=npmrc,src=%USERPROFILE%/.npmrc && docker tag infocus-app:0.1.5 mbinfocus.azurecr.io/infocus-app:0.1.5 && docker push mbinfocus.azurecr.io/infocus-app:0.1.5"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.7.4",

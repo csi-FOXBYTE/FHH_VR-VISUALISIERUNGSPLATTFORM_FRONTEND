@@ -1,17 +1,22 @@
+# syntax=docker/dockerfile:1.3
+
 FROM node:18-alpine AS base
+
+RUN apk add openssl && \
+    apk add openssl-dev && \
+    apk add libc6-compat && \
+    rm -rf /var/cache/apk/*
 
 # Install dependencies only when needed
 FROM base AS deps
 # Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
-RUN apk add --no-cache libc6-compat openssl openssl-dev && \
-    rm -rf /var/cache/apk/*
-
+RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
 # Install dependencies based on the preferred package manager
 COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* .npmrc ./
 RUN --mount=type=secret,id=npmrc,target=/root/.npmrc corepack enable pnpm && pnpm i --frozen-lockfile
-
+ 
 # Rebuild the source code only when needed
 FROM base AS builder
 WORKDIR /app

@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  projectOverviewFilter,
   projectOverviewFilterWithDefaults,
 } from "@/components/project/ProjectOverviewFilter";
 import { useRouter } from "@/server/i18n/routing";
@@ -9,7 +8,6 @@ import { trpc } from "@/server/trpc/client";
 import {
   Autorenew,
   Error,
-  MoreVert,
   AccessTime,
   Flag,
   Person,

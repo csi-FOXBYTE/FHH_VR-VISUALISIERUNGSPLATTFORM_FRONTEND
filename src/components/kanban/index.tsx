@@ -4,7 +4,7 @@ import { Droppable } from "./Droppable";
 import { Draggable } from "./Draggable";
 
 export default function Kanban<
-  D extends Record<any, any>,
+  D extends Record<string, any>,
   C extends Column<D>
 >({
   data,
