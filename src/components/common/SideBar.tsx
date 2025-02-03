@@ -8,37 +8,25 @@ import {
   Paper,
   styled,
 } from "@mui/material";
-import {
-  Add,
-  CalendarMonth,
-  ChecklistRtl,
-  ContentPaste,
-  Dashboard,
-  DeveloperBoard,
-  DocumentScanner,
-  Folder,
-  Money,
-  ThreeDRotation,
-} from "@mui/icons-material";
+import { Add } from "@mui/icons-material";
 import { usePathname, useRouter } from "@/server/i18n/routing";
 import { Fragment, ReactNode, useEffect, useState } from "react";
 import { parseAsBoolean, useQueryState } from "nuqs";
-import { useParams } from "next/navigation";
 
 type SideBarItem =
   | {
-    path: string;
-    name: string;
-    type: "button" | "folder";
-    icon?: ReactNode;
-    disabled?: boolean;
-    children?: {
       path: string;
       name: string;
+      type: "button" | "folder";
       icon?: ReactNode;
       disabled?: boolean;
-    }[];
-  }
+      children?: {
+        path: string;
+        name: string;
+        icon?: ReactNode;
+        disabled?: boolean;
+      }[];
+    }
   | { type: "divider" };
 
 const StyledListItemText = styled(ListItemText)`
@@ -53,10 +41,8 @@ const StyledListItemText = styled(ListItemText)`
   }
 `;
 
-export default function SideBar() {
+export default function SideBar({ items }: { items: SideBarItem[] }) {
   const pathname = usePathname();
-
-  const { projectId } = useParams();
 
   const [sideBarOpen] = useQueryState(
     "sideBarOpen",
@@ -72,137 +58,6 @@ export default function SideBar() {
   }, [sideBarOpen]);
 
   const router = useRouter();
-
-  const items: SideBarItem[] = [
-    {
-      name: "Dashboard",
-      path: "/",
-      type: "button",
-      icon: <Dashboard />,
-    },
-    {
-      type: "divider",
-    },
-    {
-      name: "Projekte",
-      path: "/projects",
-      type: "folder",
-      icon: <Folder />,
-      children: [
-        {
-          name: "Übersicht",
-          path: "/projects/overview",
-        },
-        {
-          name: "Anforderungen",
-          path: `/projects/${projectId}/requirements`,
-        },
-        {
-          name: "Ziele",
-          path: `/projects/${projectId}/targets`,
-        },
-        {
-          name: "Beteiligte",
-          path: `/projects/${projectId}/participant`,
-        },
-        {
-          name: "Aufgaben",
-          path: `/projects/${projectId}/workitems`,
-        },
-      ],
-    },
-    {
-      type: "divider",
-    },
-    {
-      name: "Aufgaben",
-      path: `/workitems`,
-      type: "button",
-      icon: <ChecklistRtl />,
-    },
-    {
-      type: "divider",
-    },
-    {
-      name: "Terminplanung",
-      path: "/projects/date",
-      type: "folder",
-      icon: <CalendarMonth />,
-      children: [
-        {
-          name: "Gantt-Diagramm",
-          path: "/",
-        },
-        {
-          name: "Kanban Board",
-          path: "/",
-        },
-        {
-          name: "Last Planner System",
-          path: "/",
-        },
-      ],
-    },
-    {
-      type: "divider",
-    },
-    {
-      name: "Kostenplanung",
-      path: "/projects/costplanner",
-      type: "folder",
-      icon: <Money />,
-      children: [
-        {
-          name: "Vergabe Übersicht",
-          path: "/",
-        },
-      ],
-    },
-    {
-      type: "divider",
-    },
-    {
-      name: "CAD 2D/3D",
-      icon: <ThreeDRotation />,
-      path: "/projects/cad",
-      type: "folder",
-      disabled: true,
-      children: [
-        {
-          name: "AR Modus",
-          path: "",
-          disabled: true,
-        },
-      ],
-    },
-    {
-      type: "divider",
-    },
-    {
-      name: "Dokumentation",
-      path: "/projects/documentation",
-      type: "button",
-      icon: <DocumentScanner />,
-    },
-    {
-      type: "divider",
-    },
-    {
-      name: "Standards und Vorlagen",
-      path: "/projects/standards",
-      type: "button",
-      icon: <DeveloperBoard />,
-    },
-    {
-      type: "divider",
-    },
-    {
-      name: "Protokolle und LOP",
-      path: "/projects/protocols",
-      type: "button",
-      icon: <ContentPaste />,
-    },
-  ];
 
   if (pathname === "/") return null;
 
@@ -233,11 +88,11 @@ export default function SideBar() {
                     key={item.name}
                     title={item.name}
                   >
-                    <ListItemIcon style={{
-                      color: pathname === item.path
-                        ? "#008DFC"
-                        : "inherit",
-                    }}>
+                    <ListItemIcon
+                      style={{
+                        color: pathname === item.path ? "#008DFC" : "inherit",
+                      }}
+                    >
                       {item.icon}
                     </ListItemIcon>
                     <StyledListItemText primary={item.name} />

@@ -5,9 +5,7 @@ import SuperJSON from "superjson";
 import prisma from "@/server/prisma";
 import { createOTelPlugin } from "./otelMiddleware";
 import eventBus from "@/server/events";
-import { UserService } from "../services/userService";
 import type { GeneratedPermissions } from "../auth/roles";
-import { ProjectService } from "../services/projectService";
 
 export const { createCallerFactory, router, procedure } = initTRPC
   .context<typeof createTRPCContext>()
@@ -42,28 +40,13 @@ export function protectedProcedure(
     .use(async ({ next, ctx }) => {
       const session = ctx.session;
 
-      requiredPermissions.includes("project:create");
-
       if (!session) throw new TRPCError({ code: "UNAUTHORIZED" }); // Only authenticated users are allowed!
-
-      let _userService: UserService | null = null;
-      let _projectService: ProjectService | null = null;
 
       return next({
         ctx: {
           ...ctx,
           session: session,
         ***REMOVED***prisma,
-          ***REMOVED***{
-            get user() {
-              _userService ??= new UserService(prisma, eventBus, session);
-              return _userService;
-            },
-            get project() {
-              _projectService ??= new ProjectService(prisma, eventBus, session);
-              return _projectService;
-            },
-          },
           storage: null,
           eventBus,
         },

@@ -25,7 +25,7 @@ export default function AppProviders({
   children: ReactNode;
   locale: string;
 }) {
-  const themeWithLocale = createTheme(theme, supportedLocales[locale as "en"] ?? supportedLocales.en);
+  const themeWithLocale = createTheme(supportedLocales[locale as "en"] ?? supportedLocales.en, theme);
 
   return (
     <AppRouterCacheProvider>

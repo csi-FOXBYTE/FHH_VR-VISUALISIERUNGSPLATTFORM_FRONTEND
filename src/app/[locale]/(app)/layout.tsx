@@ -21,7 +21,6 @@ import { signOut, useSession } from "next-auth/react";
 import { useState, MouseEvent } from "react";
 import Logout from "@mui/icons-material/Logout";
 import { Link as NextLink } from "@/server/i18n/routing";
-import { MBFooter } from "@mercedes-benz/mbui-comps";
 import { useLocale } from "next-intl";
 import { AccountCircle, Language, Mail } from "@mui/icons-material";
 import SideBar from "@/components/common/SideBar";
@@ -34,7 +33,7 @@ export default function LocaleLayout({
 }) {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
-  const [, setSideBarOpen] = useQueryState(
+  const [sideBarOpen, setSideBarOpen] = useQueryState(
     "sideBarOpen",
     parseAsBoolean.withDefault(false)
   );
@@ -68,34 +67,13 @@ export default function LocaleLayout({
       }}
     >
       <CssBaseline />
-      <AppBar
-        position="sticky"
-        sx={(theme) => ({
-          backgroundColor: theme.palette.common.black,
-          backgroundImage: "none",
-          color: "white",
-          display: "flex",
-          flexDirection: "column",
-        })}
-      >
+      <AppBar position="sticky" color="primary">
         <Toolbar style={{ paddingLeft: 0 }}>
-          <IconButton
-            onClick={() => setSideBarOpen((sideBarOpen) => !sideBarOpen)}
-            style={{ color: "white", padding: 16, borderRadius: 0, margin: 0 }}
-          >
+          <IconButton color="inherit">
             <MenuIcon />
           </IconButton>
-          <Link href="/" component={NextLink} underline="none" color="white">
-            <Typography
-              style={{
-                fontFamily: "MB Corpo A Title",
-                fontSize: 21,
-                marginLeft: 16,
-              }}
-              variant="body1"
-            >
-              Infocus
-            </Typography>
+          <Link href="/" component={NextLink} underline="none" color="inherit">
+            <Typography variant="body1">Base</Typography>
           </Link>
           <div style={{ flex: 1 }} />
           <ButtonGroup>
@@ -148,7 +126,15 @@ export default function LocaleLayout({
         flexDirection="row"
         wrap="nowrap"
       >
-        <SideBar />
+        <SideBar
+          items={[
+            {
+              name: "Test",
+              path: "/test",
+              type: "folder",
+            },
+          ]}
+        />
         <Paper
           elevation={0}
           sx={{
@@ -161,12 +147,6 @@ export default function LocaleLayout({
           {children}
         </Paper>
       </Grid2>
-      <MBFooter
-        lang={locale}
-        privacyProtectionInfoLink=""
-        legalNoticeInfoLink=""
-        providerInfoLink=""
-      />
     </div>
   );
 }
