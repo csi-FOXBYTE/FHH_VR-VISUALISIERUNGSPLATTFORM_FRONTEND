@@ -1,9 +1,6 @@
 "use client";
 
-import {
-  CircularProgress,
-  Grid2
-} from "@mui/material";
+import { CircularProgress, Grid2 } from "@mui/material";
 import "cesium/Build/Cesium/Widgets/widgets.css";
 import dynamic from "next/dynamic";
 import AppBar from "./AppBar";
@@ -18,6 +15,7 @@ const ResiumViewer = dynamic(async () => (await import("./Viewer")).default, {
       height="100%"
       flexDirection="column"
       alignItems="center"
+      style={{ background: "white" }}
       justifyContent="center"
       alignContent="center"
       justifyItems="center"

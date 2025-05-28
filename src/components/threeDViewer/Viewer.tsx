@@ -1,28 +1,46 @@
 "use client";
 
-import {
-  Camera,
-  CameraFlyTo,
-  Cesium3DTileset,
-  Cesium3DTilesetProps,
-  Entity,
-  ImageryLayer,
-  PolygonGraphics,
-  Viewer,
-} from "resium";
 import * as Cesium from "cesium";
-import { useEffect, useMemo, useRef } from "react";
-import { useViewerStore } from "./ViewerProvider";
+import { useMemo } from "react";
+import { CameraFlyTo, Cesium3DTileset, ImageryLayer, Viewer } from "resium";
+import ClippingPolygons from "./ClippingPolygons";
+import Compass from "./Compass";
+import GetResiumCtx from "./GetResiumCtx";
 import ProjectObjects from "./ProjectObjects";
-import ToolsProvider from "./Tools";
 import StartingPoints from "./StartingPoints";
+import TimePicker from "./TimePicker";
+import ToolsProvider from "./Tools";
+import { useViewerStore } from "./ViewerProvider";
+import VisualAxes from "./VisualAxes";
 
 const terrain = Cesium.CesiumTerrainProvider.fromUrl(
-  "https://fhhvrshare.blob.core.windows.net/hamburg/terrain",
+  new Cesium.Resource({
+    url: "https://fhhvrshare.blob.core.windows.net/hamburg/terrain",
+  }),
   {
     requestVertexNormals: true,
   }
 );
+
+const area1 = new Cesium.Resource({
+  url: "https://fhhvrshare.blob.core.windows.net/hamburg/3dtiles/area1/tileset.json",
+});
+
+const area2 = new Cesium.Resource({
+  url: "https://fhhvrshare.blob.core.windows.net/hamburg/3dtiles/area2/tileset.json",
+});
+
+const area3 = new Cesium.Resource({
+  url: "https://fhhvrshare.blob.core.windows.net/hamburg/3dtiles/area3/tileset.json",
+});
+
+const area4 = new Cesium.Resource({
+  url: "https://fhhvrshare.blob.core.windows.net/hamburg/3dtiles/area4/tileset.json",
+});
+
+const area5 = new Cesium.Resource({
+  url: "https://fhhvrshare.blob.core.windows.net/hamburg/3dtiles/area5/tileset.json",
+});
 
 const imageryProvider = new Cesium.OpenStreetMapImageryProvider({
   url: "https://tile.openstreetmap.org/",
@@ -30,29 +48,16 @@ const imageryProvider = new Cesium.OpenStreetMapImageryProvider({
 });
 
 export default function ResiumViewer() {
-  const viewerRef = useRef<Cesium.Viewer>(null);
-
-  const cameraRef = useRef<Cesium.Camera>(null);
-
   const viewerStore = useViewerStore();
-
-  const handleClick: Cesium3DTilesetProps["onClick"] = (_m, target) => {
-    const result: Record<string, unknown> = {};
-
-    for (const propertyId of target.getPropertyIds()) {
-      result[propertyId] = target.getProperty(propertyId);
-    }
-
-    viewerStore.updateObjectInfo({ info: result, object: target });
-  };
 
   const builtClippingPolygons = useMemo(() => {
     return new Array(6).fill(0).map(() => {
-      if (viewerStore.clippingPolygons.length === 0) return undefined;
+      if (viewerStore.clippingPolygons.value.length === 0) return undefined;
+
       const collection = new Cesium.ClippingPolygonCollection({
-        enabled: true,
+        enabled: viewerStore.clippingPolygons.value.length > 0,
         inverse: false,
-        polygons: viewerStore.clippingPolygons.map(
+        polygons: viewerStore.clippingPolygons.value.map(
           (clippingPolygon) =>
             new Cesium.ClippingPolygon({
               positions: clippingPolygon.positions.map(
@@ -64,35 +69,18 @@ export default function ResiumViewer() {
 
       return collection;
     });
-  }, [viewerStore.clippingPolygons]);
+  }, [viewerStore.clippingPolygons.value]);
 
   const safeCameraZoneVisible = useViewerStore(
     (state) => state.tools.safeCameraZoneVisible
   );
 
-  useEffect(() => {});
-
   return (
     <Viewer
       ref={(ref) => {
-        {/** @ts-expect-error wrong types */}
-        viewerRef.current = ref?.cesiumElement ?? null;
-        if (viewerRef.current) {
-          const viewer = viewerRef.current;
-          viewer.shadowMap.softShadows = true;
-          viewer.shadowMap.size = 8192;
+        if (!ref?.cesiumElement) return;
 
-          viewer.scene.globe.depthTestAgainstTerrain = true;
-
-          viewer.scene.fog.enabled = true;
-          viewer.scene.fog.density = 0.0015;
-          viewer.scene.fog.visualDensityScalar = 0.7;
-          viewer.scene.fog.minimumBrightness = 0.1;
-          viewer.scene.fog.screenSpaceErrorFactor = 4;
-          viewer.scene.fog.heightScalar = 0.0005;
-          viewer.scene.fog.heightFalloff = 0.6;
-          viewer.scene.fog.maxHeight = 800000;
-        }
+        ref.cesiumElement.scene.globe.depthTestAgainstTerrain = true;
       }}
       style={{
         width: "100%",
@@ -109,7 +97,6 @@ export default function ResiumViewer() {
       geocoder={false}
       baseLayerPicker={false}
       baseLayer={false}
-      shadows={true}
       terrainShadows={Cesium.ShadowMode.ENABLED}
       homeButton={false}
       vrButton={false}
@@ -119,17 +106,13 @@ export default function ResiumViewer() {
       terrainProvider={terrain}
       timeline={false}
       scene3DOnly
-      requestRenderMode
       targetFrameRate={30}
       infoBox={false}
     >
-      <Camera
-        ref={(ref) => {
-          {/** @ts-expect-error wrong types */}
-          cameraRef.current = ref?.cesiumElement ?? null;
-          console.log(cameraRef.current?.position.toString());
-        }}
-      />
+      {/* <CesiumGizmo /> */}
+      <Compass />
+      <TimePicker />
+      <GetResiumCtx />
       <ProjectObjects />
       <StartingPoints />
       <ToolsProvider />
@@ -144,56 +127,28 @@ export default function ResiumViewer() {
           )
         }
       />
-      {viewerStore.clippingPolygons
-        .filter((p) => p.visible)
-        .map((clippingPolygon) => (
-          <Entity key={clippingPolygon.id}>
-            <PolygonGraphics
-              extrudedHeight={100}
-              hierarchy={{
-                holes: [],
-                positions: clippingPolygon.positions.map(
-                  (p) => new Cesium.Cartesian3(p.x, p.y, p.z)
-                ),
-                isConstant: false,
-              }}
-              outline
-              outlineColor={new Cesium.Color(1, 1, 0, 0.6)}
-              material={new Cesium.Color(1, 1, 0, 0.5)}
-              fill
-            />
-          </Entity>
-        ))}
+      <ClippingPolygons />
+      <VisualAxes />
       <ImageryLayer imageryProvider={imageryProvider} />
       <Cesium3DTileset
         clippingPolygons={builtClippingPolygons?.[0]}
-        onClick={handleClick}
-        url="https://fhhvrshare.blob.core.windows.net/hamburg/3dtiles/area1/tileset.json"
+        url={area1}
       />
       <Cesium3DTileset
         clippingPolygons={builtClippingPolygons?.[1]}
-        onClick={handleClick}
-        url="https://fhhvrshare.blob.core.windows.net/hamburg/3dtiles/area2/tileset.json"
+        url={area2}
       />
       <Cesium3DTileset
         clippingPolygons={builtClippingPolygons?.[2]}
-        onClick={handleClick}
-        url="https://fhhvrshare.blob.core.windows.net/hamburg/3dtiles/area3/tileset.json"
+        url={area3}
       />
       <Cesium3DTileset
         clippingPolygons={builtClippingPolygons?.[3]}
-        onClick={handleClick}
-        url="https://fhhvrshare.blob.core.windows.net/hamburg/3dtiles/area4/tileset.json"
+        url={area4}
       />
       <Cesium3DTileset
         clippingPolygons={builtClippingPolygons?.[4]}
-        onClick={handleClick}
-        url="https://fhhvrshare.blob.core.windows.net/hamburg/3dtiles/area5/tileset.json"
-      />
-      <Cesium3DTileset
-        clippingPolygons={builtClippingPolygons?.[5]}
-        onClick={handleClick}
-        url="https://fhhvrshare.blob.core.windows.net/hamburg/3dtiles/trees/tileset.json"
+        url={area5}
       />
     </Viewer>
   );

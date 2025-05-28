@@ -5,8 +5,9 @@ import {
   ArrowLeft,
   ArrowRight,
   Delete,
+  LocationCity,
   Visibility,
-  VisibilityOff
+  VisibilityOff,
 } from "@mui/icons-material";
 import {
   Button,
@@ -14,48 +15,51 @@ import {
   Grid2,
   IconButton,
   Input,
-  Table,
-  TableCell,
-  TableRow,
   Tooltip,
   Typography,
-  useTheme
+  useTheme,
 } from "@mui/material";
 import { SimpleTreeView, TreeItem } from "@mui/x-tree-view";
 import * as Cesium from "cesium";
 import { useSnackbar } from "notistack";
 import { useState } from "react";
 import SplitPane, { Pane } from "react-split-pane";
-import CoordinateInput from "./CoordinateInput";
+import ImportProjectObjectInput from "./ImportProjectObjectInput";
+import ObjectProperties from "./ObjectProperties";
 import "./SplitPane.css";
-import { useViewerStore } from "./ViewerProvider";
+import { useSelectedObject, useViewerStore } from "./ViewerProvider";
 
 export default function RightDrawer() {
   const theme = useTheme();
 
   const [rightDrawerVisibility, setRightDrawerVisibility] = useState(true);
 
-  const clippingPolygons = useViewerStore((state) => state.clippingPolygons);
-  const updateClippingPolygons = useViewerStore(
-    (state) => state.updateClippingPolygons
+  const clippingPolygons = useViewerStore(
+    (state) => state.clippingPolygons.value
+  );
+  const createClippingPolygon = useViewerStore(
+    (state) => state.clippingPolygons.create
+  );
+  const deleteClippingPolygon = useViewerStore(
+    (state) => state.clippingPolygons.delete
   );
 
-  const info = useViewerStore((state) => state.objectInfo?.info);
-
-  const object = useViewerStore((state) => state.objectInfo?.object);
-
-  const setProjectObjects = useViewerStore((state) => state.setProjectObjects);
-  const projectObjects = useViewerStore((state) => state.projectObjects);
+  const projectObjects = useViewerStore((state) => state.projectObjects.value);
+  const updateProjectObject = useViewerStore(
+    (state) => state.projectObjects.update
+  );
 
   const createStartingPoint = useViewerStore(
-    (state) => state.createStartingPoint
+    (state) => state.startingPoints.create
   );
-  const startingPoints = useViewerStore((state) => state.startingPoints);
+  const startingPoints = useViewerStore((state) => state.startingPoints.value);
 
   const pickPoint = useViewerStore((state) => state.tools.pickPoint);
-  const createClippingPolygon = useViewerStore(
-    (state) => state.createClippingPolygon
-  );
+
+  const visualAxes = useViewerStore((state) => state.visualAxes);
+
+  const selectedObject = useSelectedObject();
+  const setSelectedObject = useViewerStore((state) => state.setSelectedObject);
 
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
@@ -100,7 +104,6 @@ export default function RightDrawer() {
                 boxShadow: theme.shadows[2],
                 background: "white",
                 borderRadius: 8,
-                zIndex: -1,
               }}
             >
               {rightDrawerVisibility ? <ArrowRight /> : <ArrowLeft />}
@@ -148,6 +151,7 @@ export default function RightDrawer() {
                     <TreeItem
                       key={clippingPolygon.id}
                       itemId={clippingPolygon.id}
+                      onClick={() => setSelectedObject(clippingPolygon)}
                       label={
                         <Grid2
                           container
@@ -155,53 +159,10 @@ export default function RightDrawer() {
                           alignItems="center"
                           wrap="nowrap"
                         >
-                          <Input
-                            defaultValue={clippingPolygon.name}
-                            onKeyDown={(event) => {
-                              if (event.key === "Enter") {
-                                const clippingPolygonIndex =
-                                  clippingPolygons.findIndex(
-                                    (p) => clippingPolygon.id === p.id
-                                  );
-
-                                if (clippingPolygonIndex === -1) return;
-
-                                const newClippingPolygons = [
-                                  ...clippingPolygons,
-                                ];
-
-                                newClippingPolygons[clippingPolygonIndex] = {
-                                  ...clippingPolygon,
-                                  name: event.currentTarget.value,
-                                };
-
-                                updateClippingPolygons(newClippingPolygons);
-                              }
-                            }}
-                          />
+                          <Input defaultValue={clippingPolygon.name} />
                           <ButtonGroup>
                             <Tooltip title="Toggle clipping polygon visibility">
-                              <IconButton
-                                onClick={() => {
-                                  const clippingPolygonIndex =
-                                    clippingPolygons.findIndex(
-                                      (p) => clippingPolygon.id === p.id
-                                    );
-
-                                  if (clippingPolygonIndex === -1) return;
-
-                                  const newClippingPolygons = [
-                                    ...clippingPolygons,
-                                  ];
-
-                                  newClippingPolygons[clippingPolygonIndex] = {
-                                    ...clippingPolygon,
-                                    visible: !clippingPolygon.visible,
-                                  };
-
-                                  updateClippingPolygons(newClippingPolygons);
-                                }}
-                              >
+                              <IconButton>
                                 {clippingPolygon.visible ? (
                                   <Visibility />
                                 ) : (
@@ -211,13 +172,9 @@ export default function RightDrawer() {
                             </Tooltip>
                             <Tooltip title="Delete clipping polygon">
                               <IconButton
-                                onClick={() => {
-                                  updateClippingPolygons(
-                                    clippingPolygons.filter(
-                                      (p) => p.id !== clippingPolygon.id
-                                    )
-                                  );
-                                }}
+                                onClick={() =>
+                                  deleteClippingPolygon(clippingPolygon.id)
+                                }
                               >
                                 <Delete />
                               </IconButton>
@@ -240,21 +197,19 @@ export default function RightDrawer() {
                         Project objects [{projectObjects.length}]
                       </Typography>
                       <ButtonGroup size="small">
-                        <IconButton
-                          size="small"
-                          disabled
-                          style={{ opacity: 0 }}
-                        >
+                        <IconButton size="small" component="label">
                           <Add />
+                          <ImportProjectObjectInput />
                         </IconButton>
                       </ButtonGroup>
                     </Grid2>
                   }
                 >
-                  {projectObjects.map((projectObject, index) => (
+                  {projectObjects.map((projectObject) => (
                     <TreeItem
                       key={projectObject.id}
                       itemId={projectObject.id}
+                      onClick={() => setSelectedObject(projectObject)}
                       label={
                         <>
                           {projectObject.name}
@@ -274,21 +229,40 @@ export default function RightDrawer() {
 
                               try {
                                 const pickedPoint = await pickPoint();
-                                const newProjectObjects = [...projectObjects];
 
-                                newProjectObjects[index] = {
-                                  ...projectObject,
-                                  modelMatrix:
-                                    Cesium.Transforms.eastNorthUpToFixedFrame(
-                                      new Cesium.Cartesian3(
-                                        pickedPoint.x,
-                                        pickedPoint.y,
-                                        pickedPoint.z
-                                      )
+                                const modelMatrix =
+                                  Cesium.Transforms.eastNorthUpToFixedFrame(
+                                    new Cesium.Cartesian3(
+                                      pickedPoint.x,
+                                      pickedPoint.y,
+                                      pickedPoint.z
+                                    )
+                                  );
+
+                                const translation =
+                                  Cesium.Matrix4.getTranslation(
+                                    modelMatrix,
+                                    new Cesium.Cartesian3()
+                                  );
+                                const scale = Cesium.Matrix4.getScale(
+                                  modelMatrix,
+                                  new Cesium.Cartesian3()
+                                );
+                                const rotation =
+                                  Cesium.Quaternion.fromRotationMatrix(
+                                    Cesium.Matrix4.getRotation(
+                                      modelMatrix,
+                                      new Cesium.Matrix3()
                                     ),
-                                };
+                                    new Cesium.Quaternion()
+                                  );
 
-                                setProjectObjects(newProjectObjects);
+                                updateProjectObject({
+                                  translation,
+                                  scale,
+                                  rotation,
+                                  id: projectObject.id,
+                                });
                               } catch {}
 
                               document.body.style.cursor = "auto";
@@ -333,36 +307,53 @@ export default function RightDrawer() {
                     <TreeItem
                       key={startingPoint.id}
                       itemId={startingPoint.id}
+                      onClick={() => setSelectedObject(startingPoint)}
                       label={<>{startingPoint.name}</>}
                     />
                   ))}
                 </TreeItem>
                 <TreeItem
-                  itemId="points_of_interest"
-                  label={`Points of interest (0)`}
-                ></TreeItem>
+                  itemId="visual_axes"
+                  label={
+                    <Grid2
+                      container
+                      justifyContent="space-between"
+                      alignItems="center"
+                    >
+                      <Typography>
+                        Visual axes [{visualAxes.value.length}]
+                      </Typography>
+                      <ButtonGroup size="small">
+                        <IconButton size="small" onClick={visualAxes.create}>
+                          <Add />
+                        </IconButton>
+                      </ButtonGroup>
+                    </Grid2>
+                  }
+                >
+                  {visualAxes.value.map((visualAxis) => (
+                    <TreeItem
+                      key={visualAxis.id}
+                      itemId={visualAxis.id}
+                      onClick={() => setSelectedObject(visualAxis)}
+                      label={
+                        <>
+                          {visualAxis.name}
+                          <Button
+                            onClick={() => visualAxes.helpers.flyTo(visualAxis)}
+                          >
+                            <LocationCity />
+                          </Button>
+                        </>
+                      }
+                    />
+                  ))}
+                </TreeItem>
               </SimpleTreeView>
             </Pane>
             {/** @ts-expect-error wrong types */}
             <Pane style={{ overflow: "hidden", overflowY: "auto" }}>
-              <Typography variant="h6">Object Info</Typography>
-              {info ? (
-                <Table>
-                  {Object.entries(info).map(([key, value]) => (
-                    <TableRow key={key}>
-                      <TableCell>{key}</TableCell>
-                      <TableCell>{String(value)}</TableCell>
-                    </TableRow>
-                  ))}
-                  <TableRow>Origin</TableRow>
-                  <CoordinateInput
-                    value={object?.primitive?.boundingSphere?.center}
-                  />
-                  <TableRow>
-                    {object?.primitive?.boundingSphere?.center?.toString()}
-                  </TableRow>
-                </Table>
-              ) : null}
+              <ObjectProperties selectedObject={selectedObject} />
             </Pane>
           </SplitPane>
         </div>

@@ -1,25 +1,25 @@
+import { Redo, Undo } from "@mui/icons-material";
 import {
-  Grid2,
-  ButtonGroup,
   Button,
-  Menu,
-  MenuList,
-  MenuItem,
+  ButtonGroup,
+  Grid2,
   ListItemText,
+  Menu,
+  MenuItem,
+  MenuList,
   Typography,
 } from "@mui/material";
-import BreadCrumbs from "../navbar/BreadCrumbs";
 import { useState } from "react";
+import BreadCrumbs from "../navbar/BreadCrumbs";
+import ImportProjectObjectInput from "./ImportProjectObjectInput";
 import { useViewerStore } from "./ViewerProvider";
-import * as Cesium from "cesium";
 
 export default function AppBar() {
   const [fileAnchorEl, setFileAnchorEl] = useState<HTMLElement | null>();
 
   const [fileMenuOpen, setFileMenuOpen] = useState(false);
 
-  const projectObjects = useViewerStore((state) => state.projectObjects);
-  const setProjectObjects = useViewerStore((state) => state.setProjectObjects);
+  const history = useViewerStore((state) => state.history);
 
   return (
     <Grid2
@@ -33,6 +33,15 @@ export default function AppBar() {
       <ButtonGroup color="secondary" variant="text">
         <Button onClick={() => setFileMenuOpen(true)} ref={setFileAnchorEl}>
           File
+        </Button>
+        <Button disabled={history.index === 0} onClick={history.undo}>
+          <Undo />
+        </Button>
+        <Button
+          disabled={history.value.length === history.index + 1}
+          onClick={history.redo}
+        >
+          <Redo />
         </Button>
       </ButtonGroup>
       <Menu
@@ -64,29 +73,7 @@ export default function AppBar() {
             <Typography variant="body2" sx={{ color: "text.secondary" }}>
               ⌘I
             </Typography>
-            <input
-              type="file"
-              style={{ display: "none" }}
-              onChange={async (event) => {
-                const file = event.target.files?.[0];
-
-                if (!file) return;
-
-                const buffer = await file.arrayBuffer();
-
-                setProjectObjects([
-                  ...projectObjects,
-                  {
-                    fileContent: Buffer.from(buffer),
-                    id: crypto.randomUUID(),
-                    metaData: {},
-                    modelMatrix: new Cesium.Matrix4(),
-                    name: file.name,
-                    visible: true,
-                  },
-                ]);
-              }}
-            />
+            <ImportProjectObjectInput onFinished={() => setFileMenuOpen(false)} />
           </MenuItem>
           <MenuItem>
             <ListItemText>Close</ListItemText>

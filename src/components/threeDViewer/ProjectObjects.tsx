@@ -1,15 +1,10 @@
-import CustomModel from "./CustomModel";
+import ProjectObject from "./ProjectObject";
 import { useViewerStore } from "./ViewerProvider";
 
 export default function ProjectObjects() {
-  const projectObjects = useViewerStore((state) => state.projectObjects);
+  const projectObjects = useViewerStore((state) => state.projectObjects.value);
 
   return projectObjects.map((projectObject) => (
-    <CustomModel
-      modelMatrix={projectObject.modelMatrix}
-      id={projectObject.id}
-      key={projectObject.id}
-      buffer={projectObject.fileContent}
-    />
+    <ProjectObject key={projectObject.id} projectObject={projectObject} />
   ));
 }

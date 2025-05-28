@@ -23,7 +23,7 @@ import {
   Toolbar,
   Tooltip,
   Typography,
-  useTheme
+  useTheme,
 } from "@mui/material";
 import { useLocale, useTranslations } from "next-intl";
 import Image from "next/image";
@@ -153,20 +153,20 @@ export default function LocaleLayout({
           <Typography>©Hamburg LGV 2025</Typography>
           <Grid2 container spacing={4}>
             <Link
-              href={"/impressum"}
+              href={"/imprint"}
               underline="none"
               color="inherit"
               component={NextLink}
             >
-              {t("footer.impressum")}
+              {t("footer.imprint")}
             </Link>
             <Link
-              href={"/dsgvo"}
+              href={"/gdpr"}
               underline="none"
               color="inherit"
               component={NextLink}
             >
-              {t("footer.datenschutz")}
+              {t("footer.gdpr")}
             </Link>
           </Grid2>
         </Grid2>

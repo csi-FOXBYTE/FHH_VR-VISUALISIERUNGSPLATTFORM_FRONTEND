@@ -41,6 +41,8 @@ export default function BreadCrumbs({ style = {} }: { style?: CSSProperties }) {
           href={crumb.href}
           underline="none"
           color="textPrimary"
+          justifyContent="center"
+          alignItems="center"
           key={crumb.href}
         >
           {crumb.content}

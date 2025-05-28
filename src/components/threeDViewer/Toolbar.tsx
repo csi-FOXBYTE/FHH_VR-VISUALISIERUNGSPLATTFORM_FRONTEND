@@ -1,11 +1,12 @@
 import {
-  Crop169,
-  ContentCut,
-  AddLocationAlt,
   AddAPhoto,
+  AddLocationAlt,
+  ContentCut,
+  Crop169,
+  Expand,
   OpenWith,
   ThreeSixty,
-  Expand,
+  Tonality
 } from "@mui/icons-material";
 import { Divider, Grid2, IconButton, Tooltip, useTheme } from "@mui/material";
 import { useViewerStore } from "./ViewerProvider";
@@ -14,18 +15,24 @@ export default function Toolbar() {
   const theme = useTheme();
 
   const createClippingPolygon = useViewerStore(
-    (state) => state.createClippingPolygon
+    (state) => state.clippingPolygons.create
   );
 
   const createStartingPoint = useViewerStore(
-    (state) => state.createStartingPoint
+    (state) => state.startingPoints.create
   );
-  const createPointOfInterest = useViewerStore(
-    (state) => state.createPointOfInterest
+  const createVisualAxis = useViewerStore((state) => state.visualAxes.create);
+
+  const safeCameraZoneVisible = useViewerStore(
+    (state) => state.tools.safeCameraZoneVisible
+  );
+  const toggleSafeCameraZoneVisibility = useViewerStore(
+    (state) => state.tools.toggleSafeCameraZoneVisibility
   );
 
-  const { toggleSafeCameraZoneVisibility } = useViewerStore(
-    (state) => state.tools
+  const shadowVisible = useViewerStore((state) => state.tools.shadowVisible);
+  const toggleShadowVisibility = useViewerStore(
+    (state) => state.tools.toggleShadowVisibility
   );
 
   return (
@@ -43,8 +50,19 @@ export default function Toolbar() {
     >
       <Grid2 container flexDirection="column">
         <Tooltip arrow placement="right" title="Toggle camera safe zone">
-          <IconButton onClick={toggleSafeCameraZoneVisibility}>
+          <IconButton
+            color={safeCameraZoneVisible ? "primary" : undefined}
+            onClick={toggleSafeCameraZoneVisibility}
+          >
             <Crop169 />
+          </IconButton>
+        </Tooltip>
+        <Tooltip arrow placement="right" title="Toggle shadows">
+          <IconButton
+            color={shadowVisible ? "primary" : undefined}
+            onClick={toggleShadowVisibility}
+          >
+            <Tonality />
           </IconButton>
         </Tooltip>
         <Divider />
@@ -74,8 +92,8 @@ export default function Toolbar() {
             <AddLocationAlt />
           </IconButton>
         </Tooltip>
-        <Tooltip arrow placement="right" title="Create point of interest">
-          <IconButton onClick={createPointOfInterest}>
+        <Tooltip arrow placement="right" title="Create visual axis">
+          <IconButton onClick={createVisualAxis}>
             <AddAPhoto />
           </IconButton>
         </Tooltip>

@@ -47,3 +47,8 @@
   .Resizer.disabled:hover {
     border-color: transparent;
   }
+
+  .Pane {
+    flex: 1;
+    height: 100%;
+  }

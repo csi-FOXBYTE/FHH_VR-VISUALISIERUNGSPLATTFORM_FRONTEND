@@ -32,8 +32,8 @@
     "3d-viewer": "3D Viewer"
   },
   "footer": {
-    "impressum": "Legal Notice",
-    "datenschutz": "Privacy Policy"
+    "imprint": "Imprint",
+    "gdpr": "GDPR"
   },
   "profile": {
     "profile": "Profile",

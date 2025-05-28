@@ -1,4 +1,4 @@
-"use sever";
+"use server";
 
 import { HydrateClient } from "@/server/trpc/server";
 import { getTranslations } from "next-intl/server";

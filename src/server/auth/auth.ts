@@ -1,5 +1,5 @@
 import NextAuth from "next-auth";
-import MicrosoftEntraIdProvider from "next-auth/providers/microsoft-entra-id"
+import MicrosoftEntraIdProvider from "next-auth/providers/microsoft-entra-id";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import prisma from "../prisma";
 
@@ -13,7 +13,7 @@ export const { auth, handlers, signIn, signOut, unstable_update } = NextAuth({
   ],
   session: {
     strategy: "database",
-    maxAge: 259200,
+    maxAge: 259200, // 30 days
   },
   adapter: PrismaAdapter(prisma),
 });

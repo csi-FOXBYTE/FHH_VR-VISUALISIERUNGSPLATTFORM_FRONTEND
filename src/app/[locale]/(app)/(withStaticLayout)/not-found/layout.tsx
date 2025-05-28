@@ -1,4 +1,4 @@
-"use sever";
+"use server";
 
 import { HydrateClient } from "@/server/trpc/server";
 import { Metadata } from "next";
