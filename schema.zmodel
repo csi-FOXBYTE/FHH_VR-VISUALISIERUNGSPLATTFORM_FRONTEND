@@ -14,22 +14,27 @@ generator client {
 
 /// NEXT-AUTH
 model User {
-  id            String          @id() @default(cuid())
-  name          String?
-  phoneNumber   String?
-  email         String          @unique()
-  emailVerified DateTime?
-  image         String?         @db.Text()
-  accounts      Account[]
-  sessions      Session[]
-  Authenticator Authenticator[]
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt()
-  role          Role?           @relation(fields: [roleId], references: [id])
-  roleId        String?
+  id             String          @id() @default(cuid())
+  name           String?
+  phoneNumber    String?
+  email          String          @unique()
+  emailVerified  DateTime?
+  image          String?         @db.Text()
+  accounts       Account[]
+  sessions       Session[]
+  Authenticator  Authenticator[]
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt()
+  role           Role?           @relation(fields: [roleId], references: [id])
+  roleId         String?
 
-  createdTasks  Task[]
-  projects      Project[]
+  createdTasks   Task[]
+  projects       Project[]
+  createdEvents  Event[]
+  attendedEvents EventAttendee[]
+
+  @@allow('all', true)
+  @@auth
 }
 
 model Account {
@@ -49,6 +54,7 @@ model Account {
   user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([provider, providerAccountId])
+  @@allow('all', true)
 }
 
 model Session {
@@ -66,6 +72,7 @@ model VerificationToken {
   expires    DateTime
 
   @@id([identifier, token])
+  @@allow('all', true)
 }
 
 model Authenticator {
@@ -80,6 +87,7 @@ model Authenticator {
   user                 User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([userId, credentialID])
+  @@allow('all', true)
 }
 
 model Role {
@@ -90,6 +98,7 @@ model Role {
   name        String
   permissions String
   users       User[]
+  @@allow('all', true)
 }
 
 model Task {
@@ -102,6 +111,7 @@ model Task {
   status          String   @default("PENDING")
   createdByUser   User     @relation(fields: [createdByUserId], references: [id])
   createdByUserId String
+  @@allow('all', true)
 }
 
 model Project {
@@ -113,4 +123,47 @@ model Project {
   description String   @db.Text
   owner       User     @relation(fields: [ownerId], references: [id])
   ownerId     String
+
+  events      Event[]
+
+  @@allow('create', true)
+  @@allow('read', auth().id == owner.id)
+  @@allow('update,delete', auth().id == owner.id)
+}
+
+/// This is explicit because of potential role assignments per event
+model EventAttendee {
+  event   Event  @relation(fields: [eventId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  eventId String
+  user    User   @relation(fields: [userId], references: [id])
+  userId  String
+
+  @@id([eventId, userId])
+  @@allow('all', true)
+}
+
+model Event {
+  id                 String          @id() @default(cuid())
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt()
+
+  creator            User            @relation(fields: [creatorId], references: [id])
+  creatorId          String
+
+  /// Can be one of MISSING_HOST, ACTIVE, PLANNED, END
+  status             String
+
+  title              String          @db.Text
+  startTime          DateTime
+  endTime            DateTime
+  joinCode           String?
+  heartbeatTimestamp DateTime?
+  project            Project?        @relation(fields: [projectId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  projectId          String?
+
+  attendees          EventAttendee[]
+
+  @@allow('create', true)
+  @@allow('read', auth().id == creatorId || attendees?[user.id == auth().id])
+  @@allow('update,delete', auth().id == creatorId)
 }

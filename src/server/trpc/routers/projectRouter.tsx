@@ -1,7 +1,16 @@
+import { tracked } from "@trpc/server";
+import { eachValueFrom } from "rxjs-for-await";
 import { protectedProcedure, router } from "..";
 import { z } from "zod";
 
 const projectRouter = router({
+  subscribe: protectedProcedure.subscription(async function* (opts) {
+    for await (const value of eachValueFrom(
+      opts.ctx.subscriberDb.project.subscribe({ operations: ["*"] })
+    )) {
+      yield tracked(value.id, value);
+    }
+  }),
   update: protectedProcedure
     .input(
       z.object({ id: z.string(), title: z.string(), description: z.string() })

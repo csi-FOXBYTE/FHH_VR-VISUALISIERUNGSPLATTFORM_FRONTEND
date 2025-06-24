@@ -1,1 +1,11 @@
-// Put your custom inside this folder / this file.
+"use client";
+
+import { trpc } from "@/server/trpc/client";
+
+export function useEventSubscriber() {
+  const utils = trpc.useUtils();
+
+  trpc.subscriptionRouter.subscribe.useSubscription("event", {
+    onData: () => utils.eventsRouter.invalidate(),
+  });
+}

@@ -19,6 +19,7 @@ export default function WithStaticLayout({
         overflow: "hidden",
         padding: "32px 64px",
         boxSizing: "border-box",
+        overflowY: "auto",
         height: "100%",
         width: "100%",
       }}

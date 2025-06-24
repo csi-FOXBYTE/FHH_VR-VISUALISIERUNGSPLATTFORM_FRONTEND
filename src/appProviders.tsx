@@ -10,13 +10,16 @@ import { Session } from "next-auth";
 import { routing } from "./server/i18n/routing";
 import { deDE, enUS } from "@mui/material/locale";
 import { deDE as xdeDE, enUS as xenUS } from "@mui/x-data-grid/locales";
+import { deDE as tdeDE, enUS as tdenUS } from "@mui/x-date-pickers/locales";
 import { SnackbarProvider } from "notistack";
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import "dayjs/locale/de";
+import "dayjs/locale/en";
 
 const supportedLocales: Record<(typeof routing.locales)[number], Theme> = {
-  de: createTheme(deDE, xdeDE),
-  en: createTheme(enUS, xenUS),
+  de: createTheme(deDE, tdeDE, xdeDE),
+  en: createTheme(enUS, xenUS, tdenUS),
 };
 
 export default function AppProviders({
@@ -36,12 +39,12 @@ export default function AppProviders({
   return (
     <AppRouterCacheProvider>
       <SnackbarProvider>
-      <LocalizationProvider dateAdapter={AdapterDayjs}>
-        <ThemeProvider theme={themeWithLocale}>
-          <SessionProvider session={session}>
-            <TRPCProvider>{children}</TRPCProvider>
-          </SessionProvider>
-        </ThemeProvider>
+        <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={locale}>
+          <ThemeProvider theme={themeWithLocale}>
+            <SessionProvider session={session}>
+              <TRPCProvider>{children}</TRPCProvider>
+            </SessionProvider>
+          </ThemeProvider>
         </LocalizationProvider>
       </SnackbarProvider>
     </AppRouterCacheProvider>

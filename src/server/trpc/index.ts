@@ -5,6 +5,7 @@ import SuperJSON from "superjson";
 import prisma from "@/server/prisma";
 import { createOTelPlugin } from "./otelMiddleware";
 import eventBus from "@/server/events";
+import { enhance } from "@zenstackhq/runtime";
 
 export const { createCallerFactory, router, procedure } = initTRPC
   .context<typeof createTRPCContext>()
@@ -42,7 +43,9 @@ export const protectedProcedure = procedure
       ctx: {
         ...ctx,
         session: session,
-      ***REMOVED***prisma,
+        // @ts-expect-error session types not correct
+      ***REMOVED***enhance(prisma, session),
+        subscriberDb: prisma,
         storage: null,
         eventBus,
       },

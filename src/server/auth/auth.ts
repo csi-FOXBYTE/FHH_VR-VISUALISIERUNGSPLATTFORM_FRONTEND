@@ -9,6 +9,11 @@ export const { auth, handlers, signIn, signOut, unstable_update } = NextAuth({
       clientSecret: process.env.MICROSOFT_ENTRA_CLIENT_SECRET,
       clientId: process.env.MICROSOFT_ENTRA_CLIENT_ID,
       issuer: process.env.MICROSOFT_ENTRA_ISSUER,
+      authorization: {
+        params: {
+          scope: "openid profile email urn:fhhvr/vrvis-prod",
+        },
+      },
     }),
   ],
   session: {

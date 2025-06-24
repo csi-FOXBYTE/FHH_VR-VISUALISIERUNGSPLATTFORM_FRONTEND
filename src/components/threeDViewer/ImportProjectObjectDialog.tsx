@@ -15,6 +15,7 @@ import { Add } from "@mui/icons-material";
 import { useMutation } from "@tanstack/react-query";
 import { useViewerStore } from "./ViewerProvider";
 import { Cartesian3, Matrix3, Matrix4, Quaternion } from "cesium";
+import { useSnackbar } from "notistack";
 
 const epsgValues = Object.values(proj4List)
   .map(([epsg, proj4]) => ({
@@ -44,8 +45,19 @@ export default function ImportProjectObjectDialog() {
     (state) => state.projectObjects.toggleImport
   );
 
+  const { enqueueSnackbar } = useSnackbar();
+
   const { mutate: importFileMutation, isPending: isImportFileMutationPending } =
     useMutation({
+      onSuccess: () => {
+        enqueueSnackbar({
+          variant: "success",
+          message: "File import successful!",
+        });
+      },
+      onError: () => {
+        enqueueSnackbar({ variant: "error", message: "File import failed!" });
+      },
       mutationFn: async () => {
         if (!file) return;
 
@@ -55,7 +67,7 @@ export default function ImportProjectObjectDialog() {
         formData.append("fileType", file.type);
         formData.append("fileName", file.name);
 
-        const response = await fetch("/api/backend/upload/project-object", {
+        const response = await fetch("/api/backend/converter3D/convert", {
           method: "POST",
           body: formData,
         });

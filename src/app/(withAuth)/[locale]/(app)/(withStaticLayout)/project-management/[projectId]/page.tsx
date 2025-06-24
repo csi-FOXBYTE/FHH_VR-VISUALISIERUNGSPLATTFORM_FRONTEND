@@ -142,9 +142,11 @@ export default function ProjectPage() {
         display="flex"
         flexWrap="nowrap"
         onSubmit={handleSubmit((data) => {
-          isNew
-            ? createProjectMutation(data)
-            : updateProjectMutation({ id: projectId, ...data });
+          if (isNew) {
+            createProjectMutation(data)
+          } else {
+            updateProjectMutation({ id: projectId, ...data });
+          }
         })}
       >
         <CustomTitleInput

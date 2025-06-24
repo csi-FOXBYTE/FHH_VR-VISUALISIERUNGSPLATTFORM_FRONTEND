@@ -1,6 +1,6 @@
 {
   "name": "fhhvr-webfrontend",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "private": true,
   "husky": {
     "hooks": {
@@ -21,7 +21,7 @@
     "preinstall": "npx only-allow pnpm",
     "db:reset": "pnpm zenstack generate && pnpm tsx src/server/prisma/extensions/resetSystemVersionedTables.ts && pnpm prisma db push --force-reset",
     "db:eject": "pnpm prisma migrate diff --from-empty --to-schema-datamodel ./prisma/schema.prisma --script > ./prisma/migration.sql",
-    "publish:dev": "docker build -t fhhvr-webfrontend:0.0.9 . --secret id=npmrc,src=%USERPROFILE%/.npmrc --secret id=env,src=.env && docker tag fhhvr-webfrontend:0.0.9 fhhvrdockerregistry.azurecr.io/fhhvr-webfrontend:0.0.9 && docker push fhhvrdockerregistry.azurecr.io/fhhvr-webfrontend:0.0.9"
+    "publish:dev": "docker build -t fhhvr-webfrontend:0.0.10 . --secret id=npmrc,src=%USERPROFILE%/.npmrc --secret id=env,src=.env && docker tag fhhvr-webfrontend:0.0.10 fhhvrdockerregistry.azurecr.io/fhhvr-webfrontend:0.0.10 && docker push fhhvrdockerregistry.azurecr.io/fhhvr-webfrontend:0.0.10"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.7.4",
@@ -48,12 +48,14 @@
     "@trpc/server": "11.0.0-rc.730",
     "@types/autosuggest-highlight": "^3.2.3",
     "@types/proj4": "^2.5.6",
+    "@types/react-big-calendar": "^1.16.2",
     "@vercel/otel": "^1.10.0",
     "@zenstackhq/runtime": "2.14.2",
     "autosuggest-highlight": "^3.3.4",
     "cesium": "^1.129.0",
     "client-only": "^0.0.1",
     "dayjs": "^1.11.13",
+    "material-ui-popup-state": "^5.3.6",
     "next": "15.0.3",
     "next-auth": "5.0.0-beta.25",
     "next-intl": "^3.25.1",
@@ -63,11 +65,13 @@
     "proj4": "^2.17.0",
     "proj4-list": "^1.0.4",
     "react": "19.0.0-rc-66855b96-20241106",
+    "react-big-calendar": "^1.19.4",
     "react-dom": "19.0.0-rc-66855b96-20241106",
     "react-hook-form": "^7.57.0",
     "resium": "1.19.0-beta.1",
     "rxjs": "^7.8.1",
     "rxjs-for-await": "^1.0.0",
+    "sass": "^1.89.2",
     "server-only": "^0.0.1",
     "sharp": "^0.34.2",
     "superjson": "^2.2.1",
