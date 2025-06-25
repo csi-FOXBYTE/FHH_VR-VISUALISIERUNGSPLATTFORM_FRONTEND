@@ -1,6 +1,6 @@
 {
   "name": "fhhvr-webfrontend",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "private": true,
   "husky": {
     "hooks": {
@@ -21,7 +21,7 @@
     "preinstall": "npx only-allow pnpm",
     "db:reset": "pnpm zenstack generate && pnpm tsx src/server/prisma/extensions/resetSystemVersionedTables.ts && pnpm prisma db push --force-reset",
     "db:eject": "pnpm prisma migrate diff --from-empty --to-schema-datamodel ./prisma/schema.prisma --script > ./prisma/migration.sql",
-    "publish:dev": "docker build -t fhhvr-webfrontend:0.0.10 . --secret id=npmrc,src=%USERPROFILE%/.npmrc --secret id=env,src=.env && docker tag fhhvr-webfrontend:0.0.10 fhhvrdockerregistry.azurecr.io/fhhvr-webfrontend:0.0.10 && docker push fhhvrdockerregistry.azurecr.io/fhhvr-webfrontend:0.0.10"
+    "publish:dev": "docker build -t fhhvr-webfrontend:0.0.11 . --secret id=npmrc,src=%USERPROFILE%/.npmrc --secret id=env,src=.env && docker tag fhhvr-webfrontend:0.0.11 fhhvrdockerregistry.azurecr.io/fhhvr-webfrontend:0.0.11 && docker push fhhvrdockerregistry.azurecr.io/fhhvr-webfrontend:0.0.11"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.7.4",
