@@ -3,13 +3,7 @@
 import PageContainer from "@/components/common/PageContainer";
 import UserAvatar from "@/components/common/UserAvatar";
 import { Link } from "@/server/i18n/routing";
-import {
-  Button,
-  ButtonGroup,
-  Grid,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Button, Grid, TextField, Typography } from "@mui/material";
 import { useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
 
@@ -23,10 +17,8 @@ export default function ProfilePage() {
         {t("profile.personal-data")}
       </Typography>
       <Grid container spacing={2} marginBottom={4}>
-        <Grid></Grid>
         <Grid size={12} container justifyItems="stretch" alignItems="center">
           <UserAvatar style={{ width: 64, height: 64 }} />
-
           <TextField
             disabled
             value={session.data?.user.name}
@@ -61,25 +53,23 @@ export default function ProfilePage() {
           }}
         />
       </Grid>
-      <Grid container justifyContent="flex-end">
-        <ButtonGroup>
-          <Button
-            LinkComponent={Link}
-            size="large"
-            variant="outlined"
-            href={`https://myprofile.microsoft.com/?login_hint=${encodeURIComponent(
-              session.data?.user.email ?? ""
-            )}`}
-            target="_blank"
-            color="secondary"
-          >
-            {t("profile.update-account")}
-          </Button>
-          <Button size="large" variant="contained" color="secondary">
-            {t("profile.delete-account")}
-          </Button>
-        </ButtonGroup>
+      <Grid container spacing={2} justifyContent="flex-end">
+        <Button
+          LinkComponent={Link}
+          size="large"
+          variant="outlined"
+          href={`https://myprofile.microsoft.com/?login_hint=${encodeURIComponent(
+            session.data?.user.email ?? ""
+          )}`}
+          target="_blank"
+          color="secondary"
+        >
+          {t("profile.update-account")}
+        </Button>
+        <Button size="large" variant="contained" color="secondary">
+          {t("profile.delete-account")}
+        </Button>
       </Grid>
-      </PageContainer>
+    </PageContainer>
   );
 }

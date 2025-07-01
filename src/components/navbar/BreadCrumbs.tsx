@@ -66,7 +66,16 @@ export default function BreadCrumbs({ style = {} }: { style?: CSSProperties }) {
   }, [pathname, t, projectTitle]);
 
   return (
-    <Breadcrumbs style={{ marginBottom: 32, ...style }}>
+    <Breadcrumbs
+      style={{
+        marginLeft: "auto",
+        marginRight: "auto",
+        marginBottom: 32,
+        maxWidth: 1440,
+        width: "100%",
+        ...style,
+      }}
+    >
       {crumbs.map((crumb, index) => (
         <Link
           component={NextLink}

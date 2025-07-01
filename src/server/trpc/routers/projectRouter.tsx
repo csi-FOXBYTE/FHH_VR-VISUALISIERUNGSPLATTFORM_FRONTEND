@@ -2,6 +2,11 @@ import { tracked } from "@trpc/server";
 import { eachValueFrom } from "rxjs-for-await";
 import { protectedProcedure, router } from "..";
 import { z } from "zod";
+import { dataGridZod } from "@/components/dataGridServerSide/zodTypes";
+import {
+  createFilters,
+  createSort,
+} from "@/components/dataGridServerSide/helpers";
 
 const projectRouter = router({
   subscribe: protectedProcedure.subscription(async function* (opts) {
@@ -48,6 +53,10 @@ const projectRouter = router({
         include: { owner: true },
       });
     }),
+  listLayers: protectedProcedure.input(dataGridZod).query(async (opts) => {
+    const where = createFilters("BaseLayer", [], opts.input.filterModel);
+    const orderBy = createSort("");
+  }),
   create: protectedProcedure
     .input(z.object({ title: z.string(), description: z.string() }))
     .mutation(async (opts) => {

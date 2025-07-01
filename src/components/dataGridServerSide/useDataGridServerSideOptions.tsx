@@ -63,7 +63,7 @@ export default function useDataGridServerSideHelper(
         apiRef.current.restoreState(
           JSON.parse(localStorage.getItem(name) ?? "")
         );
-      } catch (e) {}
+      } catch {}
     }
 
     const abortController = new AbortController();
@@ -75,7 +75,7 @@ export default function useDataGridServerSideHelper(
           name,
           JSON.stringify(apiRef.current.exportState())
         );
-      } catch (e) {}
+      } catch {}
     }
 
     window.addEventListener("beforeunload", saveSnapshot, {
@@ -136,7 +136,6 @@ export default function useDataGridServerSideHelper(
     [
       props?.extraActions,
       props?.showQuickFilter,
-      props?.initialState,
       filterModel,
       paginationModel,
       rowModesModel,

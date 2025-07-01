@@ -1,15 +1,7 @@
 import { trpc } from "@/server/trpc/client";
-import {
-  Grid,
-  Paper,
-  TextField,
-  Typography
-} from "@mui/material";
 import { skipToken } from "@tanstack/react-query";
-import { useSnackbar } from "notistack";
-import { Controller } from "react-hook-form";
-import CUDialog from "../common/CUDialog";
-import TranslationInput from "../threeDViewer/TransformInputs/TranslationInput";
+import { EasyCUDialog } from "../common/EasyCUDialog";
+import { useDefaultMutationNotifications } from "../mutationHelpers";
 
 export default function VisualAxisCUDialog({
   open,
@@ -27,39 +19,17 @@ export default function VisualAxisCUDialog({
       open && mode === "UPDATE" && id !== undefined ? { id } : skipToken
     );
 
-  const { enqueueSnackbar } = useSnackbar();
-
   const { mutate: createMutation, isPending: isCreateMutationPending } =
-    trpc.dataManagementRouter.createVisualAxis.useMutation({
-      onSuccess: () =>
-        enqueueSnackbar({
-          variant: "success",
-          message: "Successfully created event!",
-        }),
-      onError: (err) => {
-        enqueueSnackbar({
-          variant: "error",
-          message: "Failed to create event!",
-        });
-        console.error(err);
-      },
-    });
+    trpc.dataManagementRouter.createVisualAxis.useMutation(
+      useDefaultMutationNotifications("Visual axis", "create")
+    );
   const { mutate: updateMutation, isPending: isUpdateMutationPending } =
-    trpc.dataManagementRouter.updateVisualAxis.useMutation({
-      onSuccess: () =>
-        enqueueSnackbar({
-          variant: "success",
-          message: "Successfully updated event!",
-        }),
-      onError: () =>
-        enqueueSnackbar({
-          variant: "error",
-          message: "Failed to update event!",
-        }),
-    });
+    trpc.dataManagementRouter.updateVisualAxis.useMutation(
+      useDefaultMutationNotifications("Visual axis", "delete")
+    );
 
   return (
-    <CUDialog
+    <EasyCUDialog
       close={close}
       open={open}
       entity="Visual Axis"
@@ -96,48 +66,36 @@ export default function VisualAxisCUDialog({
         });
       }}
       fetchedData={initialVisualAxis}
-    >
-      {({ register, control }) => (
-        <Grid container flexDirection="column" spacing={2}>
-          <TextField required fullWidth {...register("name")} label="Title" />
-          <TextField
-            required
-            multiline
-            {...register("description")}
-            label="Description"
-          />
-          <Grid padding={1} spacing={1} component={Paper} elevation={2}>
-            <Typography marginBottom={2} variant="subtitle2">
-              Start point
-            </Typography>
-            <Controller
-              name="startPoint"
-              control={control}
-              render={({ field }) => (
-                <TranslationInput
-                  value={field.value}
-                  onChange={field.onChange}
-                />
-              )}
-            />
-          </Grid>
-          <Grid padding={1} spacing={1} component={Paper} elevation={2}>
-            <Typography marginBottom={2} variant="subtitle2">
-              End point
-            </Typography>
-            <Controller
-              name="endPoint"
-              control={control}
-              render={({ field }) => (
-                <TranslationInput
-                  value={field.value}
-                  onChange={field.onChange}
-                />
-              )}
-            />
-          </Grid>
-        </Grid>
-      )}
-    </CUDialog>
+      model={[
+        {
+          name: "name",
+          props: {
+            label: "Title",
+          },
+          type: "text",
+        },
+        {
+          name: "description",
+          props: {
+            label: "Description",
+          },
+          type: "text",
+        },
+        {
+          name: "startPoint",
+          props: {
+            label: "Start Point",
+          },
+          type: "georeferencedTranslation",
+        },
+        {
+          name: "endPoint",
+          props: {
+            label: "End Point",
+          },
+          type: "georeferencedTranslation",
+        },
+      ]}
+    />
   );
 }

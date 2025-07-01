@@ -7,11 +7,10 @@ import {
 } from "@mui/material";
 import { ReactNode, useEffect } from "react";
 import {
-  Control,
   DefaultValues,
   FieldValues,
   useForm,
-  UseFormRegister,
+  UseFormReturn,
 } from "react-hook-form";
 
 export type CUDialogProps<Data extends FieldValues> = {
@@ -24,13 +23,7 @@ export type CUDialogProps<Data extends FieldValues> = {
   defaultData: Data;
   fetchedData: Data | null;
   isLoading: boolean;
-  children: ({
-    control,
-    register,
-  }: {
-    control: Control<Data>;
-    register: UseFormRegister<Data>;
-  }) => ReactNode;
+  children: (form: UseFormReturn<Data>) => ReactNode;
 };
 
 export default function CUDialog<Data extends FieldValues>({
@@ -45,26 +38,26 @@ export default function CUDialog<Data extends FieldValues>({
   onUpdate,
   children,
 }: CUDialogProps<Data>) {
-  const { control, register, handleSubmit, reset } = useForm({
+  const form = useForm({
     defaultValues: defaultData as DefaultValues<Data>,
   });
 
   useEffect(() => {
     if (fetchedData !== null) {
-      reset(fetchedData);
+      form.reset(fetchedData);
     }
-  }, [fetchedData, reset]);
+  }, [fetchedData, form.reset]);
 
   useEffect(() => {
     if (!open) {
-      reset(defaultData);
+      form.reset(defaultData);
     }
-  }, [open, reset]);
+  }, [open, form.reset]);
 
   return (
     <Dialog fullWidth open={open} onClose={close}>
       <form
-        onSubmit={handleSubmit((values) => {
+        onSubmit={form.handleSubmit((values) => {
           switch (mode) {
             case "CREATE":
               return onCreate(values);
@@ -76,7 +69,7 @@ export default function CUDialog<Data extends FieldValues>({
         <DialogTitle>
           {mode} {entity}
         </DialogTitle>
-        <DialogContent>{children({ control, register })}</DialogContent>
+        <DialogContent>{children(form)}</DialogContent>
         <DialogActions>
           <Button onClick={close} variant="outlined">
             Cancel

@@ -9,7 +9,8 @@ import dayjs from "dayjs";
  * @param filterItem
  */
 export function createDateFilter(
-  filterItem: GridFilterItem
+  filterItem: GridFilterItem,
+  nullable?: boolean
 ): Prisma.DateTimeFilter;
 export function createDateFilter(
   filterItem: GridFilterItem,
@@ -70,7 +71,8 @@ export function createDateFilter(
  * @param filterItem
  */
 export function createDateTimeFilter(
-  filterItem: GridFilterItem
+  filterItem: GridFilterItem,
+  nullable?: boolean
 ): Prisma.DateTimeFilter;
 export function createDateTimeFilter(
   filterItem: GridFilterItem,
@@ -131,7 +133,8 @@ export function createDateTimeFilter(
  * @param filterItem
  */
 export function createNumberFilter(
-  filterItem: GridFilterItem
+  filterItem: GridFilterItem,
+  nullable?: boolean
 ): Prisma.FloatFilter;
 export function createNumberFilter(
   filterItem: GridFilterItem,
@@ -253,13 +256,16 @@ export function createStringFilter(
 //  * This filter is for booleans
 //  * @param filterItem
 //  */
-// export function createBoolFilter(filterItem: GridFilterItem): Prisma.BoolFilter;
-// export function createBoolFilter(
-//   filterItem: GridFilterItem,
-//   nullable: true,
-// ): Prisma.BoolNullableFilter;
-// export function createBoolFilter(
-//   filterItem: GridFilterItem,
-// ): Prisma.BoolNullableFilter | Prisma.BoolFilter {
-//   return { equals: filterItem.value };
-// }
+export function createBoolFilter(
+  filterItem: GridFilterItem,
+  nullable?: boolean
+): Prisma.BoolFilter;
+export function createBoolFilter(
+  filterItem: GridFilterItem,
+  nullable: true
+): Prisma.BoolNullableFilter;
+export function createBoolFilter(
+  filterItem: GridFilterItem
+): Prisma.BoolNullableFilter | Prisma.BoolFilter {
+  return { equals: filterItem.value };
+}

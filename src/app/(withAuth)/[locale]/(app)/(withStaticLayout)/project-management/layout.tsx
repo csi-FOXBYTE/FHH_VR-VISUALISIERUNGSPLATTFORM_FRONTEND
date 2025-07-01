@@ -1,6 +1,5 @@
 "use server";
 
-import { trpc } from "@/server/trpc/server";
 import { HydrateClient } from "@/server/trpc/server";
 import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
@@ -17,7 +16,5 @@ export default async function ProjectManagementLayout({
 }: {
   children: ReactNode;
 }) {
-  await trpc.projectManagementRouter.list.prefetch({ page: 0, rowsPerPage: 10 });
-
   return <HydrateClient>{children}</HydrateClient>;
 }

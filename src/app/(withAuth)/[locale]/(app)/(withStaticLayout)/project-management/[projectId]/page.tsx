@@ -1,7 +1,7 @@
 "use client";
 
-import ListWithPagination from "@/components/common/ListWithPagination";
 import PageContainer from "@/components/common/PageContainer";
+import BaseAndProjectLayers from "@/components/projectManagement/BaseAndProjectLayers";
 import { Link, useRouter } from "@/server/i18n/routing";
 import { trpc } from "@/server/trpc/client";
 import {
@@ -27,12 +27,6 @@ import {
 import { skipToken } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
 import { useSnackbar } from "notistack";
-import {
-  parseAsArrayOf,
-  parseAsInteger,
-  parseAsString,
-  useQueryState,
-} from "nuqs";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 
@@ -49,19 +43,6 @@ const CustomDescriptionInput = styled(TextField)(({ theme }) => ({
 }));
 
 export default function ProjectPage() {
-  const [page, setSelectedPage] = useQueryState(
-    "page",
-    parseAsInteger.withDefault(0)
-  );
-  const [rowsPerPage, setRowsPerPage] = useQueryState(
-    "rowsPerPage",
-    parseAsInteger.withDefault(10)
-  );
-  const [selection, setSelection] = useQueryState(
-    "selection",
-    parseAsArrayOf(parseAsString).withDefault([])
-  );
-
   const params = useParams();
 
   const [menuNewRef, setMenuNewRef] = useState<HTMLElement | null>(null);
@@ -235,31 +216,7 @@ export default function ProjectPage() {
       {isNew ? null : (
         <>
           <Divider />
-          <ListWithPagination
-            getId={({ row }) => row.id}
-            onPageChange={setSelectedPage}
-            onRowsPerPageChange={setRowsPerPage}
-            page={page}
-            rowsPerPage={rowsPerPage}
-            selection={selection}
-            onSelectionChange={setSelection}
-            totalRows={100}
-            sx={{ height: "100%" }}
-            renderRow={({ row }) => (
-              <>
-                <ListItemText>{row.title}</ListItemText>
-                <ListItemText>{row.gb} GB</ListItemText>
-              </>
-            )}
-            data={[
-              { id: "area1", title: "Area 1", gb: 2.78 },
-              { id: "area2", title: "Area 2", gb: 4.59 },
-              { id: "area3", title: "Area 3", gb: 1.99 },
-              { id: "area4", title: "Area 4", gb: 8.13 },
-              { id: "area5", title: "Area 5", gb: 2.0 },
-              { id: "trees", title: "Trees", gb: 8.13 },
-            ]}
-          />
+          <BaseAndProjectLayers />
         </>
       )}
     </PageContainer>

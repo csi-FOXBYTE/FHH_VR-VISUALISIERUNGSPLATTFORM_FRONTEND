@@ -1,4 +1,10 @@
-import { Autocomplete, Grid, InputAdornment, TextField } from "@mui/material";
+import {
+  Autocomplete,
+  Grid,
+  InputAdornment,
+  TextField,
+  Typography,
+} from "@mui/material";
 import proj4 from "proj4";
 import proj4List from "proj4-list";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -18,10 +24,12 @@ export default function TranslationInput({
   value,
   readOnly = false,
   onImmediateChange,
+  label,
 }: {
   value?: { x: number; y: number; z: number };
   onChange?: (value: { x: number; y: number; z: number }) => void;
   onImmediateChange?: (value: { x: number; y: number; z: number }) => void;
+  label?: string;
   readOnly?: boolean;
 }) {
   const [selectedEpsg, setSelectedEpsg] = useState<{
@@ -97,6 +105,7 @@ export default function TranslationInput({
 
   return (
     <Grid container flexDirection="column" spacing={2}>
+      {label ? <Typography>{label}</Typography> : null}
       <Autocomplete
         disablePortal
         renderInput={(params) => <TextField {...params} label="EPSG" />}
@@ -115,7 +124,7 @@ export default function TranslationInput({
           },
         }}
         inputRef={xRef}
-        variant="standard"
+        variant="outlined"
         onChange={(event) =>
           setTransformedValue((value) => ({
             ...value,
@@ -134,7 +143,7 @@ export default function TranslationInput({
           },
         }}
         inputRef={yRef}
-        variant="standard"
+        variant="outlined"
         onChange={(event) =>
           setTransformedValue((value) => ({
             ...value,
@@ -153,7 +162,7 @@ export default function TranslationInput({
           },
         }}
         inputRef={zRef}
-        variant="standard"
+        variant="outlined"
         onChange={(event) =>
           setTransformedValue((value) => ({
             ...value,

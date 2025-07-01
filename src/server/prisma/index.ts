@@ -1,12 +1,14 @@
-import "server-only";
+// import "server-only";
 import { PrismaClient } from "@prisma/client";
 import { versioningExtension } from "./extensions/versioningExtension";
 import realtimeExtension from "./extensions/realtimeExtension";
+import paginationExtension from "./extensions/paginationExtension";
 
 const prismaClientSingleton = () => {
   return new PrismaClient()
     .$extends(realtimeExtension({ intervalMs: 1000 }))
-    .$extends(versioningExtension());
+    .$extends(versioningExtension())
+    .$extends(paginationExtension());
 };
 
 declare const globalThis: {

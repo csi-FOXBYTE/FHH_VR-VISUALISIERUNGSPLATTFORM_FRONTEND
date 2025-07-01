@@ -4,6 +4,7 @@ import { DataGrid } from "@mui/x-data-grid";
 import useDataGridServerSideHelper from "../dataGridServerSide/useDataGridServerSideOptions";
 import { keepPreviousData } from "@tanstack/react-query";
 import { Add } from "@mui/icons-material";
+import createEditDeleteActions from "../dataGridServerSide/createEditDeleteActions";
 
 export default function Layers() {
   const { props } = useDataGridServerSideHelper("data-management-layers", {
@@ -14,7 +15,7 @@ export default function Layers() {
     ),
   });
 
-  const { data: { data, count } = { count: 0, data: [] } } =
+  const { data: { data, count } = { count: 0, data: [] }, isLoading } =
     trpc.dataManagementRouter.listBaseLayers.useQuery(
       {
         filterModel: props.filterModel,
@@ -30,6 +31,7 @@ export default function Layers() {
     <Grid container flex="1" flexDirection="column">
       <DataGrid
         {...props}
+        loading={isLoading}
         rowCount={count}
         rows={data}
         columns={[
@@ -54,7 +56,7 @@ export default function Layers() {
             field: "creator.name",
             valueGetter: (_, row) => row.creator.name,
             type: "string",
-            filterable: false,
+            filterable: true,
             sortable: false,
             flex: 1,
           },
@@ -69,6 +71,10 @@ export default function Layers() {
             field: "createdAt",
             type: "date",
           },
+          createEditDeleteActions({
+            handleDelete: () => {},
+            handleEdit: () => {},
+          }),
         ]}
       />
     </Grid>

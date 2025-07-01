@@ -42,7 +42,6 @@ const eventsRouter = router({
           id: opts.input.id,
         },
         select: {
-          id: true,
           startTime: true,
           endTime: true,
           title: true,
@@ -68,7 +67,11 @@ const eventsRouter = router({
 
       return {
         ...event,
-        attendees: event.attendees.map((attendee) => attendee.user),
+        attendees: event.attendees.map((attendee) => ({
+          label: attendee.user.name ?? attendee.user.email,
+          value: attendee.user.id,
+        })),
+        project: event.project?.title !== undefined && event.project?.id !== undefined ? { label: event.project?.title, value: event.project?.id } : null,
       };
     }),
   getPossibleAttendees: protectedProcedure
@@ -97,21 +100,25 @@ const eventsRouter = router({
             id: true,
           },
         })
-      ).filter((user) => user.id !== opts.ctx.session.user.id);
+      )
+        .filter((user) => user.id !== opts.ctx.session.user.id)
+        .map((user) => ({ label: user.name ?? user.email, value: user.id }));
     }),
   getPossibleProjects: protectedProcedure
     .input(z.object({ search: z.string() }))
     .query(async (opts) => {
-      return await opts.ctx.db.project.findMany({
-        take: 50,
-        where: {
-          OR: [{ title: { contains: opts.input.search } }],
-        },
-        select: {
-          title: true,
-          id: true,
-        },
-      });
+      return (
+        await opts.ctx.db.project.findMany({
+          take: 50,
+          where: {
+            OR: [{ title: { contains: opts.input.search } }],
+          },
+          select: {
+            title: true,
+            id: true,
+          },
+        })
+      ).map((project) => ({ label: project.title, value: project.id }));
     }),
   create: protectedProcedure
     .input(

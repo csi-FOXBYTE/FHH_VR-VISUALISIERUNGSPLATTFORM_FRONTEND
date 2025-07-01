@@ -13,6 +13,7 @@ import {
   parseAsString,
   parseAsBoolean,
 } from "nuqs";
+import createEditDeleteActions from "../dataGridServerSide/createEditDeleteActions";
 
 export default function VisualAxes() {
   const [mode, setMode] = useQueryState(
@@ -41,7 +42,7 @@ export default function VisualAxes() {
     ),
   });
 
-  const { data: { data, count } = { data: [], count: 0 } } =
+  const { data: { data, count } = { data: [], count: 0 }, isLoading } =
     trpc.dataManagementRouter.listVisualAxes.useQuery(
       {
         filterModel: props.filterModel,
@@ -66,14 +67,17 @@ export default function VisualAxes() {
       />
       <DataGrid
         {...props}
+        loading={isLoading}
         rows={data}
         rowCount={count}
         columns={[
           {
             field: "name",
+            flex: 1,
           },
           {
             field: "description",
+            flex: 1,
           },
           {
             field: "startPoint",
@@ -87,6 +91,10 @@ export default function VisualAxes() {
               return `(${row.startPointX}, ${row.startPointY}, ${row.startPointZ})`;
             },
           },
+          createEditDeleteActions({
+            handleDelete: () => {},
+            handleEdit: () => {},
+          }),
         ]}
       />
     </>

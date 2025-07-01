@@ -1,12 +1,77 @@
+import { CRUD_PERMISSIONS_SET } from "@/constants/permissions";
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
 (async () => {
+  const permissions = await prisma.$transaction(
+    Array.from(CRUD_PERMISSIONS_SET).map((permission) =>
+      prisma.permission.create({
+        data: { name: permission },
+      })
+    )
+  );
+
+  const { id: superAdminRoleId } = await prisma.role.create({
+    data: {
+      name: "Super Admin",
+      assignedPermissions: {
+        connect: permissions.map((permission) => ({ id: permission.id })),
+      },
+    },
+  });
+
+  const { id: adminRoleId } = await prisma.role.create({
+    data: {
+      name: "Admin",
+      assignedPermissions: {
+        connect: permissions.map((permission) => ({ id: permission.id })),
+      },
+    },
+  });
+
+  const { id: guestRoleId } = await prisma.role.create({
+    data: {
+      name: "Guest",
+      assignedPermissions: {
+        connect: permissions
+          .filter((permission) => permission.name.endsWith("READ"))
+          .map((permission) => ({ id: permission.id })),
+      },
+    },
+  });
+
+  const { id: adminGroupId } = await prisma.group.create({
+    data: {
+      name: "Administrator",
+      defaultFor: "*@csi-online.de",
+      isAdminGroup: true,
+      assignedRoles: {
+        connect: {
+          id: superAdminRoleId,
+        },
+      },
+    },
+  });
+
+  const { id: guestGroupId } = await prisma.group.create({
+    data: {
+      name: "Guest",
+      defaultFor: "!*@csi-online.de",
+      isAdminGroup: false,
+      assignedRoles: {
+        connect: {
+          id: guestRoleId,
+        },
+      },
+    },
+  });
+
   const { id } = await prisma.user.create({
     data: {
       email: "admin@foxbyte.de",
       name: "Admin Foxbyte",
+      assignedGroups: { connect: { id: adminGroupId } },
     },
     select: {
       id: true,
@@ -16,6 +81,7 @@ const prisma = new PrismaClient();
   await prisma.visualAxis.createMany({
     data: [
       {
+        creatorId: id,
         endPointX: 0,
         endPointY: 0,
         endPointZ: 0,
@@ -23,9 +89,9 @@ const prisma = new PrismaClient();
         startPointX: 0,
         startPointY: 0,
         startPointZ: 0,
-      }
-    ]
-  })
+      },
+    ],
+  });
 
   await prisma.baseLayer.createMany({
     data: [

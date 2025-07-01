@@ -1,43 +1,29 @@
-import {
-  createFilters,
-  createSort,
-} from "@/components/dataGridServerSide/helpers";
 import { dataGridZod } from "@/components/dataGridServerSide/zodTypes";
-import { protectedProcedure, router } from "..";
 import { z } from "zod";
+import { protectedProcedure, router } from "..";
 
 const dataManagementRouter = router({
-  listBaseLayers: protectedProcedure.input(dataGridZod).query(async (opts) => {
-    const where = createFilters("BaseLayer", ["name"], opts.input.filterModel);
-    const orderBy = createSort("BaseLayer", opts.input.sortModel);
-
-    const baseLayers = await opts.ctx.db.baseLayer.findMany({
-      where,
-      orderBy,
-      take: opts.input.paginationModel.pageSize,
-      skip:
-        opts.input.paginationModel.page * opts.input.paginationModel.pageSize,
-      select: {
-        id: true,
-        sizeGB: true,
-        createdAt: true,
-        name: true,
-        creator: {
+  listBaseLayers: protectedProcedure.input(dataGridZod).query(
+    async (opts) =>
+      await opts.ctx.db.baseLayer.paginate(
+        {
           select: {
+            id: true,
+            sizeGB: true,
+            createdAt: true,
             name: true,
+            creator: {
+              select: {
+                name: true,
+              },
+            },
+            description: true,
+            type: true,
           },
         },
-        description: true,
-        type: true,
-      },
-    });
-
-    const baseLayerCount = await opts.ctx.db.baseLayer.count({
-      where,
-    });
-
-    return { data: baseLayers, count: baseLayerCount };
-  }),
+        opts.input
+      )
+  ),
   createVisualAxis: protectedProcedure
     .input(
       z.object({
@@ -55,6 +41,11 @@ const dataManagementRouter = router({
       return await opts.ctx.db.visualAxis.create({
         data: {
           ...opts.input,
+          creator: {
+            connect: {
+              id: opts.ctx.session.user.id,
+            },
+          },
         },
       });
     }),
@@ -83,36 +74,26 @@ const dataManagementRouter = router({
         },
       });
     }),
-  listVisualAxes: protectedProcedure.input(dataGridZod).query(async (opts) => {
-    const where = createFilters("VisualAxis", ["name"], opts.input.filterModel);
-    const orderBy = createSort("VisualAxis", opts.input.sortModel);
-
-    const baseLayers = await opts.ctx.db.visualAxis.findMany({
-      where,
-      orderBy,
-      take: opts.input.paginationModel.pageSize,
-      skip:
-        opts.input.paginationModel.page * opts.input.paginationModel.pageSize,
-      select: {
-        id: true,
-        createdAt: true,
-        name: true,
-        description: true,
-        endPointX: true,
-        endPointY: true,
-        endPointZ: true,
-        startPointX: true,
-        startPointY: true,
-        startPointZ: true,
-      },
-    });
-
-    const baseLayerCount = await opts.ctx.db.baseLayer.count({
-      where,
-    });
-
-    return { data: baseLayers, count: baseLayerCount };
-  }),
+  listVisualAxes: protectedProcedure.input(dataGridZod).query(
+    async (opts) =>
+      await opts.ctx.db.visualAxis.paginate(
+        {
+          select: {
+            id: true,
+            createdAt: true,
+            name: true,
+            description: true,
+            endPointX: true,
+            endPointY: true,
+            endPointZ: true,
+            startPointX: true,
+            startPointY: true,
+            startPointZ: true,
+          },
+        },
+        opts.input
+      )
+  ),
   getVisualAxis: protectedProcedure
     .input(z.object({ id: z.string() }))
     .query(async (opts) => {

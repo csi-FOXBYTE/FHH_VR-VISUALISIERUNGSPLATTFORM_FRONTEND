@@ -7,7 +7,7 @@ import {
   CardContent,
   CardHeader,
   Grid,
-  GridProps
+  GridProps,
 } from "@mui/material";
 import { ReactNode } from "react";
 
@@ -42,12 +42,10 @@ export default function Cards({ items }: CardProps) {
       {items.map((item) => (
         <Grid key={item.key} {...cardProps}>
           <CardHeader title={item.title} />
-          <CardContent sx={{ flex: 1 }}>
-            {item.content}
-          </CardContent>
+          <CardContent sx={{ flex: 1 }}>{item.content}</CardContent>
           <Grid component={CardActions} container justifyContent="flex-end">
             <Button
-              variant="contained"
+              variant="outlined"
               color="secondary"
               endIcon={<ArrowRightOutlined />}
               href={item.link.href}

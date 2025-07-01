@@ -20,6 +20,7 @@ export function TabPanel(props: TabPanelProps & GridProps) {
       aria-labelledby={`vertical-tab-${index}`}
       style={{
         height: "100%",
+        width: "100%",
         flex: 1,
         overflowY: "auto",
         ...style

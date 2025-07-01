@@ -8,7 +8,7 @@ export default function PageContainer({
   children: ReactNode;
 } & GridProps) {
   return (
-    <Grid container spacing={4} flex="1" flexDirection="column" {...props}>
+    <Grid container maxWidth="1440px" width="100%" margin="0 auto" spacing={4} flex="1" flexDirection="column" {...props}>
       {children}
     </Grid>
   );

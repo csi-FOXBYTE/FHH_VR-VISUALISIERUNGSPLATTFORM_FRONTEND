@@ -1,15 +1,15 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from "@prisma/client";
 
 export async function resetSystemVersionedTables() {
   const prismaClient = new PrismaClient();
 
   const modelNamesSys = await prismaClient.$queryRawUnsafe<{ name: string }[]>(
-    `SELECT name FROM sys.tables;`,
+    `SELECT name FROM sys.tables;`
   );
 
   const modelNames = modelNamesSys
-    .filter(d => !d.name.endsWith('_history'))
-    .map(d => d.name);
+    .filter((d) => !d.name.endsWith("_history"))
+    .map((d) => d.name);
 
   for (const modelName of modelNames) {
     try {
@@ -23,4 +23,4 @@ export async function resetSystemVersionedTables() {
   }
 }
 
-resetSystemVersionedTables().then(() => console.log('FINISHED'));
+resetSystemVersionedTables().then(() => console.log("FINISHED"));

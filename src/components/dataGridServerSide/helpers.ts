@@ -1,10 +1,54 @@
 import { Prisma } from "@prisma/client";
 import { FilterModelZodType, SortModelZodType } from "./zodTypes";
 import {
+  createBoolFilter,
   createDateTimeFilter,
   createNumberFilter,
   createStringFilter,
 } from "./gridFilterServerSideHelpers";
+
+function createFieldForFilterRecursively(
+  accessor: string[],
+  model: (typeof Prisma.dmmf.datamodel.models)[0],
+  filterItem: FilterModelZodType["items"][0],
+  result: any = {} // eslint-disable-line @typescript-eslint/no-explicit-any
+) {
+  const field = model.fields.find((field) => field.name === accessor[0]);
+
+  if (!field) throw new Error("Found no matching field!");
+
+  if (field.kind === "object") {
+    const newRes = {};
+
+    result[field.name] = field.isList ? { some: newRes } : newRes;
+
+    createFieldForFilterRecursively(
+      accessor.slice(1),
+      Prisma.dmmf.datamodel.models.find((model) => model.name === field.type)!,
+      filterItem,
+      newRes
+    );
+
+    return result;
+  }
+
+  switch (field.type) {
+    case "String":
+      result[field.name] = createStringFilter(filterItem, !field.isRequired);
+      break;
+    case "Float":
+      result[field.name] = createNumberFilter(filterItem, !field.isRequired);
+      break;
+    case "DateTime":
+      result[field.name] = createDateTimeFilter(filterItem, !field.isRequired);
+      break;
+    case "Boolean":
+      result[field.name] = createBoolFilter(filterItem, !field.isRequired);
+      break;
+  }
+
+  return result;
+}
 
 export function createFilters(
   modelName: string,
@@ -22,9 +66,9 @@ export function createFilters(
         .join(", ")}"`
     );
 
-  const where: any = {};
+  const where: any = {}; // eslint-disable-line @typescript-eslint/no-explicit-any
 
-  let filters: any[] = [];
+  let filters: any[] = []; // eslint-disable-line @typescript-eslint/no-explicit-any
   if ((filterModel.logicOperator ?? "or") === "or") {
     where.OR = [];
     filters = where.OR;
@@ -38,26 +82,10 @@ export function createFilters(
 
     const accessor = filterItem.field.split(".");
 
-    if (accessor.length > 1) continue;
-
-    const field = model.fields.find((field) => field.name === filterItem.field);
-
-    if (!field) throw new Error("Found no matching field!");
-
-    switch (field.type) {
-      case "String":
-        filters.push({ [field.name]: createStringFilter(filterItem) });
-        break;
-      case "Float":
-        filters.push({ [field.name]: createNumberFilter(filterItem) });
-        break;
-      case "DateTime":
-        filters.push({ [field.name]: createDateTimeFilter(filterItem) });
-        break;
-    }
+    filters.push(createFieldForFilterRecursively(accessor, model, filterItem));
   }
 
-  const whereOr: any[] = [];
+  const whereOr: any[] = []; // eslint-disable-line @typescript-eslint/no-explicit-any
 
   for (const quickFilterValue of filterModel.quickFilterValues ?? []) {
     whereOr.push(
@@ -75,32 +103,34 @@ export function createFilters(
 }
 
 export function createSort(modelName: string, sortModel: SortModelZodType) {
-    const model = Prisma.dmmf.datamodel.models.find(
-        (model) => model.name === modelName
-      );
-    
-      if (!model)
-        throw new Error(
-          `Found no model for ${model}, available models are "${Prisma.dmmf.datamodel.models
-            .map((model) => model.dbName ?? model.name)
-            .join(", ")}"`
-        );
+  const model = Prisma.dmmf.datamodel.models.find(
+    (model) => model.name === modelName
+  );
 
-    const orderBy: Record<string, any> = {};
+  if (!model)
+    throw new Error(
+      `Found no model for ${model}, available models are "${Prisma.dmmf.datamodel.models
+        .map((model) => model.dbName ?? model.name)
+        .join(", ")}"`
+    );
 
-    for (const sortItem of sortModel) {
-        if (!sortItem.sort) continue;
+  const orderBy: Record<string, any> = {}; // eslint-disable-line @typescript-eslint/no-explicit-any
 
-        const accessor = sortItem.field.split(".");
+  for (const sortItem of sortModel) {
+    if (!sortItem.sort) continue;
 
-        if (accessor.length > 1) continue;
+    const accessor = sortItem.field.split(".");
 
-        const field = model.fields.find(field => field.name === sortItem.field);
-
-        if (!field) throw new Error("Found no matching field!");
-
-        orderBy[sortItem.field] = sortItem.sort;
+    if (accessor.length > 1) {
+      throw new Error("Sorting nested objects is not possible with prisma!");
     }
 
-    return orderBy;
+    const field = model.fields.find((field) => field.name === sortItem.field);
+
+    if (!field) throw new Error("Found no matching field!");
+
+    orderBy[sortItem.field] = sortItem.sort;
+  }
+
+  return orderBy;
 }

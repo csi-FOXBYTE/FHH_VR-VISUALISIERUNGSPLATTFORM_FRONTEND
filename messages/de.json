@@ -100,5 +100,26 @@
       "search": "Suche",
       "search-placeholder": "Begriff eingeben..."
     }
+  },
+  "permissions": {
+    "CREATE": "Erstellen",
+    "UPDATE": "Ändern",
+    "DELETE": "Löschen",
+    "READ": "Lesen",
+    "ALL": "Alles",
+    "EVENT": "Meeting",
+    "EVENT_ATTENDEE": "Meeting Teilnehmer",
+    "BASE_LAYER": "Basisebene",
+    "PROJECT_LAYER": "Projectebene",
+    "GROUP": "Gruppe",
+    "ROLE": "Rolle",
+    "PERMISSION": "Berechtigung",
+    "PROJECT": "Projekt",
+    "CLIPPING_POLYGON": "Ausschnittpolygon",
+    "PROJECT_FILE": "Projekt Datei",
+    "VISUAL_AXIS": "Sichtachse",
+    "STARTING_POINT": "Startpunkt",
+    "USER": "Benutzer",
+    "VIEWS": "Ansichten"
   }
 }
