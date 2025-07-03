@@ -17,6 +17,8 @@ model Event extends Base, Ownable {
 
   attendees          EventAttendee[]
 
+  @@allow('read', attendees?[userId == auth().id])
+
   @@allow('create', auth().assignedGroups?[assignedRoles?[assignedPermissions?[name == 'EVENT:CREATE']]])
   @@allow('read', auth().assignedGroups?[assignedRoles?[assignedPermissions?[name == 'EVENT:READ']]])
   @@allow('update', auth().assignedGroups?[assignedRoles?[assignedPermissions?[name == 'EVENT:UPDATE']]])
@@ -30,8 +32,11 @@ model EventAttendee {
   user    User   @relation(fields: [userId], references: [id])
   userId  String
 
+  /// Can be one of GUEST, MODERATOR
+  role    String @default("GUEST")
+
   @@id([eventId, userId])
-  @@allow('all', true)
+  @@allow('all', auth().id == userId)
 
   @@allow('create', auth().assignedGroups?[assignedRoles?[assignedPermissions?[name == 'EVENT_ATTENDEE:CREATE']]])
   @@allow('read', auth().assignedGroups?[assignedRoles?[assignedPermissions?[name == 'EVENT_ATTENDEE:READ']]])

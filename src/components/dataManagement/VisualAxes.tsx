@@ -1,49 +1,60 @@
 "use client";
 
 import { trpc } from "@/server/trpc/client";
+import { Add } from "@mui/icons-material";
 import { DataGrid } from "@mui/x-data-grid";
 import { keepPreviousData } from "@tanstack/react-query";
-import useDataGridServerSideHelper from "../dataGridServerSide/useDataGridServerSideOptions";
-import { Button, ButtonGroup } from "@mui/material";
-import { Add } from "@mui/icons-material";
-import VisualAxisCUDialog from "../cuDialogs/VisualAxisCUDialog";
-import {
-  useQueryState,
-  parseAsStringLiteral,
-  parseAsString,
-  parseAsBoolean,
-} from "nuqs";
+import { useTranslations } from "next-intl";
 import createEditDeleteActions from "../dataGridServerSide/createEditDeleteActions";
+import useDataGridServerSideHelper from "../dataGridServerSide/useDataGridServerSideOptions";
+import VisualAxisCUDialog, {
+  useVisualAxisCUDialogState,
+} from "./VisualAxisCUDialog";
+import { useSnackbar } from "notistack";
 
 export default function VisualAxes() {
-  const [mode, setMode] = useQueryState(
-    "mode",
-    parseAsStringLiteral(["CREATE", "UPDATE"]).withDefault("CREATE")
-  );
-  const [id, setId] = useQueryState("id", parseAsString);
-  const [open, setOpen] = useQueryState(
-    "open",
-    parseAsBoolean.withDefault(false)
-  );
+  const t = useTranslations();
+
+  const [, { openCreate }] = useVisualAxisCUDialogState();
 
   const { props } = useDataGridServerSideHelper("data-management-visual-axes", {
-    extraActions: (
-      <ButtonGroup variant="contained">
-        <Button
-          onClick={() => {
-            setOpen(true);
-            setMode("CREATE");
-          }}
-          startIcon={<Add />}
-        >
-          Sichtachse anlegen
-        </Button>
-      </ButtonGroup>
-    ),
+    extraActions: [
+      {
+        icon: <Add />,
+        label: t("actions.create"),
+        key: "create",
+        onClick: openCreate,
+      },
+    ],
   });
 
+  const utils = trpc.useUtils();
+
+  const { enqueueSnackbar } = useSnackbar();
+
+  const { mutate: deleteMutation, isPending: isDeleteMutationPending } =
+    trpc.dataManagementRouter.visualAxis.delete.useMutation({
+      onSuccess: () => {
+        utils.dataManagementRouter.invalidate();
+        enqueueSnackbar({
+          variant: "success",
+          message: t("generic.crud-notifications.delete-success", {
+            entity: t("entities.visual-axis"),
+          }),
+        });
+        close();
+      },
+      onError: () =>
+        enqueueSnackbar({
+          variant: "error",
+          message: t("generic.crud-notifications.delete-failed", {
+            entity: t("entities.visual-axis"),
+          }),
+        }),
+    });
+
   const { data: { data, count } = { data: [], count: 0 }, isLoading } =
-    trpc.dataManagementRouter.listVisualAxes.useQuery(
+    trpc.dataManagementRouter.visualAxis.list.useQuery(
       {
         filterModel: props.filterModel,
         paginationModel: props.paginationModel,
@@ -56,15 +67,7 @@ export default function VisualAxes() {
 
   return (
     <>
-      <VisualAxisCUDialog
-        open={open}
-        mode={mode}
-        id={id ?? undefined}
-        close={() => {
-          setOpen(false);
-          setId(null);
-        }}
-      />
+      <VisualAxisCUDialog />
       <DataGrid
         {...props}
         loading={isLoading}
@@ -74,25 +77,30 @@ export default function VisualAxes() {
           {
             field: "name",
             flex: 1,
+            headerName: t("data-management.name"),
           },
           {
             field: "description",
+            headerName: t("data-management.description"),
             flex: 1,
           },
           {
             field: "startPoint",
+            headerName: t("data-management.start-point"),
             renderCell({ row }) {
               return `(${row.startPointX}, ${row.startPointY}, ${row.startPointZ})`;
             },
           },
           {
             field: "endPoint",
+            headerName: t("data-management.end-point"),
             renderCell({ row }) {
               return `(${row.startPointX}, ${row.startPointY}, ${row.startPointZ})`;
             },
           },
           createEditDeleteActions({
-            handleDelete: () => {},
+            handleDelete: (id) => deleteMutation({ id }),
+            loading: isDeleteMutationPending,
             handleEdit: () => {},
           }),
         ]}

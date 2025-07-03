@@ -7,8 +7,10 @@ abstract model Base {
 }
 
 abstract model Ownable {
-  creator   User   @relation(fields: [creatorId], references: [id])
-  creatorId String @deny('update', true)
+  owner   User?   @relation(fields: [ownerId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  ownerId String? @deny('update', true)
+
+  @@allow('all', auth().id == ownerId)
 }
 
 abstract model DirectedPoint extends Base, Ownable {

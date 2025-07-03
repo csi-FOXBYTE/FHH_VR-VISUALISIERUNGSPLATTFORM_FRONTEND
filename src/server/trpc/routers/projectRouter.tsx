@@ -50,13 +50,45 @@ const projectRouter = router({
         where: {
           id: opts.input.id,
         },
-        include: { owner: true },
+        include: {
+          owner: true,
+          includedBaseLayers: true,
+          includedProjectLayers: true,
+        },
       });
     }),
-  listLayers: protectedProcedure.input(dataGridZod).query(async (opts) => {
-    const where = createFilters("BaseLayer", [], opts.input.filterModel);
-    const orderBy = createSort("");
+  listBaseLayers: protectedProcedure.input(dataGridZod).query(async (opts) => {
+    return await opts.ctx.db.baseLayer.paginate(
+      {
+        select: {
+          name: true,
+          id: true,
+          sizeGB: true,
+          description: true,
+        },
+      },
+      opts.input,
+      ["name"]
+    );
   }),
+  updateBaseLayersSelection: protectedProcedure
+    .input(
+      z.object({ projectId: z.string(), baseLayerIds: z.array(z.string()) })
+    )
+    .mutation(async (opts) => {
+      return await opts.ctx.db.project.update({
+        where: {
+          id: opts.input.projectId,
+        },
+        data: {
+          includedBaseLayers: {
+            set: opts.input.baseLayerIds.map((baseLayerId) => ({
+              id: baseLayerId,
+            })),
+          },
+        },
+      });
+    }),
   create: protectedProcedure
     .input(z.object({ title: z.string(), description: z.string() }))
     .mutation(async (opts) => {

@@ -87,13 +87,13 @@ model Authenticator {
 }
 
 model Project {
+  owner                 User?             @relation(fields: [ownerId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  ownerId               String?
   id                    String            @id() @default(cuid())
   createdAt             DateTime          @default(now())
   updatedAt             DateTime          @updatedAt()
   title                 String            @db.Text()
   description           String            @db.Text()
-  owner                 User              @relation(fields: [ownerId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  ownerId               String
   visibleForGroups      Group[]
   visibleForUsers       User[]            @relation("visibleForUsers")
   startingPoints        StartingPoint[]
@@ -105,8 +105,8 @@ model Project {
 }
 
 model ClippingPolygon {
-  creator   User     @relation(fields: [creatorId], references: [id])
-  creatorId String
+  owner     User?    @relation(fields: [ownerId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  ownerId   String?
   id        String   @id() @default(cuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt()
@@ -131,8 +131,8 @@ model ProjectFile {
 
 /// Is global per definition, can not be associatd to a project.
 model VisualAxis {
-  creator     User     @relation(fields: [creatorId], references: [id])
-  creatorId   String
+  owner       User?    @relation(fields: [ownerId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  ownerId     String?
   id          String   @id() @default(cuid())
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt()
@@ -148,8 +148,8 @@ model VisualAxis {
 
 /// Can be global or local depending on if a project is defined.
 model StartingPoint {
-  creator     User     @relation(fields: [creatorId], references: [id])
-  creatorId   String
+  owner       User?    @relation(fields: [ownerId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  ownerId     String?
   id          String   @id() @default(cuid())
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt()
@@ -199,8 +199,8 @@ model Permission {
 }
 
 model BaseLayer {
-  creator            User      @relation(fields: [creatorId], references: [id])
-  creatorId          String
+  owner              User?     @relation(fields: [ownerId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  ownerId            String?
   id                 String    @id() @default(cuid())
   createdAt          DateTime  @default(now())
   updatedAt          DateTime  @updatedAt()
@@ -215,8 +215,8 @@ model BaseLayer {
 }
 
 model ProjectLayer {
-  creator            User          @relation(fields: [creatorId], references: [id])
-  creatorId          String
+  owner              User?         @relation(fields: [ownerId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  ownerId            String?
   id                 String        @id() @default(cuid())
   createdAt          DateTime      @default(now())
   updatedAt          DateTime      @updatedAt()
@@ -231,8 +231,8 @@ model ProjectLayer {
 }
 
 model Event {
-  creator            User            @relation(fields: [creatorId], references: [id])
-  creatorId          String
+  owner              User?           @relation(fields: [ownerId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  ownerId            String?
   id                 String          @id() @default(cuid())
   createdAt          DateTime        @default(now())
   updatedAt          DateTime        @updatedAt()
@@ -254,6 +254,18 @@ model EventAttendee {
   eventId String
   user    User   @relation(fields: [userId], references: [id])
   userId  String
+  /// Can be one of GUEST, MODERATOR
+  role    String @default("GUEST")
 
   @@id([eventId, userId])
+}
+
+model Configuration {
+  id                String   @id() @default(cuid())
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt()
+  defaultEPSG       String
+  globalStartPointX Float
+  globalStartPointY Float
+  globalStartPointZ Float
 }

@@ -1,6 +1,7 @@
 import Providers from "@/appProviders";
 import { auth } from "@/server/auth/auth";
 import { redirect, routing } from "@/server/i18n/routing";
+import prisma from "@/server/prisma";
 import { CssBaseline } from "@mui/material";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
@@ -30,6 +31,15 @@ export default async function LandingPageLayout({
 
   const messages = await getMessages();
 
+  const configuration = await prisma.configuration.findFirstOrThrow({
+    select: {
+      defaultEPSG: true,
+      globalStartPointX: true,
+      globalStartPointY: true,
+      globalStartPointZ: true,
+    },
+  });
+
   return (
     <html lang={locale}>
       <head>
@@ -39,7 +49,18 @@ export default async function LandingPageLayout({
         <NextIntlClientProvider messages={messages}>
           <NuqsAdapter>
             <CssBaseline />
-            <Providers locale={locale} session={session}>
+            <Providers
+              configuration={{
+                defaultEPSG: configuration.defaultEPSG,
+                globalStartPoint: {
+                  x: configuration.globalStartPointX,
+                  y: configuration.globalStartPointY,
+                  z: configuration.globalStartPointZ,
+                },
+              }}
+              locale={locale}
+              session={session}
+            >
               {children}
             </Providers>
           </NuqsAdapter>

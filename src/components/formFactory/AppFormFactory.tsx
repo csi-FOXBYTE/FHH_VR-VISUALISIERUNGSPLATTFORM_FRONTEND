@@ -17,8 +17,8 @@ export type AppFormFactoryProps = ComponentProps<typeof AppFormFactory>;
 export const AppFormFactory = createFormFactory(
   {
     number: {
-      render(name, { isLoading }: { isLoading: boolean }, { register }) {
-        return <TextField {...register(name)} />;
+      render(name, { label }: { label?: string }, { register }) {
+        return <TextField label={label} {...register(name)} />;
       },
       valueType: 0 as number,
     },
@@ -105,6 +105,7 @@ export const AppFormFactory = createFormFactory(
                     fullWidth
                   />
                 )}
+                value={field.value}
                 getOptionKey={(opt) => opt.value}
                 getOptionLabel={(opt) => opt.label}
                 options={options}

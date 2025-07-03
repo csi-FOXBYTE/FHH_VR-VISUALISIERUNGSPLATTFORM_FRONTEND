@@ -6,9 +6,12 @@ import Groups from "@/components/userManagement/Groups";
 import Roles from "@/components/userManagement/Roles";
 import Users from "@/components/userManagement/Users";
 import { Tab, Tabs } from "@mui/material";
+import { useTranslations } from "next-intl";
 import { parseAsFloat, useQueryState } from "nuqs";
 
 export default function UserManagementPage() {
+  const t = useTranslations();
+
   const [selectedTab, setSelectedTab] = useQueryState(
     "tab",
     parseAsFloat.withDefault(0)
@@ -17,9 +20,21 @@ export default function UserManagementPage() {
   return (
     <PageContainer>
       <Tabs value={selectedTab}>
-        <Tab value={0} onClick={() => setSelectedTab(0)} label="Benutzer" />
-        <Tab value={1} onClick={() => setSelectedTab(1)} label="Gruppen" />
-        <Tab value={2} onClick={() => setSelectedTab(2)} label="Rollen" />
+        <Tab
+          value={0}
+          onClick={() => setSelectedTab(0)}
+          label={t("entities.user")}
+        />
+        <Tab
+          value={1}
+          onClick={() => setSelectedTab(1)}
+          label={t("entities.group")}
+        />
+        <Tab
+          value={2}
+          onClick={() => setSelectedTab(2)}
+          label={t("entities.role")}
+        />
       </Tabs>
       <TabPanel index={0} value={selectedTab} visible>
         <Users />

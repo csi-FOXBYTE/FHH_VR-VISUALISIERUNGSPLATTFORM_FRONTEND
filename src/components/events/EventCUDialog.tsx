@@ -3,66 +3,82 @@ import { skipToken } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import { useSnackbar } from "notistack";
 import { useState } from "react";
-import { EasyCUDialog } from "../common/EasyCUDialog";
+import { EasyCUDialog, useEasyCUDialogState } from "../common/EasyCUDialog";
+import { useTranslations } from "next-intl";
 
-export default function EventCUDialog({
-  open,
-  close,
-  mode,
-  id,
-}: {
-  open: boolean;
-  close: () => void;
-  mode: "CREATE" | "UPDATE";
-  id?: string;
-}) {
+export const useEventCUDialogState = () =>
+  useEasyCUDialogState("event-cu-dialog-state");
+
+export default function EventCUDialog() {
+  const [state, { close }] = useEventCUDialogState();
+
+  const utils = trpc.useUtils();
+
+  const t = useTranslations();
+
   const [searchAttendees, setSearchAttendees] = useState("");
   const [searchProjects, setSearchProjects] = useState("");
 
   const { data: possibleAttendees = [] } =
     trpc.eventsRouter.getPossibleAttendees.useQuery(
-      open ? { search: searchAttendees } : skipToken
+      state.open ? { search: searchAttendees } : skipToken
     );
 
   const { data: possibleProjects = [] } =
     trpc.eventsRouter.getPossibleProjects.useQuery(
-      open ? { search: searchAttendees } : skipToken
+      state.open ? { search: searchAttendees } : skipToken
     );
 
   const { data: initialEvent = null } =
     trpc.eventsRouter.getEventDetails.useQuery(
-      open && mode === "UPDATE" && id !== undefined ? { id } : skipToken
+      state.open && state.mode === "UPDATE" && state.id !== undefined
+        ? { id: state.id }
+        : skipToken
     );
 
   const { enqueueSnackbar } = useSnackbar();
 
   const { mutate: createMutation, isPending: isCreateMutationPending } =
     trpc.eventsRouter.create.useMutation({
-      onSuccess: () =>
+      onSuccess: () => {
+        utils.eventsRouter.invalidate();
         enqueueSnackbar({
           variant: "success",
-          message: "Successfully created event!",
-        }),
-      onError: (err) => {
+          message: t("generic.crud-notifications.create-success", {
+            entity: t("entities.event"),
+          }),
+        });
+        close();
+      },
+      onError: () => {
         enqueueSnackbar({
           variant: "error",
-          message: "Failed to create event!",
+          message: t("generic.crud-notifications.create-failed", {
+            entity: t("entities.event"),
+          }),
         });
-        console.error(err);
       },
     });
   const { mutate: updateMutation, isPending: isUpdateMutationPending } =
     trpc.eventsRouter.update.useMutation({
-      onSuccess: () =>
+      onSuccess: () => {
+        utils.eventsRouter.invalidate();
         enqueueSnackbar({
           variant: "success",
-          message: "Successfully updated event!",
-        }),
-      onError: () =>
+          message: t("generic.crud-notifications.update-success", {
+            entity: t("entities.event"),
+          }),
+        });
+        close();
+      },
+      onError: () => {
         enqueueSnackbar({
           variant: "error",
-          message: "Failed to update event!",
-        }),
+          message: t("generic.crud-notifications.update-failed", {
+            entity: t("entities.event"),
+          }),
+        });
+      },
     });
 
   return (
@@ -75,6 +91,7 @@ export default function EventCUDialog({
         startTime: new Date(),
       }}
       onCreate={(values) => {
+        console.log(values);
         createMutation({
           attendees: values.attendees.map((attendee) => attendee.value),
           endTime: values.endTime,
@@ -84,28 +101,26 @@ export default function EventCUDialog({
         });
       }}
       onUpdate={(values) => {
-        if (!id) throw new Error("No id supplied!");
+        if (!state.id) throw new Error("No id supplied!");
         updateMutation({
           attendees: values.attendees.map((attendee) => attendee.value),
           endTime: values.endTime,
           startTime: values.startTime,
           title: values.title,
           project: values.project?.value ?? null,
-          id,
+          id: state.id,
         });
       }}
+      state={state}
       close={close}
-      entity="Project"
       isLoading={isUpdateMutationPending || isCreateMutationPending}
-      open={open}
-      mode="CREATE"
       fetchedData={initialEvent}
       model={[
         {
           type: "text",
           name: "title",
           props: {
-            label: "Title",
+            label: t("events.title"),
           },
         },
         {
@@ -114,8 +129,9 @@ export default function EventCUDialog({
           props: {
             search: searchProjects,
             onSearchChange: setSearchProjects,
+            multiple: false,
             options: possibleProjects,
-            label: "Project",
+            label: t("events.project"),
           },
         },
         {
@@ -124,22 +140,23 @@ export default function EventCUDialog({
           props: {
             search: searchAttendees,
             onSearchChange: setSearchAttendees,
+            multiple: true,
             options: possibleAttendees,
-            label: "Attendees",
+            label: t("events.attendees"),
           },
         },
         {
           type: "dateTime",
           name: "startTime",
           props: {
-            label: "Start Time",
+            label: t("events.start-time"),
           },
         },
         {
           type: "dateTime",
           name: "endTime",
           props: {
-            label: "End Time",
+            label: t("events.end-time"),
           },
         },
       ]}

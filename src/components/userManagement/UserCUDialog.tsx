@@ -2,59 +2,74 @@ import { trpc } from "@/server/trpc/client";
 import { skipToken } from "@tanstack/react-query";
 import { useSnackbar } from "notistack";
 import { useState } from "react";
-import { EasyCUDialog } from "../common/EasyCUDialog";
+import { EasyCUDialog, useEasyCUDialogState } from "../common/EasyCUDialog";
+import { useTranslations } from "next-intl";
 
-export default function UserCUDialog({
-  open,
-  close,
-  mode,
-  id,
-}: {
-  open: boolean;
-  close: () => void;
-  mode: "CREATE" | "UPDATE";
-  id?: string;
-}) {
+export const useUserCUDialogState = () =>
+  useEasyCUDialogState("user-management-user-cu-state");
+
+export default function UserCUDialog() {
+  const t = useTranslations();
+
+  const [state, { close }] = useUserCUDialogState();
+
   const [searchGroups, setSearchGroups] = useState("");
+
+  const utils = trpc.useUtils();
 
   const { data: possibleGroups = [] } =
     trpc.userManagementRouter.users.getPossibleGroups.useQuery(
-      open ? { search: searchGroups } : skipToken
+      state.open ? { search: searchGroups } : skipToken
     );
 
   const { data: initialUser = null } =
     trpc.userManagementRouter.users.getFullUser.useQuery(
-      open && mode === "UPDATE" && id !== undefined ? { id } : skipToken
+      state.open && state.mode === "UPDATE" && state.id !== undefined
+        ? { id: state.id }
+        : skipToken
     );
 
   const { enqueueSnackbar } = useSnackbar();
 
   const { mutate: createMutation, isPending: isCreateMutationPending } =
     trpc.userManagementRouter.users.create.useMutation({
-      onSuccess: () =>
+      onSuccess: () => {
+        utils.userManagementRouter.invalidate();
         enqueueSnackbar({
           variant: "success",
-          message: "Successfully created event!",
-        }),
-      onError: (err) => {
+          message: t("generic.crud-notifications.create-success", {
+            entity: t("entities.user"),
+          }),
+        });
+        close();
+      },
+      onError: () => {
         enqueueSnackbar({
           variant: "error",
-          message: "Failed to create event!",
+          message: t("generic.crud-notifications.create-failed", {
+            entity: t("entities.user"),
+          }),
         });
-        console.error(err);
       },
     });
   const { mutate: updateMutation, isPending: isUpdateMutationPending } =
     trpc.userManagementRouter.users.update.useMutation({
-      onSuccess: () =>
+      onSuccess: () => {
+        utils.userManagementRouter.invalidate();
         enqueueSnackbar({
           variant: "success",
-          message: "Successfully updated event!",
-        }),
+          message: t("generic.crud-notifications.update-success", {
+            entity: t("entities.user"),
+          }),
+        });
+        close();
+      },
       onError: () =>
         enqueueSnackbar({
           variant: "error",
-          message: "Failed to update event!",
+          message: t("generic.crud-notifications.update-failed", {
+            entity: t("entities.user"),
+          }),
         }),
     });
 
@@ -73,28 +88,26 @@ export default function UserCUDialog({
         });
       }}
       onUpdate={(values) => {
-        if (!id) throw new Error("No id supplied!");
+        if (!state.id) throw new Error("No id supplied!");
         updateMutation({
           assignedGroups: values.assignedGroups.map(
             (assignedGroup) => assignedGroup.value
           ),
-          id,
+          id: state.id,
         });
       }}
       close={close}
-      entity="Project"
       isLoading={isUpdateMutationPending || isCreateMutationPending}
-      open={open}
-      mode="CREATE"
+      state={state}
       fetchedData={initialUser}
       model={
-        mode === "CREATE"
+        state.mode === "CREATE"
           ? [
               {
                 type: "text",
                 name: "email",
                 props: {
-                  label: "Email",
+                  label: t("user-management.email"),
                 },
               },
               {
@@ -105,7 +118,7 @@ export default function UserCUDialog({
                   search: searchGroups,
                   options: possibleGroups,
                   multiple: true,
-                  label: "Assigned groups",
+                  label: t("user-management.assigned-groups"),
                 },
               },
             ]
@@ -118,7 +131,7 @@ export default function UserCUDialog({
                   search: searchGroups,
                   options: possibleGroups,
                   multiple: true,
-                  label: "Assigned groups",
+                  label: t("user-management.assigned-groups"),
                 },
               },
             ]

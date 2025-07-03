@@ -43,7 +43,6 @@ export const protectedProcedure = procedure
       ctx: {
         ...ctx,
         session: session,
-        // @ts-expect-error session types not correct
       ***REMOVED***enhance(prisma, session),
         subscriberDb: prisma,
         storage: null,

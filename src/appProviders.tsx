@@ -16,6 +16,10 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import "dayjs/locale/de";
 import "dayjs/locale/en";
+import { ConfirmProvider } from "material-ui-confirm";
+import ConfigurationProvider, {
+  ConfigurationProviderContextType,
+} from "./components/configuration/ConfigurationProvider";
 
 const supportedLocales: Record<(typeof routing.locales)[number], Theme> = {
   de: createTheme(deDE, tdeDE, xdeDE),
@@ -25,11 +29,13 @@ const supportedLocales: Record<(typeof routing.locales)[number], Theme> = {
 export default function AppProviders({
   session,
   children,
+  configuration,
   locale,
 }: {
   session: Session | null;
   children: ReactNode;
   locale: string;
+  configuration: ConfigurationProviderContextType;
 }) {
   const themeWithLocale = createTheme(
     supportedLocales[locale as "en"] ?? supportedLocales.en,
@@ -38,15 +44,22 @@ export default function AppProviders({
 
   return (
     <AppRouterCacheProvider>
-      <SnackbarProvider>
-        <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={locale}>
-          <ThemeProvider theme={themeWithLocale}>
-            <SessionProvider session={session}>
-              <TRPCProvider>{children}</TRPCProvider>
-            </SessionProvider>
-          </ThemeProvider>
-        </LocalizationProvider>
-      </SnackbarProvider>
+      <ConfirmProvider>
+        <ConfigurationProvider configuration={configuration}>
+          <SnackbarProvider autoHideDuration={5000}>
+            <LocalizationProvider
+              dateAdapter={AdapterDayjs}
+              adapterLocale={locale}
+            >
+              <ThemeProvider theme={themeWithLocale}>
+                <SessionProvider session={session}>
+                  <TRPCProvider>{children}</TRPCProvider>
+                </SessionProvider>
+              </ThemeProvider>
+            </LocalizationProvider>
+          </SnackbarProvider>
+        </ConfigurationProvider>
+      </ConfirmProvider>
     </AppRouterCacheProvider>
   );
 }

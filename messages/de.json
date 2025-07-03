@@ -9,7 +9,11 @@
     "manage-projects": "Projekte verwalten",
     "show-collaboration": "Zusammenarbeit aufrufen",
     "show-administration": "Administrationsbereich öffnen",
-    "last-logged-in-message": "Zuletzt eingeloggt am {date}."
+    "last-logged-in-message": "Zuletzt eingeloggt am {date}.",
+    "events-text": "Folgende Termine stehen heute am {date} an:",
+    "no-events-pending": "Keine Termine bevorstehend",
+    "administration-description": "Über diesen Bereich erhalten Sie Zugriff auf zentrale Verwaltungsfunktionen des Systems. Hier können Sie Basisdaten hochladen und organisieren, Systemeinstellungen wie APIs und Anwendungen konfigurieren, Systemaktivitäten sowie sicherheitsrelevante Logs einsehen und Benutzer sowie Gruppen verwalten.",
+    "project-management-description": "In diesem Bereich verwalten Sie Ihre Projekte zentral und effizient. Sie können neue Projekte anlegen, bestehende löschen oder bearbeiten. Zusätzlich haben Sie die Möglichkeit, projektspezifische Daten hochzuladen und als Ebenen innerhalb des Systems verfügbar zu machen."
   },
   "navbar": {
     "profile": "Profil",
@@ -81,19 +85,34 @@
     "title": "Konfiguration"
   },
   "user-management": {
-    "title": "Nutzer- und Gruppenverwaltung"
+    "title": "Nutzer- und Gruppenverwaltung",
+    "email": "Email",
+    "assigned-groups": "Zugewiesene Gruppen",
+    "name": "Name",
+    "default-for": "Standardmäßig",
+    "is-admin-group": "Ist Admin Gruppe",
+    "assigned-roles": "Zugewiesene Rollen"
   },
   "system-activities": {
     "title": "Systemaktivitäten und Logs"
   },
   "data-management": {
-    "title": "Datenverwaltung"
+    "title": "Datenverwaltung",
+    "starting-point": "Startpunkt",
+    "start-point": "Startpunkt",
+    "end-point": "Endpunkt",
+    "description": "Beschreibung",
+    "name": "Name",
+    "owner": "Besitzer",
+    "size-in-gb": "Größe in GB",
+    "create-at": "Erstellt am",
+    "visible-for-groups": "Sichtbar für folgende Gruppen",
+    "only-visible-for-groups": "Nur sichtbar für folgende Gruppen"
   },
   "project-management": {
     "title": "Projektverwaltung",
     "my-projects": "Meine Projekte",
-    "shared-projects": "Mit mir geteilte Projekte",
-    "create-project": "Projekt anlegen"
+    "shared-projects": "Mit mir geteilte Projekte"
   },
   "components": {
     "list-with-pagination": {
@@ -107,10 +126,10 @@
     "DELETE": "Löschen",
     "READ": "Lesen",
     "ALL": "Alles",
-    "EVENT": "Meeting",
-    "EVENT_ATTENDEE": "Meeting Teilnehmer",
+    "EVENT": "Veranstaltung",
+    "EVENT_ATTENDEE": "Veranstaltungs Teilnehmer",
     "BASE_LAYER": "Basisebene",
-    "PROJECT_LAYER": "Projectebene",
+    "PROJECT_LAYER": "Projektebene",
     "GROUP": "Gruppe",
     "ROLE": "Rolle",
     "PERMISSION": "Berechtigung",
@@ -121,5 +140,53 @@
     "STARTING_POINT": "Startpunkt",
     "USER": "Benutzer",
     "VIEWS": "Ansichten"
+  },
+  "entities": {
+    "user": "Benutzer",
+    "group": "Gruppe",
+    "role": "Rolle",
+    "base-layer": "Basisebene",
+    "project-layer": "Projektebene",
+    "starting-point": "Startpunkt",
+    "visual-axis": "Sichtachse",
+    "project-file": "Projekt Datei",
+    "event": "Veranstaltung"
+  },
+  "generic": {
+    "crud-notifications": {
+      "create-success": "{entity} erfolgreich erstellt!",
+      "delete-success": "{entity} erfolgreich gelöscht!",
+      "update-success": "{entity} erfolgreich geändert!",
+      "create-failed": "Erstellen von {entity} fehlgeschlagen!",
+      "delete-failed": "Löschen von {entity} fehlgeschlagen!",
+      "update-failed": "Ändern von {entity} fehlgeschlagen!"
+    }
+  },
+  "actions": {
+    "cancel": "Abbrechen",
+    "create": "Erstellen",
+    "update": "Ändern",
+    "save": "Speichern",
+    "delete": "Löschen",
+    "invite": "Einladen"
+  },
+  "data-mangement": {
+    "title": "Titel"
+  },
+  "events": {
+    "end-time": "Endzeit",
+    "start-time": "Startzeit",
+    "attendees": "Teilnehmer",
+    "project": "Projekt",
+    "title": "Titel",
+    "create-event": "Veranstaltung anlegen",
+    "cancel-event": "Meeting absagen",
+    "update-event": "Meeting ändern",
+    "no-events": "Keine Veranstaltungen"
+  },
+  "under-construction": {
+    "we-are-working-hard": "Wir arbeiten hart um euch bald neue Features zeigen zu können.",
+    "go-back": "Zurück gehen",
+    "title": "Seite in Bearbeitung"
   }
 }

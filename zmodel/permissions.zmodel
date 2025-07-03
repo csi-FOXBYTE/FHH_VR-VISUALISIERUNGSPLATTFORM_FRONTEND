@@ -39,7 +39,8 @@ model Role extends Base {
 /// This is readonly
 model Permission extends Base {
     assignedRoles Role[]
-    name          String @unique
+    name          String @unique @deny('update', true)
 
     @@allow('read', auth().assignedGroups?[assignedRoles?[assignedPermissions?[name == 'PERMISSION:READ']]])
+    @@allow('update', auth().assignedGroups?[assignedRoles?[assignedPermissions?[name == 'PERMISSION:UPDATE']]])
 }

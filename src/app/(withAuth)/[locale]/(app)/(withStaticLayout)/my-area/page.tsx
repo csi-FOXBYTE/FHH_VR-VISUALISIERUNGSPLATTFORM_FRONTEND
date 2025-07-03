@@ -52,11 +52,7 @@ export default function MyAreaPage() {
             key: "project-management",
             content: (
               <Typography textAlign="justify" whiteSpace="break-spaces">
-                In diesem Bereich verwalten Sie Ihre Projekte zentral und
-                effizient. Sie können neue Projekte anlegen, bestehende löschen
-                oder bearbeiten. Zusätzlich haben Sie die Möglichkeit,
-                projektspezifische Daten hochzuladen und als Ebenen innerhalb
-                des Systems verfügbar zu machen.
+                {t("index.project-management-description")}
               </Typography>
             ),
             link: {
@@ -70,13 +66,13 @@ export default function MyAreaPage() {
             content: (
               <>
                 <span>
-                  Folgende Termine stehen heute am&nbsp;
-                  {formatter.dateTime(dayjs().toDate(), {
-                    dateStyle: "medium",
+                  {t("index.events-text", {
+                    date: formatter.dateTime(dayjs().toDate(), {
+                      dateStyle: "medium",
+                    }),
                   })}
-                  &nbsp; an:
                 </span>
-                <Timeline>
+                <Timeline sx={{ maxHeight: 200, overflowY: "auto"}}>
                   {todaysEvents.length !== 0 ? (
                     todaysEvents.map((event, index) => (
                       <TimelineItem key={event.id}>
@@ -107,7 +103,7 @@ export default function MyAreaPage() {
                         <TimelineDot />
                       </TimelineSeparator>
                       <TimelineContent>
-                        Keine Termine bevorstehend
+                        {t("index.no-events-pending")}
                       </TimelineContent>
                     </TimelineItem>
                   )}
@@ -124,12 +120,7 @@ export default function MyAreaPage() {
             key: "administration",
             content: (
               <Typography textAlign="justify" whiteSpace="break-spaces">
-                Über diesen Bereich erhalten Sie Zugriff auf zentrale
-                Verwaltungsfunktionen des Systems. Hier können Sie Basisdaten
-                hochladen und organisieren, Systemeinstellungen wie APIs und
-                Anwendungen konfigurieren, Systemaktivitäten sowie
-                sicherheitsrelevante Logs einsehen und Benutzer sowie Gruppen
-                verwalten.
+                {t("index.administration-description")}
               </Typography>
             ),
             link: {

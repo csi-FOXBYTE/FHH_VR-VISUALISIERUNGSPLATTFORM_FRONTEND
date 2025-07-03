@@ -1,80 +1,83 @@
 {
   "index": {
-    "my-area": "My Area",
-    "project-management": "Project Management",
+    "my-area": "My area",
+    "project-management": "Project management",
     "collaboration": "Collaboration",
     "administration": "Administration",
-    "welcoming-text": "Hello {name}!",
-    "show-profile": "View Profile",
-    "manage-projects": "Manage Projects",
-    "show-collaboration": "Open Collaboration",
-    "show-administration": "Open Administration",
-    "today": "Today",
-    "last-logged-in-message": "Last logged in on {date}."
+    "welcoming-text": "Hello, {name}!",
+    "show-profile": "View profile",
+    "manage-projects": "Manage projects",
+    "show-collaboration": "Open collaboration",
+    "show-administration": "Open administration",
+    "last-logged-in-message": "Last logged in on {date}.",
+    "events-text": "The following events are scheduled for today, {date}:",
+    "no-events-pending": "No upcoming events",
+    "administration-description": "In this area you have access to the system’s central administrative functions. Here you can upload and organize base data, configure system settings such as APIs and applications, view system activities and security logs, and manage users and groups.",
+    "project-management-description": "In this area you centrally and efficiently manage your projects. You can create new projects, delete or edit existing ones, and upload project-specific data to make it available as layers within the system."
   },
   "navbar": {
     "profile": "Profile",
-    "project-management": "Project Management",
+    "project-management": "Project management",
     "collaboration": "Collaboration",
     "administration": "Administration",
-    "sign-out": "Sign Out",
-    "system-version": "System Version",
+    "sign-out": "Sign out",
+    "system-version": "System version",
     "help": "Help",
     "settings": "Settings",
-    "login": "Log In",
+    "login": "Sign in",
     "register": "Register"
   },
   "landingpage": {
-    "in-3d-and-virtual-reality": "in 3D and Virtual Reality",
+    "in-3d-and-virtual-reality": "in 3D and virtual reality",
     "download": "Download"
   },
   "navigation": {
-    "my-area": "My Area",
+    "my-area": "My area",
     "profile": "Profile",
-    "not-found": "Not Found",
+    "not-found": "Not found",
     "administration": "Administration",
-    "project-management": "Project Management",
+    "project-management": "Project management",
     "collaboration": "Collaboration",
     "editor": "Editor",
-    "new-project": "New Project",
+    "new-project": "New project",
     "project": "Project",
-    "user-management": "User & Group Management",
+    "user-management": "User and group management",
     "configuration": "Configuration",
-    "system-activities-and-logs": "System Activities & Logs",
-    "data-management": "Data Management"
+    "system-activities-and-logs": "System activities and logs",
+    "data-management": "Data management"
   },
   "footer": {
     "imprint": "Imprint",
-    "gdpr": "Privacy Policy"
+    "gdpr": "Privacy policy"
   },
   "profile": {
     "profile": "Profile",
     "name": "Name",
-    "email": "Email Address",
-    "user-group": "User Group",
-    "personal-data": "Personal Data",
-    "last-login": "Last Login",
-    "delete-account": "Delete Account",
-    "update-account": "Edit Account"
+    "email": "Email address",
+    "user-group": "User group",
+    "personal-data": "Personal data",
+    "last-login": "Last login",
+    "delete-account": "Delete account",
+    "update-account": "Edit account"
   },
   "collaboration": {
     "collaboration": "Collaboration",
-    "to-project": "To Project",
+    "to-project": "Go to project",
     "copied-to-clipboard-success": "Code successfully copied to clipboard!",
     "code": "Code"
   },
   "administration": {
-    "data-management": "Data Management",
-    "user-management": "User & Group Management",
+    "data-management": "Data management",
+    "user-management": "User and group management",
     "configuration": "Configuration",
-    "system-activities-and-logs": "System Activities & Logs",
-    "go-to-configuration": "Go to Configuration",
-    "go-to-data-management": "Go to Data Management",
-    "go-to-system-activities": "Go to System Activities",
-    "go-to-user-management": "Go to User & Group Management",
+    "system-activities-and-logs": "System activities and logs",
+    "go-to-configuration": "Go to configuration",
+    "go-to-data-management": "Go to data management",
+    "go-to-system-activities": "Go to system activities",
+    "go-to-user-management": "Go to user and group management",
     "system-activities-and-logs-description": "All log entries for system, database, users, and security.",
     "configuration-description": "Manage system settings for data, APIs, and applications.",
-    "data-management-description": "Upload base data, manage datasets, and define viewing axes.",
+    "data-management-description": "Upload and manage base data and set visual axes.",
     "user-management-description": "Add users, manage permissions, and organize groups.",
     "title": "Administration"
   },
@@ -82,24 +85,98 @@
     "title": "Configuration"
   },
   "user-management": {
-    "title": "User & Group Management"
+    "title": "User and group management",
+    "email": "Email",
+    "assigned-groups": "Assigned groups",
+    "name": "Name",
+    "default-for": "Default for",
+    "is-admin-group": "Is admin group",
+    "assigned-roles": "Assigned roles"
   },
   "system-activities": {
-    "title": "System Activities & Logs"
+    "title": "System activities and logs"
   },
   "data-management": {
-    "title": "Data Management"
+    "title": "Data management",
+    "starting-point": "Starting point",
+    "start-point": "Starting point",
+    "end-point": "End point",
+    "description": "Description",
+    "name": "Name"
   },
   "project-management": {
-    "title": "Project Management",
-    "my-projects": "My Projects",
-    "shared-projects": "Projects Shared with Me",
-    "create-project": "Create Project"
+    "title": "Project management",
+    "my-projects": "My projects",
+    "shared-projects": "Projects shared with me"
   },
   "components": {
     "list-with-pagination": {
       "search": "Search",
       "search-placeholder": "Enter term..."
     }
+  },
+  "permissions": {
+    "CREATE": "Create",
+    "UPDATE": "Update",
+    "DELETE": "Delete",
+    "READ": "Read",
+    "ALL": "All",
+    "EVENT": "Event",
+    "EVENT_ATTENDEE": "Event attendee",
+    "BASE_LAYER": "Base layer",
+    "PROJECT_LAYER": "Project layer",
+    "GROUP": "Group",
+    "ROLE": "Role",
+    "PERMISSION": "Permission",
+    "PROJECT": "Project",
+    "CLIPPING_POLYGON": "Clipping polygon",
+    "PROJECT_FILE": "Project file",
+    "VISUAL_AXIS": "Visual axis",
+    "STARTING_POINT": "Starting point",
+    "USER": "User",
+    "VIEWS": "Views"
+  },
+  "entities": {
+    "user": "User",
+    "group": "Group",
+    "role": "Role",
+    "base-layer": "Base layer",
+    "project-layer": "Project layer",
+    "starting-point": "Starting point",
+    "visual-axis": "Visual axis",
+    "project-file": "Project file",
+    "event": "Event"
+  },
+  "generic": {
+    "crud-notifications": {
+      "create-success": "{entity} created successfully!",
+      "delete-success": "{entity} deleted successfully!",
+      "update-success": "{entity} updated successfully!",
+      "create-failed": "Failed to create {entity}!",
+      "delete-failed": "Failed to delete {entity}!",
+      "update-failed": "Failed to update {entity}!"
+    }
+  },
+  "actions": {
+    "cancel": "Cancel",
+    "create": "Create",
+    "update": "Update",
+    "save": "Save",
+    "delete": "Delete",
+    "invite": "Invite"
+  },
+  "data-mangement": {
+    "title": "Title"
+  },
+  "events": {
+    "end-time": "End time",
+    "start-time": "Start time",
+    "attendees": "Attendees",
+    "project": "Project",
+    "title": "Title",
+    "create-event": "Create event",
+    "cancel-event": "Cancel meeting",
+    "update-event": "Update meeting",
+    "no-events": "No events"
   }
 }

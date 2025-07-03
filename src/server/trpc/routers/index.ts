@@ -8,6 +8,8 @@ import projectManagementRouter from "./projectManagementRouter";
 import projectRouter from "./projectRouter";
 import subscriptionRouter from "./subscriptionRouter";
 import userManagementRouter from "./userManagementRouter";
+import profileRouter from "./profileRouter";
+import configurationRouter from "./configurationRouter";
 
 export const appRouter = router({
   myAreaRouter,
@@ -17,6 +19,8 @@ export const appRouter = router({
   subscriptionRouter,
   dataManagementRouter,
   userManagementRouter,
+  profileRouter,
+  configurationRouter,
 });
 
 export type AppRouter = typeof appRouter;

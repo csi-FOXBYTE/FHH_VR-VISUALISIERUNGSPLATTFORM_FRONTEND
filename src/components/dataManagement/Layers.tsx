@@ -1,18 +1,25 @@
 import { trpc } from "@/server/trpc/client";
-import { Button, ButtonGroup, Grid } from "@mui/material";
-import { DataGrid } from "@mui/x-data-grid";
-import useDataGridServerSideHelper from "../dataGridServerSide/useDataGridServerSideOptions";
-import { keepPreviousData } from "@tanstack/react-query";
 import { Add } from "@mui/icons-material";
+import { DataGrid } from "@mui/x-data-grid";
+import { keepPreviousData } from "@tanstack/react-query";
 import createEditDeleteActions from "../dataGridServerSide/createEditDeleteActions";
+import useDataGridServerSideHelper from "../dataGridServerSide/useDataGridServerSideOptions";
+import { useTranslations } from "next-intl";
+import { Chip, Grid } from "@mui/material";
 
 export default function Layers() {
+  const t = useTranslations();
+
   const { props } = useDataGridServerSideHelper("data-management-layers", {
-    extraActions: (
-      <ButtonGroup variant="contained">
-        <Button startIcon={<Add />}>Basisdatensatz anlegen</Button>
-      </ButtonGroup>
-    ),
+    extraActions: [
+      {
+        icon: <Add />,
+        label: t("actions.create"),
+        key: "base",
+        disabled: true,
+        onClick: () => {},
+      },
+    ],
   });
 
   const { data: { data, count } = { count: 0, data: [] }, isLoading } =
@@ -28,7 +35,7 @@ export default function Layers() {
     );
 
   return (
-    <Grid container flex="1" flexDirection="column">
+    <>
       <DataGrid
         {...props}
         loading={isLoading}
@@ -48,35 +55,54 @@ export default function Layers() {
           {
             field: "name",
             type: "string",
-            headerName: "Name",
+            headerName: t("data-management.name"),
             flex: 1,
           },
           {
-            headerName: "Creator",
-            field: "creator.name",
-            valueGetter: (_, row) => row.creator.name,
+            headerName: t("data-management.owner"),
+            field: "owner.name",
+            valueGetter: (_, row) => row.owner?.name,
             type: "string",
             filterable: true,
             sortable: false,
             flex: 1,
           },
           {
-            headerName: "Size in GB",
+            headerName: t("data-management.visible-for-groups"),
+            field: "visibleForGroups",
+            filterable: false,
+            sortable: false,
+            renderCell: ({
+              row: { visibleForGroups },
+            }: {
+              row: (typeof data)[number];
+            }) => (
+              <Grid spacing={2}>
+                {visibleForGroups.map((visibleForGroup) => (
+                  <Chip key={visibleForGroup.id} label={visibleForGroup.name} />
+                ))}
+              </Grid>
+            ),
+            flex: 1,
+          },
+          {
+            headerName: t("data-management.size-in-gb"),
             field: "sizeGB",
             type: "number",
             valueFormatter: (value) => `${value} GB`,
           },
           {
-            headerName: "Created at",
+            headerName: t("data-management.create-at"),
             field: "createdAt",
             type: "date",
           },
           createEditDeleteActions({
             handleDelete: () => {},
             handleEdit: () => {},
+            isDisabled: () => true,
           }),
         ]}
       />
-    </Grid>
+    </>
   );
 }

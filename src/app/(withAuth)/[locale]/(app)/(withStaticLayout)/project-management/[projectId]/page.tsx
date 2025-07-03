@@ -1,7 +1,7 @@
 "use client";
 
 import PageContainer from "@/components/common/PageContainer";
-import BaseAndProjectLayers from "@/components/projectManagement/BaseAndProjectLayers";
+import BaseLayers from "@/components/projectManagement/BaseAndProjectLayers";
 import { Link, useRouter } from "@/server/i18n/routing";
 import { trpc } from "@/server/trpc/client";
 import {
@@ -216,7 +216,7 @@ export default function ProjectPage() {
       {isNew ? null : (
         <>
           <Divider />
-          <BaseAndProjectLayers />
+          <BaseLayers />
         </>
       )}
     </PageContainer>

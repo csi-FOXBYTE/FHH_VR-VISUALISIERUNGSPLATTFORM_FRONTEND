@@ -4,6 +4,15 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 (async () => {
+  await prisma.configuration.create({
+    data: {
+      defaultEPSG: "EPSG:25832",
+      globalStartPointX: 3764595.8724393756,
+      globalStartPointY: 664200.4499076013,
+      globalStartPointZ: 5144292.106228131,
+    },
+  });
+
   const permissions = await prisma.$transaction(
     Array.from(CRUD_PERMISSIONS_SET).map((permission) =>
       prisma.permission.create({
@@ -81,7 +90,7 @@ const prisma = new PrismaClient();
   await prisma.visualAxis.createMany({
     data: [
       {
-        creatorId: id,
+        ownerId: id,
         endPointX: 0,
         endPointY: 0,
         endPointZ: 0,
@@ -93,65 +102,95 @@ const prisma = new PrismaClient();
     ],
   });
 
-  await prisma.baseLayer.createMany({
-    data: [
-      {
-        creatorId: id,
-        href: "https://fhhvrshare.blob.core.windows.net/hamburg/3dtiles/area1/tileset.json",
-        sizeGB: 2.78,
-        type: "3D-TILES",
-        name: "Area 1",
+  await prisma.baseLayer.create({
+    data: {
+      ownerId: id,
+      href: "https://fhhvrshare.blob.core.windows.net/hamburg/3dtiles/area1/tileset.json",
+      sizeGB: 2.78,
+      type: "3D-TILES",
+      name: "Area 1",
+      visibleForGroups: {
+        connect: [{ id: adminGroupId }, { id: guestGroupId }],
       },
-      {
-        creatorId: id,
-        href: "https://fhhvrshare.blob.core.windows.net/hamburg/3dtiles/area2/tileset.json",
-        sizeGB: 4.59,
-        type: "3D-TILES",
-        name: "Area 2",
+    },
+  });
+
+  await prisma.baseLayer.create({
+    data: {
+      ownerId: id,
+      href: "https://fhhvrshare.blob.core.windows.net/hamburg/3dtiles/area2/tileset.json",
+      sizeGB: 4.59,
+      type: "3D-TILES",
+      name: "Area 2",
+      visibleForGroups: {
+        connect: [{ id: adminGroupId }, { id: guestGroupId }],
       },
-      {
-        creatorId: id,
-        href: "https://fhhvrshare.blob.core.windows.net/hamburg/3dtiles/area3/tileset.json",
-        sizeGB: 1.99,
-        type: "3D-TILES",
-        name: "Area 3",
+    },
+  });
+
+  await prisma.baseLayer.create({
+    data: {
+      ownerId: id,
+      href: "https://fhhvrshare.blob.core.windows.net/hamburg/3dtiles/area3/tileset.json",
+      sizeGB: 1.99,
+      type: "3D-TILES",
+      name: "Area 3",
+      visibleForGroups: {
+        connect: [{ id: adminGroupId }, { id: guestGroupId }],
       },
-      {
-        creatorId: id,
-        href: "https://fhhvrshare.blob.core.windows.net/hamburg/3dtiles/area4/tileset.json",
-        sizeGB: 8.13,
-        type: "3D-TILES",
-        name: "Area 4",
+    },
+  });
+
+  await prisma.baseLayer.create({
+    data: {
+      ownerId: id,
+      href: "https://fhhvrshare.blob.core.windows.net/hamburg/3dtiles/area4/tileset.json",
+      sizeGB: 8.13,
+      type: "3D-TILES",
+      name: "Area 4",
+      visibleForGroups: {
+        connect: [{ id: adminGroupId }, { id: guestGroupId }],
       },
-      {
-        creatorId: id,
-        href: "https://fhhvrshare.blob.core.windows.net/hamburg/3dtiles/area5/tileset.json",
-        sizeGB: 2.45,
-        type: "3D-TILES",
-        name: "Area 5",
+    },
+  });
+
+  await prisma.baseLayer.create({
+    data: {
+      ownerId: id,
+      href: "https://fhhvrshare.blob.core.windows.net/hamburg/3dtiles/area5/tileset.json",
+      sizeGB: 2.45,
+      type: "3D-TILES",
+      name: "Area 5",
+      visibleForGroups: {
+        connect: [{ id: adminGroupId }, { id: guestGroupId }],
       },
-      {
-        creatorId: id,
-        href: "https://fhhvrshare.blob.core.windows.net/hamburg/3dtiles/trees/tileset.json",
-        sizeGB: 4.25,
-        type: "3D-TILES",
-        name: "Trees",
+    },
+  });
+
+  await prisma.baseLayer.create({
+    data: {
+      ownerId: id,
+      href: "https://fhhvrshare.blob.core.windows.net/hamburg/terrain",
+      sizeGB: 3,
+      type: "TERRAIN",
+      name: "Terrain",
+      visibleForGroups: {
+        connect: [{ id: adminGroupId }, { id: guestGroupId }],
       },
-      {
-        creatorId: id,
-        href: "https://fhhvrshare.blob.core.windows.net/hamburg/terrain",
-        sizeGB: 3,
-        type: "TERRAIN",
-        name: "Terrain",
+    },
+  });
+
+  await prisma.baseLayer.create({
+    data: {
+      ownerId: id,
+      href: "https://fhhvrshare.blob.core.windows.net/hamburg/imagery/{z}/{x}/{y}.jpg",
+      sizeGB: 13,
+      type: "IMAGERY",
+      name: "Imagery",
+      visibleForGroups: {
+        connect: [{ id: adminGroupId }, { id: guestGroupId }],
       },
-      {
-        creatorId: id,
-        href: "https://fhhvrshare.blob.core.windows.net/hamburg/imagery/{z}/{x}/{y}.jpg",
-        sizeGB: 13,
-        type: "IMAGERY",
-        name: "Imagery",
-      },
-    ],
+    },
   });
 })();
 

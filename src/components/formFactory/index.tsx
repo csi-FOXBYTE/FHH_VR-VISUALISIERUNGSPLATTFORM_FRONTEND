@@ -74,9 +74,9 @@ function recurseStructure<
 
     const modelItem = modelItems.get(String(structureItem.targetKey));
 
-    const rendered = modelConfig[modelItem?.type]!.render(
-      modelItem?.name,
-      modelItem.props,
+    const rendered = modelConfig[modelItem!.type]!.render(
+      String(modelItem!.name),
+      modelItem!.props,
       form
     );
 
@@ -109,18 +109,20 @@ export function createFormFactory<
           {modelConfig[item.type].render(
             String(item.name),
             item.props,
+            //@ts-expect-error wrong type
             props.form
           )}
         </Fragment>
       ));
 
-    const modelItemsMap = new Map(props.model.map((m) => [m.name, m]));
+    const modelItemsMap = new Map(props.model.map((m) => [String(m.name), m]));
 
     return recurseStructure(
       structureConfig,
       props.structure,
       modelConfig,
       modelItemsMap,
+      //@ts-expect-error wrong type
       props.form
     );
   };

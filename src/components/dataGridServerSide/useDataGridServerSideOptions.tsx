@@ -9,7 +9,15 @@ export default function useDataGridServerSideHelper(
   props?: {
     showQuickFilter?: boolean;
     initialState?: DataGridProps["initialState"];
-    extraActions?: ReactNode;
+    extraActions?: {
+      key: string;
+      label: string;
+      onClick?: () => void;
+      loading?: boolean;
+      disabled?: boolean;
+      href?: string;
+      icon: ReactNode;
+    }[];
   }
 ) {
   const [rowSelectionModel, setRowSelectionModel] = useState<

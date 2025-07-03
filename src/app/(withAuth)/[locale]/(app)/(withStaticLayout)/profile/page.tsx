@@ -3,13 +3,22 @@
 import PageContainer from "@/components/common/PageContainer";
 import UserAvatar from "@/components/common/UserAvatar";
 import { Link } from "@/server/i18n/routing";
+import { trpc } from "@/server/trpc/client";
 import { Button, Grid, TextField, Typography } from "@mui/material";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
+import { useConfirm } from "material-ui-confirm";
 
 export default function ProfilePage() {
   const session = useSession();
   const t = useTranslations();
+
+  const { data: info } = trpc.profileRouter.getInfo.useQuery();
+
+  const { mutate: deleteUserMutation } =
+    trpc.profileRouter.deleteUser.useMutation();
+
+  const confirm = useConfirm();
 
   return (
     <PageContainer>
@@ -31,26 +40,16 @@ export default function ProfilePage() {
           disabled
           label={t("profile.email")}
           component={TextField}
-          size={{
-            lg: 6,
-            md: 6,
-            sm: 12,
-            xl: 6,
-            xs: 12,
-          }}
+          size={12}
         />
         <Grid
-          value="-"
+          defaultValue={info?.assignedGroups
+            .map((assignedGroup) => assignedGroup.name)
+            .join(", ")}
           disabled
           label={t("profile.user-group")}
           component={TextField}
-          size={{
-            lg: 6,
-            md: 6,
-            sm: 12,
-            xl: 6,
-            xs: 12,
-          }}
+          size={12}
         />
       </Grid>
       <Grid container spacing={2} justifyContent="flex-end">
@@ -66,7 +65,32 @@ export default function ProfilePage() {
         >
           {t("profile.update-account")}
         </Button>
-        <Button size="large" variant="contained" color="secondary">
+        <Button
+          disabled // TODO: Implement user delete
+          onClick={async () => {
+            const { confirmed } = await confirm({
+              title: "Sind Sie sich sicher?",
+              cancellationText: "Abbrechen",
+              confirmationText: "Ok",
+              description:
+                "Sind Sie sich sicher das Sie ihren Nutzeraccount löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden!",
+            });
+
+            if (!confirmed) return;
+
+            deleteUserMutation(undefined, {
+              onSuccess: () => {
+                signOut();
+              },
+              onError(error) {
+                console.error(error);
+              },
+            });
+          }}
+          size="large"
+          variant="contained"
+          color="secondary"
+        >
           {t("profile.delete-account")}
         </Button>
       </Grid>

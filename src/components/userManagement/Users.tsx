@@ -1,34 +1,31 @@
 "use client";
 
 import { trpc } from "@/server/trpc/client";
-import { Button, Chip, Grid } from "@mui/material";
+import { Add } from "@mui/icons-material";
+import { Chip, Grid, Typography } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { keepPreviousData } from "@tanstack/react-query";
 import UserAvatar from "../common/UserAvatar";
-import useDataGridServerSideHelper from "../dataGridServerSide/useDataGridServerSideOptions";
 import createEditDeleteActions from "../dataGridServerSide/createEditDeleteActions";
-import UserCUDialog from "./UserCUDialog";
-import {
-  useQueryState,
-  parseAsStringLiteral,
-  parseAsString,
-  parseAsBoolean,
-} from "nuqs";
-import { Add } from "@mui/icons-material";
+import useDataGridServerSideHelper from "../dataGridServerSide/useDataGridServerSideOptions";
+import UserCUDialog, { useUserCUDialogState } from "./UserCUDialog";
+import { useSnackbar } from "notistack";
+import { useTranslations } from "next-intl";
 
 export default function Users() {
+  const [, { openCreate, openUpdate }] = useUserCUDialogState();
+
+  const t = useTranslations();
+
   const { props } = useDataGridServerSideHelper("user-management/permissions", {
-    extraActions: (
-      <Button
-        startIcon={<Add />}
-        onClick={() => {
-          setMode("CREATE");
-          setOpen(true);
-        }}
-      >
-        Nutzer einladen
-      </Button>
-    ),
+    extraActions: [
+      {
+        icon: <Add />,
+        key: "create",
+        label: t("actions.invite"),
+        onClick: () => openCreate(),
+      },
+    ],
   });
 
   const { data: { data, count } = { data: [], count: 0 }, isLoading } =
@@ -43,24 +40,34 @@ export default function Users() {
       }
     );
 
-  const [mode, setMode] = useQueryState(
-    "mode",
-    parseAsStringLiteral(["CREATE", "UPDATE"]).withDefault("CREATE")
-  );
-  const [id, setId] = useQueryState("id", parseAsString);
-  const [open, setOpen] = useQueryState(
-    "open",
-    parseAsBoolean.withDefault(false)
-  );
+  const { enqueueSnackbar } = useSnackbar();
+
+  const utils = trpc.useUtils();
+
+  const { mutate: deleteMutation, isPending: isDeleteMutationPending } =
+    trpc.userManagementRouter.users.delete.useMutation({
+      onSuccess: () => {
+        utils.userManagementRouter.invalidate();
+        enqueueSnackbar({
+          variant: "success",
+          message: t("generic.crud-notifications.delete-success", {
+            entity: t("entities.user"),
+          }),
+        });
+        close();
+      },
+      onError: () =>
+        enqueueSnackbar({
+          variant: "error",
+          message: t("generic.crud-notifications.delete-failed", {
+            entity: t("entities.user"),
+          }),
+        }),
+    });
 
   return (
     <>
-      <UserCUDialog
-        id={id ?? undefined}
-        mode={mode}
-        open={open}
-        close={() => setOpen(false)}
-      />
+      <UserCUDialog />
       <DataGrid
         {...props}
         loading={isLoading}
@@ -69,23 +76,24 @@ export default function Users() {
           {
             field: "name",
             flex: 1,
-            headerName: "Name",
-            renderCell: ({ row: { image, name } }) => (
-              <Grid container alignItems="center" spacing={2}>
-                <UserAvatar src={image ?? undefined} name={name ?? undefined} />
-                {name}
+            headerName: t("user-management.name"),
+            renderCell: ({ row: { image, name, email } }) => (
+              <Grid container alignItems="center" height="100%" spacing={2}>
+                <UserAvatar src={image ?? undefined} name={name ?? email} />
+                <Typography variant="body2">{name ?? "-"}</Typography>
               </Grid>
             ),
           },
           {
             field: "email",
             flex: 1,
-            headerName: "Email",
+            headerName: t("user-management.email"),
           },
           {
             field: "assignedGroups",
             filterable: false,
             sortable: false,
+            headerName: t("user-management.assigned-groups"),
             flex: 1,
             renderCell: ({
               row: { assignedGroups },
@@ -100,12 +108,9 @@ export default function Users() {
             ),
           },
           createEditDeleteActions({
-            handleDelete: () => {},
-            handleEdit: (id) => {
-              setId(id);
-              setOpen(true);
-              setMode("UPDATE");
-            },
+            handleDelete: (id) => deleteMutation({ id }),
+            handleEdit: openUpdate,
+            loading: isDeleteMutationPending,
           }),
         ]}
         rowCount={count}

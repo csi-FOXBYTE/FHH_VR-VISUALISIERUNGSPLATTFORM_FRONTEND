@@ -1,12 +1,18 @@
 import { z } from "zod";
 import { protectedProcedure, router } from "..";
+import dayjs from "dayjs";
 
 const eventsRouter = router({
   list: protectedProcedure.query(async (opts) => {
     const events = await opts.ctx.db.event.findMany({
+      where: {
+        startTime: {
+          gte: dayjs().hour(0).minute(0).millisecond(0).second(0).toISOString(),
+        },
+      },
       select: {
         id: true,
-        creator: {
+        owner: {
           select: {
             name: true,
             id: true,
@@ -31,7 +37,7 @@ const eventsRouter = router({
     return events.map((event) => ({
       ...event,
       role:
-        event.creator.id === opts.ctx.session.user.id ? "MODERATOR" : "GUEST",
+        event.owner?.id === opts.ctx.session.user.id ? "MODERATOR" : "GUEST",
     }));
   }),
   getEventDetails: protectedProcedure
@@ -71,7 +77,10 @@ const eventsRouter = router({
           label: attendee.user.name ?? attendee.user.email,
           value: attendee.user.id,
         })),
-        project: event.project?.title !== undefined && event.project?.id !== undefined ? { label: event.project?.title, value: event.project?.id } : null,
+        project:
+          event.project?.title !== undefined && event.project?.id !== undefined
+            ? { label: event.project?.title, value: event.project?.id }
+            : null,
       };
     }),
   getPossibleAttendees: protectedProcedure
@@ -145,7 +154,7 @@ const eventsRouter = router({
               data: attendees.map((attendee) => ({ userId: attendee })),
             },
           },
-          creator: {
+          owner: {
             connect: {
               id: opts.ctx.session.user.id,
             },
@@ -203,7 +212,7 @@ const eventsRouter = router({
                 },
               }
             : undefined,
-          creator: {
+          owner: {
             connect: {
               id: opts.ctx.session.user.id,
             },

@@ -6,7 +6,7 @@ import useDataGridServerSideHelper from "@/components/dataGridServerSide/useData
 import { Link as NextLink } from "@/server/i18n/routing";
 import { trpc } from "@/server/trpc/client";
 import { Add } from "@mui/icons-material";
-import { Button, Link, ListItemText, Tab, Tabs } from "@mui/material";
+import { Link, ListItemText, Tab, Tabs } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { keepPreviousData } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
@@ -21,16 +21,14 @@ export default function ProjectManagementPage() {
   );
 
   const { props } = useDataGridServerSideHelper("project-management", {
-    extraActions: (
-      <Button
-        LinkComponent={NextLink}
-        href={"/project-management/new"}
-        variant="contained"
-        startIcon={<Add />}
-      >
-        {t("project-management.create-project")}
-      </Button>
-    ),
+    extraActions: [
+      {
+        icon: <Add />,
+        key: "new",
+        label: t("actions.create"),
+        href: "/project-management/new",
+      },
+    ],
   });
 
   const { data: { data, count } = { data: [], count: 0 } } =

@@ -12,43 +12,20 @@ import TimePicker from "./TimePicker";
 import ToolsProvider from "./Tools";
 import { useViewerStore } from "./ViewerProvider";
 import VisualAxes from "./VisualAxes";
+import { useBaseLayerProviderContext } from "./BaseLayerProvider";
+import { useConfigurationProviderContext } from "../configuration/ConfigurationProvider";
 
-const terrain = Cesium.CesiumTerrainProvider.fromUrl(
-  new Cesium.Resource({
-    url: "https://fhhvrshare.blob.core.windows.net/hamburg/terrain",
-  }),
-  {
-    requestVertexNormals: true,
-  }
-);
-
-const area1 = new Cesium.Resource({
-  url: "https://fhhvrshare.blob.core.windows.net/hamburg/3dtiles/area1/tileset.json",
-});
-
-const area2 = new Cesium.Resource({
-  url: "https://fhhvrshare.blob.core.windows.net/hamburg/3dtiles/area2/tileset.json",
-});
-
-const area3 = new Cesium.Resource({
-  url: "https://fhhvrshare.blob.core.windows.net/hamburg/3dtiles/area3/tileset.json",
-});
-
-const area4 = new Cesium.Resource({
-  url: "https://fhhvrshare.blob.core.windows.net/hamburg/3dtiles/area4/tileset.json",
-});
-
-const area5 = new Cesium.Resource({
-  url: "https://fhhvrshare.blob.core.windows.net/hamburg/3dtiles/area5/tileset.json",
-});
-
-const imageryProvider = new Cesium.OpenStreetMapImageryProvider({
+const openStreetMapImagerProvider = new Cesium.OpenStreetMapImageryProvider({
   url: "https://tile.openstreetmap.org/",
   fileExtension: "png",
 });
 
 export default function ResiumViewer() {
   const viewerStore = useViewerStore();
+
+  const layers = useBaseLayerProviderContext();
+
+  const configuration = useConfigurationProviderContext();
 
   const builtClippingPolygons = useMemo(() => {
     return new Array(6).fill(0).map(() => {
@@ -103,7 +80,7 @@ export default function ResiumViewer() {
       animation={false}
       navigationHelpButton={false}
       fullscreenButton={false}
-      terrainProvider={terrain}
+      terrainProvider={layers.terrain?.resource}
       timeline={false}
       scene3DOnly
       targetFrameRate={30}
@@ -121,35 +98,25 @@ export default function ResiumViewer() {
         duration={0}
         destination={
           new Cesium.Cartesian3(
-            3764595.8724393756,
-            664200.4499076013,
-            5144292.106228131
+            configuration.globalStartPoint.x,
+            configuration.globalStartPoint.y,
+            configuration.globalStartPoint.z
           )
         }
       />
       <ClippingPolygons />
       <VisualAxes />
-      <ImageryLayer imageryProvider={imageryProvider} />
-      <Cesium3DTileset
-        clippingPolygons={builtClippingPolygons?.[0]}
-        url={area1}
-      />
-      <Cesium3DTileset
-        clippingPolygons={builtClippingPolygons?.[1]}
-        url={area2}
-      />
-      <Cesium3DTileset
-        clippingPolygons={builtClippingPolygons?.[2]}
-        url={area3}
-      />
-      <Cesium3DTileset
-        clippingPolygons={builtClippingPolygons?.[3]}
-        url={area4}
-      />
-      <Cesium3DTileset
-        clippingPolygons={builtClippingPolygons?.[4]}
-        url={area5}
-      />
+      <ImageryLayer imageryProvider={openStreetMapImagerProvider} />
+      {layers.imageries.map((imagery) => (
+        <ImageryLayer key={imagery.id} imageryProvider={imagery.resource} />
+      ))}
+      {layers.tileSets.map((tileSet) => (
+        <Cesium3DTileset
+          key={tileSet.id}
+          url={tileSet.resource}
+          clippingPolygons={builtClippingPolygons?.[0]}
+        />
+      ))}
     </Viewer>
   );
 }

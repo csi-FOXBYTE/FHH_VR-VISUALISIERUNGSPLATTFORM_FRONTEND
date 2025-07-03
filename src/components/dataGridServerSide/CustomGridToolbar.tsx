@@ -1,11 +1,16 @@
 "use client";
 
+import { Link } from "@/server/i18n/routing";
 import { Download, Share } from "@mui/icons-material";
 import {
+  Button,
+  ButtonGroup,
+  ListItem,
+  ListItemButton,
   ListItemIcon,
   ListItemText,
   Menu,
-  MenuItem
+  MenuItem,
 } from "@mui/material";
 import {
   GridApi,
@@ -16,7 +21,9 @@ import {
   GridToolbarQuickFilter,
   useGridApiContext,
 } from "@mui/x-data-grid";
+import { ArrowDropDownIcon } from "@mui/x-date-pickers";
 import ExcelJS from "exceljs";
+import PopupState, { bindMenu, bindTrigger } from "material-ui-popup-state";
 import { ReactNode, useState } from "react";
 
 async function generateExcelFile(api: GridApi) {
@@ -114,15 +121,29 @@ const CustomGridToolbarExport = () => {
 
 export const CustomGridToolbar = ({
   showQuickFilter,
-  extraActions,
+  extraActions = [],
   ...props
 }: GridToolbarProps & {
-  extraActions?: ReactNode;
+  extraActions?: {
+    key: string;
+    label: string;
+    onClick?: () => void;
+    disabled?: boolean;
+    loading?: boolean;
+    href?: string;
+    icon: ReactNode;
+  }[];
 }) => {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
+  const extraActionFirst = extraActions.slice(0, 1)[0];
+  const extraActionsRest = extraActions.slice(1);
+
   return (
-    <GridToolbarContainer sx={{ alignItems: "center", padding: 0, justifyContent: "space-between" }} {...props}>
+    <GridToolbarContainer
+      sx={{ alignItems: "center", padding: 0, justifyContent: "space-between" }}
+      {...props}
+    >
       <div style={{ display: "flex" }}>
         <GridToolbarFilterButton />
         <GridToolbarColumnsButton />
@@ -142,7 +163,48 @@ export const CustomGridToolbar = ({
           size="small"
         />
       ) : null}
-      {extraActions ?? null}
+      {extraActionFirst ? (
+        <ButtonGroup>
+          <Button
+            variant="contained"
+            loading={extraActionFirst.loading}
+            disabled={extraActionFirst.disabled}
+            key={extraActionFirst.key}
+            onClick={extraActionFirst.onClick}
+            startIcon={extraActionFirst.icon}
+            LinkComponent={extraActionFirst.href ? Link : undefined}
+            href={extraActionFirst.href}
+          >
+            {extraActionFirst.label}
+          </Button>
+          {extraActionsRest.length > 0 ? (
+            <PopupState variant="popover">
+              {(popupState) => (
+                <>
+                  <Button variant="contained" {...bindTrigger(popupState)}>
+                    <ArrowDropDownIcon />
+                  </Button>
+                  <Menu {...bindMenu(popupState)}>
+                    {extraActionsRest.map((extraAction) => (
+                      <ListItem key={extraAction.key} disablePadding>
+                        <ListItemButton
+                          disabled={extraAction.disabled}
+                          LinkComponent={extraAction.href ? Link : undefined}
+                          href={extraAction.href ?? ""}
+                          onClick={extraAction.onClick}
+                        >
+                          <ListItemIcon>{extraAction.icon}</ListItemIcon>
+                          <ListItemText primary={extraAction.label} />
+                        </ListItemButton>
+                      </ListItem>
+                    ))}
+                  </Menu>
+                </>
+              )}
+            </PopupState>
+          ) : null}
+        </ButtonGroup>
+      ) : null}
     </GridToolbarContainer>
   );
 };
