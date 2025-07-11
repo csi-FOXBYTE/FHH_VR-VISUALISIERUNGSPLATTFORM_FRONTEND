@@ -14,6 +14,25 @@
 
 
 import * as runtime from '../runtime';
+import type {
+  EventsGet400Response,
+  EventsGet401Response,
+  EventsGet403Response,
+  EventsGet405Response,
+  EventsGet500Response,
+} from '../models/index';
+import {
+    EventsGet400ResponseFromJSON,
+    EventsGet400ResponseToJSON,
+    EventsGet401ResponseFromJSON,
+    EventsGet401ResponseToJSON,
+    EventsGet403ResponseFromJSON,
+    EventsGet403ResponseToJSON,
+    EventsGet405ResponseFromJSON,
+    EventsGet405ResponseToJSON,
+    EventsGet500ResponseFromJSON,
+    EventsGet500ResponseToJSON,
+} from '../models/index';
 
 /**
  * 

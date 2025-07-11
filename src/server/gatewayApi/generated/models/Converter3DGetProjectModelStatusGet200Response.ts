@@ -41,12 +41,6 @@ export interface Converter3DGetProjectModelStatusGet200Response {
     progress: number;
     /**
      * 
-     * @type {string}
-     * @memberof Converter3DGetProjectModelStatusGet200Response
-     */
-    buffer64?: string;
-    /**
-     * 
      * @type {Array<number>}
      * @memberof Converter3DGetProjectModelStatusGet200Response
      */
@@ -74,7 +68,6 @@ export function Converter3DGetProjectModelStatusGet200ResponseFromJSONTyped(json
         
         'state': Converter3DGetProjectModelStatusGet200ResponseStateFromJSON(json['state']),
         'progress': json['progress'],
-        'buffer64': json['buffer64'] == null ? undefined : json['buffer64'],
         'modelMatrix': json['modelMatrix'] == null ? undefined : json['modelMatrix'],
     };
 }
@@ -92,7 +85,6 @@ export function Converter3DGetProjectModelStatusGet200ResponseToJSONTyped(value?
         
         'state': Converter3DGetProjectModelStatusGet200ResponseStateToJSON(value['state']),
         'progress': value['progress'],
-        'buffer64': value['buffer64'],
         'modelMatrix': value['modelMatrix'],
     };
 }

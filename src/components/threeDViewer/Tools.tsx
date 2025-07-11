@@ -25,10 +25,27 @@ export default function ToolsProvider() {
 
       const carto = Cesium.Cartographic.fromCartesian(onEllipsoid);
 
-      const worldPositions = await Cesium.sampleTerrainMostDetailed(
-        viewer.terrainProvider,
-        [carto]
-      );
+      let worldPositions: Cesium.Cartographic[] | null = null;
+
+      try {
+        worldPositions = await Cesium.sampleTerrainMostDetailed(
+          viewer.terrainProvider,
+          [carto]
+        );
+      } catch {
+        for (let i = 16; i >= 0; i--) {
+          try {
+            worldPositions = await Cesium.sampleTerrain(
+              viewer.terrainProvider,
+              16,
+              [carto]
+            );
+            break;
+          } catch {}
+        }
+      }
+
+      if (!worldPositions) throw new Error("Could not get world positions!");
 
       const ellipsoid = viewer.scene.globe.ellipsoid;
 

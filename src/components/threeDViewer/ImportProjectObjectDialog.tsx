@@ -19,6 +19,7 @@ import { useViewerStore } from "./ViewerProvider";
 import { Cartesian3, Matrix3, Matrix4, Quaternion } from "cesium";
 import { useSnackbar } from "notistack";
 import type { Job } from "bullmq";
+import GatewayAPI from "@/server/gatewayApi/client";
 
 const epsgValues = Object.values(proj4List)
   .map(([epsg, proj4]) => ({
@@ -90,7 +91,8 @@ export default function ImportProjectObjectDialog() {
           message: "File import successful!",
         });
       },
-      onError: () => {
+      onError: (error) => {
+        console.error(error);
         enqueueSnackbar({ variant: "error", message: "File import failed!" });
       },
       mutationFn: async () => {
@@ -103,43 +105,32 @@ export default function ImportProjectObjectDialog() {
         formData.append("fileName", file.name);
         formData.append("file", file);
 
-        const response = await fetch(
-          "/api/gateway/converter3D/uploadProjectModel",
-          {
-            method: "POST",
-            body: formData,
-          }
-        );
+        const { jobId, secret } =
+          await GatewayAPI.converter3DApi.converter3DUploadProjectModelPost({
+            epsgCode: selectedEpsg.label,
+            file: file,
+            fileName: file.name,
+          });
 
-        if (!response.ok) throw new Error(await response.json());
-
-        const { blobName } = (await response.json()) as { blobName: string };
-
-        let buffer64: string | undefined = undefined;
         let modelMatrixRaw: number[] | undefined = undefined;
 
         for (let i = 0; i < 512; i++) {
-          const response = await fetch(
-            `/api/gateway/converter3D/getProjectModelStatus?blobName=${encodeURIComponent(
-              blobName
-            )}`,
-            {
-              method: "GET",
-            }
-          );
-
-          const result = (await response.json()) as {
-            state: typeof pendingState;
-            progress: number;
-            modelMatrix?: number[];
-            buffer64?: string;
-          };
+          const result =
+            await GatewayAPI.converter3DApi.converter3DGetProjectModelStatusPost(
+              {
+                converter3DUploadProjectModelPost200Response: {
+                  jobId,
+                  secret,
+                },
+              }
+            );
 
           setPendingState(result.state);
           setProgress(result.progress);
 
+          console.log(result);
+
           if (result.state === "completed") {
-            buffer64 = result.buffer64!;
             modelMatrixRaw = result.modelMatrix!;
             break;
           }
@@ -147,7 +138,36 @@ export default function ImportProjectObjectDialog() {
           await new Promise((resolve) => setTimeout(resolve, 1000));
         }
 
-        if (!buffer64 || !modelMatrixRaw) throw new Error("FAILED");
+        if (!modelMatrixRaw) throw new Error("FAILED");
+
+        const blob =
+          await GatewayAPI.converter3DApi.converter3DDownloadProjectModelPost({
+            converter3DUploadProjectModelPost200Response: {
+              jobId,
+              secret,
+            },
+          });
+
+        const arrayBuffer = await blob.arrayBuffer();
+        console.log("Got ArrayBuffer of length", arrayBuffer.byteLength);
+
+        // 3. Wrap the ArrayBuffer back into a Blob (preserving original type)
+        // const downloadable = new Blob([arrayBuffer], { type: blob.type });
+
+        // // 4. Create an object URL for the Blob
+        // const url = URL.createObjectURL(downloadable);
+
+        // // 5. Create a temporary <a> and click it to start download
+        // const a = document.createElement("a");
+        // a.style.display = "none";
+        // a.href = url;
+        // a.download = "my-file.glb";
+        // document.body.appendChild(a);
+        // a.click();
+
+        // // 6. Clean up
+        // URL.revokeObjectURL(url);
+        // document.body.removeChild(a);
 
         const modelMatrix = Matrix4.fromColumnMajorArray(modelMatrixRaw);
 
@@ -161,11 +181,10 @@ export default function ImportProjectObjectDialog() {
         const rotation = Quaternion.fromRotationMatrix(rotationMatrix);
 
         const scale = Matrix4.getScale(modelMatrix, new Cartesian3());
-
         setProjectObjects([
           ...projectObjects,
           {
-            fileContent: Buffer.from(buffer64, "base64"),
+            fileContent: Buffer.from(arrayBuffer),
             id: crypto.randomUUID(),
             metaData: {},
             scale: { x: scale.x, y: scale.y, z: scale.z },

@@ -83,6 +83,8 @@ export default function ProjectObject({
 
   if (!url) return null;
 
+  console.log(projectObject)
+
   return (
     <Model
       onClick={() => setSelectedObject(projectObject)}

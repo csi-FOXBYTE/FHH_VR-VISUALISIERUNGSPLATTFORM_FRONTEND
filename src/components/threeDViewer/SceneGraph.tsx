@@ -236,13 +236,17 @@ export default function SceneGraph() {
                         new Cesium.Quaternion()
                       );
 
+                      console.log({ translation, scale, rotation });
+
                       updateProjectObject({
                         translation,
                         scale,
                         rotation,
                         id: projectObject.id,
                       });
-                    } catch {}
+                    } catch (e) {
+                      console.error(e);
+                    }
 
                     document.body.style.cursor = "auto";
 

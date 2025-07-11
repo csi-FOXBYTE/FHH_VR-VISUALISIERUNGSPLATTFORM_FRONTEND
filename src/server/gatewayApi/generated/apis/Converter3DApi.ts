@@ -15,18 +15,37 @@
 
 import * as runtime from '../runtime';
 import type {
-  Converter3DGetProjectModelStatusGet200Response,
+  Converter3DGetProjectModelStatusPost200Response,
   Converter3DUploadProjectModelPost200Response,
+  EventsGet400Response,
+  EventsGet401Response,
+  EventsGet403Response,
+  EventsGet405Response,
+  EventsGet500Response,
 } from '../models/index';
 import {
-    Converter3DGetProjectModelStatusGet200ResponseFromJSON,
-    Converter3DGetProjectModelStatusGet200ResponseToJSON,
+    Converter3DGetProjectModelStatusPost200ResponseFromJSON,
+    Converter3DGetProjectModelStatusPost200ResponseToJSON,
     Converter3DUploadProjectModelPost200ResponseFromJSON,
     Converter3DUploadProjectModelPost200ResponseToJSON,
+    EventsGet400ResponseFromJSON,
+    EventsGet400ResponseToJSON,
+    EventsGet401ResponseFromJSON,
+    EventsGet401ResponseToJSON,
+    EventsGet403ResponseFromJSON,
+    EventsGet403ResponseToJSON,
+    EventsGet405ResponseFromJSON,
+    EventsGet405ResponseToJSON,
+    EventsGet500ResponseFromJSON,
+    EventsGet500ResponseToJSON,
 } from '../models/index';
 
-export interface Converter3DGetProjectModelStatusGetRequest {
-    blobName: string;
+export interface Converter3DDownloadProjectModelPostRequest {
+    converter3DUploadProjectModelPost200Response: Converter3DUploadProjectModelPost200Response;
+}
+
+export interface Converter3DGetProjectModelStatusPostRequest {
+    converter3DUploadProjectModelPost200Response: Converter3DUploadProjectModelPost200Response;
 }
 
 export interface Converter3DUpload3DTilePostRequest {
@@ -54,39 +73,75 @@ export class Converter3DApi extends runtime.BaseAPI {
 
     /**
      */
-    async converter3DGetProjectModelStatusGetRaw(requestParameters: Converter3DGetProjectModelStatusGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Converter3DGetProjectModelStatusGet200Response>> {
-        if (requestParameters['blobName'] == null) {
+    async converter3DDownloadProjectModelPostRaw(requestParameters: Converter3DDownloadProjectModelPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Blob>> {
+        if (requestParameters['converter3DUploadProjectModelPost200Response'] == null) {
             throw new runtime.RequiredError(
-                'blobName',
-                'Required parameter "blobName" was null or undefined when calling converter3DGetProjectModelStatusGet().'
+                'converter3DUploadProjectModelPost200Response',
+                'Required parameter "converter3DUploadProjectModelPost200Response" was null or undefined when calling converter3DDownloadProjectModelPost().'
             );
         }
 
         const queryParameters: any = {};
 
-        if (requestParameters['blobName'] != null) {
-            queryParameters['blobName'] = requestParameters['blobName'];
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+
+        let urlPath = `/converter3D/downloadProjectModel`;
+
+        const response = await this.request({
+            path: urlPath,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: Converter3DUploadProjectModelPost200ResponseToJSON(requestParameters['converter3DUploadProjectModelPost200Response']),
+        }, initOverrides);
+
+        return new runtime.BlobApiResponse(response);
+    }
+
+    /**
+     */
+    async converter3DDownloadProjectModelPost(requestParameters: Converter3DDownloadProjectModelPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Blob> {
+        const response = await this.converter3DDownloadProjectModelPostRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     */
+    async converter3DGetProjectModelStatusPostRaw(requestParameters: Converter3DGetProjectModelStatusPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Converter3DGetProjectModelStatusPost200Response>> {
+        if (requestParameters['converter3DUploadProjectModelPost200Response'] == null) {
+            throw new runtime.RequiredError(
+                'converter3DUploadProjectModelPost200Response',
+                'Required parameter "converter3DUploadProjectModelPost200Response" was null or undefined when calling converter3DGetProjectModelStatusPost().'
+            );
         }
 
+        const queryParameters: any = {};
+
         const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
 
 
         let urlPath = `/converter3D/getProjectModelStatus`;
 
         const response = await this.request({
             path: urlPath,
-            method: 'GET',
+            method: 'POST',
             headers: headerParameters,
             query: queryParameters,
+            body: Converter3DUploadProjectModelPost200ResponseToJSON(requestParameters['converter3DUploadProjectModelPost200Response']),
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => Converter3DGetProjectModelStatusGet200ResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => Converter3DGetProjectModelStatusPost200ResponseFromJSON(jsonValue));
     }
 
     /**
      */
-    async converter3DGetProjectModelStatusGet(requestParameters: Converter3DGetProjectModelStatusGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Converter3DGetProjectModelStatusGet200Response> {
-        const response = await this.converter3DGetProjectModelStatusGetRaw(requestParameters, initOverrides);
+    async converter3DGetProjectModelStatusPost(requestParameters: Converter3DGetProjectModelStatusPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Converter3DGetProjectModelStatusPost200Response> {
+        const response = await this.converter3DGetProjectModelStatusPostRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

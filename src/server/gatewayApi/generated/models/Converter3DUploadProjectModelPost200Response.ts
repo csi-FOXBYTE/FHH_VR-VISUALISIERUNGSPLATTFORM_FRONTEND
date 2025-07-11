@@ -24,14 +24,21 @@ export interface Converter3DUploadProjectModelPost200Response {
      * @type {string}
      * @memberof Converter3DUploadProjectModelPost200Response
      */
-    blobName: string;
+    jobId: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof Converter3DUploadProjectModelPost200Response
+     */
+    secret: string;
 }
 
 /**
  * Check if a given object implements the Converter3DUploadProjectModelPost200Response interface.
  */
 export function instanceOfConverter3DUploadProjectModelPost200Response(value: object): value is Converter3DUploadProjectModelPost200Response {
-    if (!('blobName' in value) || value['blobName'] === undefined) return false;
+    if (!('jobId' in value) || value['jobId'] === undefined) return false;
+    if (!('secret' in value) || value['secret'] === undefined) return false;
     return true;
 }
 
@@ -45,7 +52,8 @@ export function Converter3DUploadProjectModelPost200ResponseFromJSONTyped(json: 
     }
     return {
         
-        'blobName': json['blobName'],
+        'jobId': json['jobId'],
+        'secret': json['secret'],
     };
 }
 
@@ -60,7 +68,8 @@ export function Converter3DUploadProjectModelPost200ResponseToJSONTyped(value?: 
 
     return {
         
-        'blobName': value['blobName'],
+        'jobId': value['jobId'],
+        'secret': value['secret'],
     };
 }
 

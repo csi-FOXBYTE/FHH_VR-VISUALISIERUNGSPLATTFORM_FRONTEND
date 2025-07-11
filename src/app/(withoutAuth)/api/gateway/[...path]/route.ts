@@ -33,7 +33,7 @@ async function proxy(
   // 1. Build your upstream URL
   const upstreamBase = process.env.BACKEND_URL!; // e.g. https://api.internal.example
   const upstreamPath = (await params).path.join("/");
-  const url = `${upstreamBase}/${upstreamPath}`;
+  const url = `${upstreamBase}/${upstreamPath}?${request.nextUrl.searchParams.toString()}`;
 
   // 2. Copy method, headers, and body
   const { method, headers, body } = request;
