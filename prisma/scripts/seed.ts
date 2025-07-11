@@ -7,9 +7,13 @@ const prisma = new PrismaClient();
   await prisma.configuration.create({
     data: {
       defaultEPSG: "EPSG:25832",
+      localProcessorFolder: "D:\\processor",
       globalStartPointX: 3764595.8724393756,
       globalStartPointY: 664200.4499076013,
       globalStartPointZ: 5144292.106228131,
+      invitationEmailText: "",
+      maxParallelBaseLayerConversions: 1,
+      maxParallelFileConversions: 1,
     },
   });
 

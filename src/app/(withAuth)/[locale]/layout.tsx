@@ -1,13 +1,13 @@
+import Providers from "@/appProviders";
+import { createConfiguration } from "@/components/configuration/createConfiguration";
 import { auth } from "@/server/auth/auth";
 import { routing } from "@/server/i18n/routing";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 import { notFound } from "next/navigation";
-import Providers from "@/appProviders";
+import Script from "next/script";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { ReactNode } from "react";
-import Script from "next/script";
-import prisma from "@/server/prisma";
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
@@ -30,15 +30,6 @@ export default async function RootLayout({
 
   const messages = await getMessages();
 
-  const configuration = await prisma.configuration.findFirstOrThrow({
-    select: {
-      defaultEPSG: true,
-      globalStartPointX: true,
-      globalStartPointY: true,
-      globalStartPointZ: true,
-    },
-  });
-
   return (
     <html lang={locale}>
       <head>
@@ -48,7 +39,7 @@ export default async function RootLayout({
           strategy="beforeInteractive"
           dangerouslySetInnerHTML={{
             __html: `
-          window.CESIUM_BASE_URL="${process.env.NEXTAUTH_URL}/cesium";`,
+          window.CESIUM_BASE_URL="${process.env.NEXT_PUBLIC_BASE_URL}/cesium";`,
           }}
         />
       </head>
@@ -56,14 +47,7 @@ export default async function RootLayout({
         <NextIntlClientProvider messages={messages}>
           <NuqsAdapter>
             <Providers
-              configuration={{
-                defaultEPSG: configuration.defaultEPSG,
-                globalStartPoint: {
-                  x: configuration.globalStartPointX,
-                  y: configuration.globalStartPointY,
-                  z: configuration.globalStartPointZ,
-                },
-              }}
+              configuration={await createConfiguration()}
               locale={locale}
               session={session}
             >

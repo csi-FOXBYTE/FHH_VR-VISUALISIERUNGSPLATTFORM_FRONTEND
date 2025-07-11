@@ -4,11 +4,13 @@ import { createContext, ReactNode, useContext } from "react";
 
 export type ConfigurationProviderContextType = {
   globalStartPoint: { x: number; y: number; z: number };
+  defaultEPSGLabelValue: { label: string; value: string };
   defaultEPSG: string;
 };
 
 const initial: ConfigurationProviderContextType = {
   defaultEPSG: "",
+  defaultEPSGLabelValue: { label: "", value: "" },
   globalStartPoint: { x: 0, y: 0, z: 0 },
 };
 

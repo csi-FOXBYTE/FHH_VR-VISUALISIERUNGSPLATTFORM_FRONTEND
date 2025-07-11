@@ -8,6 +8,10 @@ const configurationRouter = router({
         globalStartPointX: true,
         globalStartPointY: true,
         globalStartPointZ: true,
+        invitationEmailText: true,
+        localProcessorFolder: true,
+        maxParallelBaseLayerConversions: true,
+        maxParallelFileConversions: true,
       },
     });
   }),

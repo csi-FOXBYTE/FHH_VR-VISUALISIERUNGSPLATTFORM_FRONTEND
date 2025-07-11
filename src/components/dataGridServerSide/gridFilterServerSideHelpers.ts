@@ -260,12 +260,12 @@ export function createBoolFilter(
   filterItem: GridFilterItem,
   nullable?: boolean
 ): Prisma.BoolFilter;
-export function createBoolFilter(
-  filterItem: GridFilterItem,
-  nullable: true
-): Prisma.BoolNullableFilter;
+// export function createBoolFilter(
+//   filterItem: GridFilterItem,
+//   nullable: true
+// ): Prisma.BoolNullableFilter;
 export function createBoolFilter(
   filterItem: GridFilterItem
-): Prisma.BoolNullableFilter | Prisma.BoolFilter {
+): /*Prisma.BoolNullableFilter |*/ Prisma.BoolFilter {
   return { equals: filterItem.value };
 }

@@ -4,8 +4,11 @@ import PageContainer from "@/components/common/PageContainer";
 import { TabPanel } from "@/components/common/TabPanel";
 import Layers from "@/components/dataManagement/Layers";
 import VisualAxes from "@/components/dataManagement/VisualAxes";
-import { Tabs, Tab } from "@mui/material";
-import { useQueryState, parseAsInteger } from "nuqs";
+import {
+  Tab,
+  Tabs
+} from "@mui/material";
+import { parseAsInteger, useQueryState } from "nuqs";
 
 export default function DataManagementPage() {
   const [selectedTab, setSelectedTab] = useQueryState(
@@ -14,7 +17,7 @@ export default function DataManagementPage() {
   );
 
   return (
-    <PageContainer>
+    <PageContainer>      
       <Tabs value={selectedTab}>
         <Tab value={0} onClick={() => setSelectedTab(0)} label="Ebenen" />
         <Tab value={1} onClick={() => setSelectedTab(1)} label="Sichtachsen" />

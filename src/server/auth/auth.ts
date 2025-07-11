@@ -201,6 +201,7 @@ export const { auth, handlers, signIn, signOut, unstable_update } = NextAuth({
   session: {
     strategy: "database",
     maxAge: 259200, // 30 days
+    updateAge: 86400, // 1 day
   },
   adapter: PrismaAdapter(prisma),
 });

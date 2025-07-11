@@ -8,14 +8,17 @@ import {
   DialogTitle,
   Grid,
   TextField,
+  CircularProgress,
+  LinearProgress,
 } from "@mui/material";
-import { useState } from "react";
+import { ReactNode, useState } from "react";
 import proj4List from "proj4-list";
 import { Add } from "@mui/icons-material";
 import { useMutation } from "@tanstack/react-query";
 import { useViewerStore } from "./ViewerProvider";
 import { Cartesian3, Matrix3, Matrix4, Quaternion } from "cesium";
 import { useSnackbar } from "notistack";
+import type { Job } from "bullmq";
 
 const epsgValues = Object.values(proj4List)
   .map(([epsg, proj4]) => ({
@@ -47,6 +50,38 @@ export default function ImportProjectObjectDialog() {
 
   const { enqueueSnackbar } = useSnackbar();
 
+  const [pendingState, setPendingState] = useState<
+    Awaited<ReturnType<Job["getState"]>> | "uploading"
+  >("uploading");
+
+  const [progress, setProgress] = useState(0);
+
+  const messageMap: Record<typeof pendingState | "uploading", ReactNode> = {
+    active: (
+      <Grid container spacing={1} alignItems="center">
+        Konvertierung im Gange
+        <LinearProgress
+          variant="determinate"
+          style={{ width: 50 }}
+          value={progress * 100}
+        />
+      </Grid>
+    ),
+    waiting: (
+      <>
+        <CircularProgress size="small" />
+        Warten in der Warteschlange...
+      </>
+    ),
+    uploading: "Hochladen...",
+    "waiting-children": null,
+    completed: "Konvertierung abgeschlossen...",
+    delayed: "Verzögert",
+    failed: "Fehlgeschlagen",
+    prioritized: "Bevorzugt",
+    unknown: "Unbekannt",
+  };
+
   const { mutate: importFileMutation, isPending: isImportFileMutationPending } =
     useMutation({
       onSuccess: () => {
@@ -61,20 +96,58 @@ export default function ImportProjectObjectDialog() {
       mutationFn: async () => {
         if (!file) return;
 
-        const formData = new FormData();
-        formData.append("file", file);
-        formData.append("epsgCode", selectedEpsg.label);
-        formData.append("fileType", file.type);
-        formData.append("fileName", file.name);
+        setPendingState("uploading");
 
-        const response = await fetch("/api/backend/converter3D/convert", {
-          method: "POST",
-          body: formData,
-        });
+        const formData = new FormData();
+        formData.append("epsgCode", selectedEpsg.label);
+        formData.append("fileName", file.name);
+        formData.append("file", file);
+
+        const response = await fetch(
+          "/api/gateway/converter3D/uploadProjectModel",
+          {
+            method: "POST",
+            body: formData,
+          }
+        );
 
         if (!response.ok) throw new Error(await response.json());
 
-        const { buffer64, modelMatrix: modelMatrixRaw } = await response.json();
+        const { blobName } = (await response.json()) as { blobName: string };
+
+        let buffer64: string | undefined = undefined;
+        let modelMatrixRaw: number[] | undefined = undefined;
+
+        for (let i = 0; i < 512; i++) {
+          const response = await fetch(
+            `/api/gateway/converter3D/getProjectModelStatus?blobName=${encodeURIComponent(
+              blobName
+            )}`,
+            {
+              method: "GET",
+            }
+          );
+
+          const result = (await response.json()) as {
+            state: typeof pendingState;
+            progress: number;
+            modelMatrix?: number[];
+            buffer64?: string;
+          };
+
+          setPendingState(result.state);
+          setProgress(result.progress);
+
+          if (result.state === "completed") {
+            buffer64 = result.buffer64!;
+            modelMatrixRaw = result.modelMatrix!;
+            break;
+          }
+
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+        }
+
+        if (!buffer64 || !modelMatrixRaw) throw new Error("FAILED");
 
         const modelMatrix = Matrix4.fromColumnMajorArray(modelMatrixRaw);
 
@@ -114,6 +187,8 @@ export default function ImportProjectObjectDialog() {
         ]);
 
         toggleImport();
+
+        return true;
       },
     });
 
@@ -156,11 +231,10 @@ export default function ImportProjectObjectDialog() {
             Close
           </Button>
           <Button
-            loading={isImportFileMutationPending}
             onClick={() => importFileMutation()}
-            disabled={file === undefined}
+            disabled={file === undefined || isImportFileMutationPending}
           >
-            Upload
+            {isImportFileMutationPending ? messageMap[pendingState] : "Upload"}
           </Button>
         </ButtonGroup>
       </DialogActions>

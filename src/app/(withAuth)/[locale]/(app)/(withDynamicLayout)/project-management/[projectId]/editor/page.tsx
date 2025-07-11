@@ -19,8 +19,8 @@ export default function ThreeDViewerPage() {
       resources={project.includedBaseLayers.map((baseLayer) => ({
         id: baseLayer.id,
         name: baseLayer.name,
-        type: baseLayer.type,
-        url: baseLayer.href,
+        type: baseLayer.type as "TERRAIN",
+        url: baseLayer.href!,
       }))}
     >
       <ThreeDViewer />

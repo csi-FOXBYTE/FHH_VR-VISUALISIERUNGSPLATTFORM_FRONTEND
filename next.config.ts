@@ -10,16 +10,6 @@ const nextConfig: NextConfig = {
   env: {
     version,
   },
-  rewrites: async () => {
-    if (!process.env.BACKEND_URL) throw new Error("No backend url supplied!");
-
-    return [
-      {
-        source: "/api/backend/:path*",
-        destination: `${process.env.BACKEND_URL}/:path*`,
-      },
-    ];
-  },
 };
 
 export default withNextIntl(nextConfig);

@@ -36,7 +36,7 @@ ENV NEXT_TELEMETRY_DISABLED=1
 
 RUN --mount=type=secret,id=npmrc,target=/root/.npmrc \
     --mount=type=secret,id=env,target=.env \
-    corepack enable pnpm && pnpm zenstack generate && pnpm run build
+    corepack enable pnpm && pnpm zenstack-generate && pnpm run build
 
 # Production image, copy all the files and run next
 FROM base AS runner
