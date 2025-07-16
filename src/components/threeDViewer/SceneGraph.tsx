@@ -4,13 +4,16 @@ import {
   Add,
   Adjust,
   Delete,
+  ExpandLess,
+  ExpandMore,
   Visibility,
-  VisibilityOff,
+  VisibilityOff
 } from "@mui/icons-material";
 import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
+  Box,
   ButtonGroup,
   Grid,
   IconButton,
@@ -19,6 +22,7 @@ import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
+  styled,
   Tooltip,
   Typography,
 } from "@mui/material";
@@ -30,6 +34,13 @@ import {
   useSelectedObject,
   useViewerStore,
 } from "./ViewerProvider";
+
+const StyledCount = styled("div")`
+  display: inline-block;
+  padding: 0px 8px;
+  color: rgba(0, 0, 0, 0.75);
+  border: 1px solid rgba(0, 0, 0, 0.25);
+`;
 
 export default function SceneGraph() {
   const clippingPolygons = useViewerStore(
@@ -77,18 +88,35 @@ export default function SceneGraph() {
   }, [selectedObject?.type]);
 
   return (
-    <>
+    <Grid container spacing={2} flexDirection="column" padding={2}>
       <Accordion
         expanded={selectedTab === "CLIPPING_POLYGON"}
         onChange={() => setSelectedTab("CLIPPING_POLYGON")}
-        disableGutters
         square
+        style={{ width: "100%" }}
+        disableGutters
       >
         <AccordionSummary>
-          <Grid container justifyContent="space-between" alignItems="center">
+          <Grid
+            container
+            justifyContent="space-between"
+            width="100%"
+            alignItems="center"
+          >
+            <IconButton>
+              {selectedTab === "CLIPPING_POLYGON" ? (
+                <ExpandLess />
+              ) : (
+                <ExpandMore />
+              )}
+            </IconButton>
             <Typography>
-              Clipping Polygons [{clippingPolygons.length}]
+              Clipping Polygons&nbsp;
+              <StyledCount style={{ backgroundColor: "#fef2f2" }}>
+                [{clippingPolygons.length}]
+              </StyledCount>
             </Typography>
+            <Box flex="1" />
             <ButtonGroup size="small">
               <IconButton
                 size="small"
@@ -143,14 +171,33 @@ export default function SceneGraph() {
         </AccordionDetails>
       </Accordion>
       <Accordion
+        style={{ width: "100%" }}
+        disableGutters
         expanded={selectedTab === "PROJECT_OBJECT"}
         onChange={() => setSelectedTab("PROJECT_OBJECT")}
-        disableGutters
         square
       >
         <AccordionSummary>
-          <Grid container justifyContent="space-between" alignItems="center">
-            <Typography>Project objects [{projectObjects.length}]</Typography>
+          <Grid
+            container
+            justifyContent="space-between"
+            width="100%"
+            alignItems="center"
+          >
+            <IconButton>
+              {selectedTab === "PROJECT_OBJECT" ? (
+                <ExpandLess />
+              ) : (
+                <ExpandMore />
+              )}
+            </IconButton>
+            <Typography>
+              Project objects&nbsp;
+              <StyledCount style={{ backgroundColor: "#eff6ff" }}>
+                [{projectObjects.length}]
+              </StyledCount>
+            </Typography>
+            <Box flex="1" />
             <ButtonGroup size="small">
               <IconButton size="small" onClick={toggleImport}>
                 <Add />
@@ -236,8 +283,6 @@ export default function SceneGraph() {
                         new Cesium.Quaternion()
                       );
 
-                      console.log({ translation, scale, rotation });
-
                       updateProjectObject({
                         translation,
                         scale,
@@ -261,10 +306,11 @@ export default function SceneGraph() {
         </AccordionDetails>
       </Accordion>
       <Accordion
+        style={{ width: "100%" }}
         expanded={selectedTab === "STARTING_POINT"}
         onChange={() => setSelectedTab("STARTING_POINT")}
-        disableGutters
         square
+        disableGutters
       >
         <AccordionSummary>
           <Grid
@@ -273,9 +319,20 @@ export default function SceneGraph() {
             width="100%"
             alignItems="center"
           >
-            <ListItemText>
-              Starting points [{startingPoints.value.length}]
-            </ListItemText>
+            <IconButton>
+              {selectedTab === "STARTING_POINT" ? (
+                <ExpandLess />
+              ) : (
+                <ExpandMore />
+              )}
+            </IconButton>
+            <Typography>
+              Starting points&nbsp;
+              <StyledCount style={{ backgroundColor: "#f0fdf4" }}>
+                [{startingPoints.value.length}]
+              </StyledCount>
+            </Typography>
+            <Box flex="1" />
             <ButtonGroup size="small">
               <Tooltip title="Add starting point">
                 <IconButton
@@ -337,10 +394,11 @@ export default function SceneGraph() {
         </AccordionDetails>
       </Accordion>
       <Accordion
+        style={{ width: "100%" }}
         expanded={selectedTab === "VISUAL_AXIS"}
         onChange={() => setSelectedTab("VISUAL_AXIS")}
-        disableGutters
         square
+        disableGutters
       >
         <AccordionSummary>
           <Grid
@@ -349,7 +407,16 @@ export default function SceneGraph() {
             width="100%"
             alignItems="center"
           >
-            <Typography>Visual axes [{visualAxes.value.length}]</Typography>
+            <IconButton>
+              {selectedTab === "VISUAL_AXIS" ? <ExpandLess /> : <ExpandMore />}
+            </IconButton>
+            <Typography>
+              Visual axes&nbsp;
+              <StyledCount style={{ backgroundColor: "#faf5ff" }}>
+                [{visualAxes.value.length}]
+              </StyledCount>
+            </Typography>
+            <Box flex="1" />
             <ButtonGroup size="small">
               <IconButton size="small" onClick={visualAxes.create}>
                 <Add />
@@ -389,6 +456,6 @@ export default function SceneGraph() {
           </List>
         </AccordionDetails>
       </Accordion>
-    </>
+    </Grid>
   );
 }

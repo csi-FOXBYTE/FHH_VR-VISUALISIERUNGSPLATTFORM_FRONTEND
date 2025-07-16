@@ -3,12 +3,15 @@
 import Footer from "@/components/navbar/Footer";
 import Navbar from "@/components/navbar/Navbar";
 import { CssBaseline } from "@mui/material";
+import { usePathname } from "@/server/i18n/routing";
 
 export default function LocaleLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const pathname = usePathname();
+
   return (
     <div
       style={{
@@ -20,9 +23,9 @@ export default function LocaleLayout({
       }}
     >
       <CssBaseline />
-      <Navbar />
+      {pathname.endsWith("/editor") ? null : <Navbar />}
       {children}
-      <Footer />
+      {pathname.endsWith("/editor") ? null : <Footer />}
     </div>
   );
 }

@@ -68,11 +68,8 @@ export default function BreadCrumbs({ style = {} }: { style?: CSSProperties }) {
   return (
     <Breadcrumbs
       style={{
-        marginLeft: "auto",
-        marginRight: "auto",
         marginBottom: 32,
         maxWidth: 1440,
-        width: "100%",
         ...style,
       }}
     >

@@ -20,6 +20,7 @@ import { Cartesian3, Matrix3, Matrix4, Quaternion } from "cesium";
 import { useSnackbar } from "notistack";
 import type { Job } from "bullmq";
 import GatewayAPI from "@/server/gatewayApi/client";
+import DragAndDropzone from "../common/DragAndDropZone";
 
 const epsgValues = Object.values(proj4List)
   .map(([epsg, proj4]) => ({
@@ -226,36 +227,40 @@ export default function ImportProjectObjectDialog() {
             onChange={(_, newValue) => setSelectedEpsg(newValue)}
             options={epsgValues}
           />
-          <Button
-            size="small"
-            variant="outlined"
-            startIcon={<Add />}
-            component="label"
-          >
-            <input
-              type="file"
-              style={{ display: "none" }}
-              accept=".fbx,.obj,.dae,.xml,.blend,.stl,.dxg,.3ds,.ter,.ifc,.glb,.gltf"
-              onChange={(event) =>
-                setFile((event.target as HTMLInputElement).files?.[0])
-              }
-            />
-            <div style={{ flex: 1 }}>{file ? file.name : "Upload File"}</div>
-          </Button>
+          <DragAndDropzone
+            name="file"
+            value={file ? [file] : []}
+            onChange={(files) => setFile(files[0])}
+            accept={{
+              "3d-files": [
+                ".fbx",
+                ".obj",
+                ".dae",
+                ".xml",
+                ".blend",
+                ".stl",
+                ".dxg",
+                ".3ds",
+                ".ter",
+                ".ifc",
+                ".glb",
+                ".gltf",
+              ],
+            }}
+          />
         </Grid>
       </DialogContent>
       <DialogActions>
-        <ButtonGroup variant="outlined">
-          <Button loading={isImportFileMutationPending} onClick={toggleImport}>
-            Close
-          </Button>
-          <Button
-            onClick={() => importFileMutation()}
-            disabled={file === undefined || isImportFileMutationPending}
-          >
-            {isImportFileMutationPending ? messageMap[pendingState] : "Upload"}
-          </Button>
-        </ButtonGroup>
+        <Button loading={isImportFileMutationPending} onClick={toggleImport}>
+          Close
+        </Button>
+        <Button
+          variant="contained"
+          onClick={() => importFileMutation()}
+          disabled={file === undefined || isImportFileMutationPending}
+        >
+          {isImportFileMutationPending ? messageMap[pendingState] : "Upload"}
+        </Button>
       </DialogActions>
     </Dialog>
   );

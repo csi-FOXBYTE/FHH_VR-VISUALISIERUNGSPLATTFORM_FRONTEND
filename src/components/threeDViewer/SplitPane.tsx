@@ -13,7 +13,7 @@ const Handle = styled("div")`
   cursor: row-resize;
   user-select: none;
   &:hover {
-    background: rgba(0, 0, 0, 0.75);
+    background: rgba(0, 0, 0, 0.25);
   }
 `;
 
@@ -74,7 +74,7 @@ export default function SplitPane({
           flexShrink: 0,
           position: "relative",
           height: 1,
-          background: "black",
+          background: "#aaa",
         }}
       >
         <Handle

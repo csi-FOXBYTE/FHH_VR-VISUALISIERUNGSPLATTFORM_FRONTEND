@@ -1,24 +1,24 @@
-import { Redo, Undo } from "@mui/icons-material";
+import { ImportExport, Redo, Save, Undo, Upload } from "@mui/icons-material";
 import {
   Button,
   ButtonGroup,
   Divider,
   Grid,
+  IconButton,
   ListItemText,
   Menu,
   MenuItem,
   MenuList,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import { useState } from "react";
 import BreadCrumbs from "../navbar/BreadCrumbs";
 import { useViewerStore } from "./ViewerProvider";
+import TimePicker from "./TimePicker";
+import ImportProjectObjectDialog from "./ImportProjectObjectDialog";
 
 export default function AppBar() {
-  const [fileAnchorEl, setFileAnchorEl] = useState<HTMLElement | null>();
-
-  const [fileMenuOpen, setFileMenuOpen] = useState(false);
-
   const history = useViewerStore((state) => state.history);
 
   const toggleImport = useViewerStore(
@@ -26,92 +26,45 @@ export default function AppBar() {
   );
 
   return (
-    <Grid
-      width="100%"
-      boxShadow={2}
-      container
-      justifyContent="space-between"
-      alignItems="center"
-      padding="0 32px"
-    >
-      <Grid container alignItems="center" alignContent="center">
-        <ButtonGroup color="secondary" variant="text">
-          <Button onClick={() => setFileMenuOpen(true)} ref={setFileAnchorEl}>
-            File
-          </Button>
-        </ButtonGroup>
-        <Menu
-          disablePortal
-          open={fileMenuOpen}
-          hideBackdrop={false}
-          onClose={() => setFileMenuOpen(false)}
-          slotProps={{
-            paper: {
-              style: {
-                borderRadius: 0,
-                pointerEvents: "all",
-                width: 240,
-                maxWidth: "100%",
-              },
-            },
-          }}
-          anchorEl={fileAnchorEl}
-        >
-          <MenuList dense>
-            <MenuItem>
-              <ListItemText>Save</ListItemText>
-              <Typography variant="body2" sx={{ color: "text.secondary" }}>
-                ⌘S
-              </Typography>
-            </MenuItem>
-            <MenuItem
-              onClick={() => {
-                toggleImport();
-                setFileMenuOpen(false);
-              }}
-            >
-              <ListItemText>Import</ListItemText>
-              <Typography variant="body2" sx={{ color: "text.secondary" }}>
-                ⌘I
-              </Typography>
-            </MenuItem>
-            <Divider />
-            <MenuItem onClick={history.undo}>
-              <ListItemText>Undo</ListItemText>
-              <Typography variant="body2" sx={{ color: "text.secondary" }}>
-                ⌘Z
-              </Typography>
-            </MenuItem>
-            <MenuItem onClick={history.redo}>
-              <ListItemText>Redo</ListItemText>
-              <Typography variant="body2" sx={{ color: "text.secondary" }}>
-                ⌘Y
-              </Typography>
-            </MenuItem>
-            <Divider />
-            <MenuItem>
-              <ListItemText>Close</ListItemText>
-              <Typography
-                variant="body2"
-                sx={{ color: "text.secondary" }}
-              ></Typography>
-            </MenuItem>
-          </MenuList>
-        </Menu>
+    <Grid width="100%" boxShadow={2} container flexDirection="column">
+      <ImportProjectObjectDialog />
+      <Grid
+        container
+        padding="8px 32px"
+        alignItems="center"
+        justifyContent="space-between"
+        flexDirection="row"
+      >
         <BreadCrumbs style={{ marginBottom: 0 }} />
+        <Grid container spacing={1}>
+          <Tooltip arrow title="Import project model">
+            <IconButton onClick={() => toggleImport()}>
+              <Upload />
+            </IconButton>
+          </Tooltip>
+          <Tooltip arrow title="Save project">
+            <IconButton>
+              <Save />
+            </IconButton>
+          </Tooltip>
+          <Tooltip arrow title="Undo">
+            <IconButton disabled={history.index === 0} onClick={history.undo}>
+              <Undo />
+            </IconButton>
+          </Tooltip>
+          <Tooltip arrow title="Redo">
+            <IconButton
+              disabled={history.value.length === history.index + 1}
+              onClick={history.redo}
+            >
+              <Redo />
+            </IconButton>
+          </Tooltip>
+        </Grid>
       </Grid>
-      <div />
-      <ButtonGroup>
-        <Button disabled={history.index === 0} onClick={history.undo}>
-          <Undo />
-        </Button>
-        <Button
-          disabled={history.value.length === history.index + 1}
-          onClick={history.redo}
-        >
-          <Redo />
-        </Button>
-      </ButtonGroup>
+      <Grid padding="8px 32px" container backgroundColor="#eee">
+        <TimePicker />
+      </Grid>
     </Grid>
   );
 }

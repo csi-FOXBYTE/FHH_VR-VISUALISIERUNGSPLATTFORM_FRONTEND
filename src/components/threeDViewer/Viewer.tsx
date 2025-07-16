@@ -14,6 +14,7 @@ import { useViewerStore } from "./ViewerProvider";
 import VisualAxes from "./VisualAxes";
 import { useBaseLayerProviderContext } from "./BaseLayerProvider";
 import { useConfigurationProviderContext } from "../configuration/ConfigurationProvider";
+import { ScaleBar } from "./ScaleBar";
 
 const openStreetMapImagerProvider = new Cesium.OpenStreetMapImageryProvider({
   url: "https://tile.openstreetmap.org/",
@@ -87,8 +88,8 @@ export default function ResiumViewer() {
       infoBox={false}
     >
       {/* <CesiumGizmo /> */}
+      <ScaleBar />
       <Compass />
-      <TimePicker />
       <GetResiumCtx />
       <ProjectObjects />
       <StartingPoints />

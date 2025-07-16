@@ -24,7 +24,7 @@ export default function WithStaticLayout({
         width: "100%",
       }}
     >
-      <BreadCrumbs />
+      <BreadCrumbs style={{ padding: "0px 32px 16px 32px", margin: "0 auto", width: "100%" }} />
       {children}
     </Grid>
   );

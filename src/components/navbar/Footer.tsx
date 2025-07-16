@@ -3,6 +3,7 @@ import { Grid, Typography, Link } from "@mui/material";
 import { Link as NextLink } from "@/server/i18n/routing";
 import FancyFooterEdge from "../common/FancyFooterEdge";
 import { useTranslations } from "next-intl";
+import PageContainer from "../common/PageContainer";
 
 export default function Footer() {
   const t = useTranslations();
@@ -26,27 +27,29 @@ export default function Footer() {
           pointerEvents: "none",
         }}
       />
-      <Grid container justifyContent="space-between" spacing={4}>
-        <Typography>©Hamburg LGV 2025</Typography>
-        <Grid container spacing={4}>
-          <Link
-            href={"/imprint"}
-            underline="none"
-            color="inherit"
-            component={NextLink}
-          >
-            {t("footer.imprint")}
-          </Link>
-          <Link
-            href={"/gdpr"}
-            underline="none"
-            color="inherit"
-            component={NextLink}
-          >
-            {t("footer.gdpr")}
-          </Link>
+      <PageContainer>
+        <Grid container justifyContent="space-between" spacing={4}>
+          <Typography>©Hamburg LGV 2025</Typography>
+          <Grid container spacing={4}>
+            <Link
+              href={"/imprint"}
+              underline="none"
+              color="inherit"
+              component={NextLink}
+            >
+              {t("footer.imprint")}
+            </Link>
+            <Link
+              href={"/gdpr"}
+              underline="none"
+              color="inherit"
+              component={NextLink}
+            >
+              {t("footer.gdpr")}
+            </Link>
+          </Grid>
         </Grid>
-      </Grid>
+      </PageContainer>
     </footer>
   );
 }

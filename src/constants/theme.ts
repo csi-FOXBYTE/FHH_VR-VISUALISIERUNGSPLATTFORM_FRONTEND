@@ -12,6 +12,9 @@ const theme = createTheme({
       main: "#003063",
     },
   },
+  typography: {
+    fontSize:  12
+  },
   components: {
     MuiButton: {
       styleOverrides: {

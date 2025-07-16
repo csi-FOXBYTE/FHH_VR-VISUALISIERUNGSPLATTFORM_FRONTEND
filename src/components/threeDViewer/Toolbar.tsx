@@ -3,7 +3,7 @@ import {
   AddLocationAlt,
   ContentCut,
   Crop169,
-  Tonality
+  Tonality,
 } from "@mui/icons-material";
 import { Divider, Grid, IconButton, Tooltip, useTheme } from "@mui/material";
 import { useViewerStore } from "./ViewerProvider";
@@ -35,14 +35,13 @@ export default function Toolbar() {
   return (
     <div
       style={{
-        top: "50%",
-        transform: "translateY(-50%)",
+        height: "100%",
         left: 0,
         position: "absolute",
         zIndex: 100,
         background: theme.palette.background.paper,
         boxShadow: theme.shadows[2],
-        borderRadius: "0 8px 8px 0px",
+        padding: 4,
       }}
     >
       <Grid container flexDirection="column">

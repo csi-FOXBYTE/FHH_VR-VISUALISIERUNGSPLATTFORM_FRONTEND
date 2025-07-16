@@ -28,7 +28,7 @@ export default function RightDrawer() {
           top: 0,
           right: 0,
           zIndex: 100,
-          background: theme.palette.background.paper,
+          background: "#eee",
           boxShadow: theme.shadows[2],
           width: 400,
           borderTop: "1px solid #ddd",
@@ -47,12 +47,11 @@ export default function RightDrawer() {
               onClick={() => setRightDrawerVisibility(!rightDrawerVisibility)}
               style={{
                 position: "absolute",
-                left: -12,
-                top: "50%",
-                transform: "translateX(-50%)",
-                boxShadow: theme.shadows[2],
-                background: "white",
-                borderRadius: 8,
+                left: 0,
+                transform: "translateX(-100%)",
+                top: 16,
+                background: "#eee",
+                borderRadius: "8px 0 0px 8px",
               }}
             >
               {rightDrawerVisibility ? <ArrowRight /> : <ArrowLeft />}

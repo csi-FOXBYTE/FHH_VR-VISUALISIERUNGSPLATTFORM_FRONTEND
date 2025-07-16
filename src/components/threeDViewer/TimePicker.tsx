@@ -27,19 +27,12 @@ export default function TimePicker() {
   return (
     <Grid
       container
-      padding={2}
-      borderRadius="0 0 8px 8px"
-      sx={{
-        position: "absolute",
-        top: 0,
-        left: "50%",
-        transform: "translateX(-50%)",
-        border: "none",
-        background: "white",
-      }}
+      alignItems="center"
+      padding="8px 0"
     >
+      Time:
       <DateTimePicker
-        label="Time"
+        sx={{ transform: "scale(0.75) translateX(32px)", position: "absolute"}}
         value={dateTime ?? dayjs()}
         onChange={(date) => {
           if (!date) return;
