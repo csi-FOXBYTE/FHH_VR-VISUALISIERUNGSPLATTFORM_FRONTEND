@@ -118,7 +118,7 @@ export default function Layers() {
                       alignItems="center"
                       justifyContent="center"
                     >
-                      <CircularProgressWithLabel value={row.progress * 100} />
+                      <CircularProgressWithLabel value={row.progress} />
                     </Grid>
                   );
                 case "PENDING":
@@ -129,7 +129,7 @@ export default function Layers() {
                       alignItems="center"
                       justifyContent="center"
                     >
-                      <CircularProgress value={row.progress * 100} />
+                      <CircularProgress value={row.progress} />
                     </Grid>
                   );
                 case "FAILED":
@@ -198,7 +198,7 @@ export default function Layers() {
           createEditDeleteActions({
             handleDelete: () => {},
             handleEdit: () => {},
-            isDisabled: () => true,
+            isDisabled: () => ({ delete: true, edit: true }),
           }),
         ]}
       />

@@ -101,16 +101,13 @@ export default function ImportProjectObjectDialog() {
 
         setPendingState("uploading");
 
-        const formData = new FormData();
-        formData.append("epsgCode", selectedEpsg.label);
-        formData.append("fileName", file.name);
-        formData.append("file", file);
-
         const { jobId, secret } =
           await converter3DApi.converter3DUploadProjectModelPost({
-            epsgCode: selectedEpsg.label,
-            file: file,
-            fileName: file.name,
+            converter3DUploadProjectModelPostRequest: {
+              epsgCode: selectedEpsg.label,
+              fileName: file.name,
+              file: file,
+            },
           });
 
         let modelMatrixRaw: number[] | undefined = undefined;
@@ -163,7 +160,7 @@ export default function ImportProjectObjectDialog() {
           {
             fileContent: Buffer.from(arrayBuffer),
             id: crypto.randomUUID(),
-            metaData: {},
+            attributes: {},
             scale: { x: scale.x, y: scale.y, z: scale.z },
             rotation: {
               x: rotation.x,

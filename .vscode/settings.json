@@ -3,6 +3,8 @@
         "messages",
         "src/i18n"
     ],
+    "typescript.tsserver.log": "normal",
+    "typescript.tsserver.maxTsServerMemory": 8192,
     "i18n-ally.keystyle": "nested",
     "i18n-ally.sourceLanguage": "de",
     "i18n-ally.extract.ignoredByFiles": {

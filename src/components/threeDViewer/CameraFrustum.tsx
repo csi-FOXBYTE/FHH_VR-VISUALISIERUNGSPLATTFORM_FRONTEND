@@ -1,5 +1,16 @@
-import { Cartesian3, Color, ColorGeometryInstanceAttribute, Ellipsoid, FrustumOutlineGeometry, GeometryInstance, Matrix3, PerInstanceColorAppearance, PerspectiveFrustum, Quaternion } from "cesium";
-import { useMemo } from "react";
+import {
+  Cartesian3,
+  Color,
+  ColorGeometryInstanceAttribute,
+  Ellipsoid,
+  FrustumOutlineGeometry,
+  GeometryInstance,
+  Matrix3,
+  PerInstanceColorAppearance,
+  PerspectiveFrustum,
+  Quaternion,
+} from "cesium";
+import { useEffect, useMemo } from "react";
 import { Primitive } from "resium";
 
 interface CameraFrustumProps {
@@ -13,6 +24,7 @@ interface CameraFrustumProps {
   near?: number;
   /** Frustum line color (default yellow) */
   color?: Color;
+  onClick?: () => void;
 }
 
 const CameraFrustum: React.FC<CameraFrustumProps> = ({
@@ -21,10 +33,14 @@ const CameraFrustum: React.FC<CameraFrustumProps> = ({
   fov = Math.PI / 4,
   near = 1,
   color = Color.YELLOW,
+  onClick,
 }) => {
   const instance = useMemo(() => {
     // Compute the up vector as the ellipsoid normal at position
-    const up = Ellipsoid.WGS84.geodeticSurfaceNormal(position, new Cartesian3());
+    const up = Ellipsoid.WGS84.geodeticSurfaceNormal(
+      position,
+      new Cartesian3()
+    );
     Cartesian3.normalize(up, up);
 
     // Compute forward direction from origin to target
@@ -41,9 +57,15 @@ const CameraFrustum: React.FC<CameraFrustumProps> = ({
 
     // Build rotation matrix from local to world axes
     const rotationMatrix = new Matrix3(
-      right.x, up.x, forward.x,
-      right.y, up.y, forward.y,
-      right.z, up.z, forward.z
+      right.x,
+      up.x,
+      forward.x,
+      right.y,
+      up.y,
+      forward.y,
+      right.z,
+      up.z,
+      forward.z
     );
 
     const orientation = Quaternion.fromRotationMatrix(rotationMatrix);
@@ -75,9 +97,14 @@ const CameraFrustum: React.FC<CameraFrustumProps> = ({
 
   return (
     <Primitive
+      onClick={onClick}
+      key={color.toCssColorString()}
       geometryInstances={[instance]}
-      appearance={new PerInstanceColorAppearance({ flat: true, translucent: false })}
+      appearance={
+        new PerInstanceColorAppearance({ flat: true, translucent: false })
+      }
       asynchronous={false}
+      releaseGeometryInstances={true}
     />
   );
 };

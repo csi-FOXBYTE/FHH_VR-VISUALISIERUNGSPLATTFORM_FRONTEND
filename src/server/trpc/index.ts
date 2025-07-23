@@ -50,4 +50,4 @@ export const protectedProcedure = procedure
       },
     });
   })
-  .unstable_concat(otelPlugin.pluginProc);
+  .concat(otelPlugin.pluginProc);

@@ -25,22 +25,15 @@ export default function TimePicker() {
   }, [dateTime, viewer]);
 
   return (
-    <Grid
-      container
-      alignItems="center"
-      padding="8px 0"
-    >
-      Time:
-      <DateTimePicker
-        sx={{ transform: "scale(0.75) translateX(32px)", position: "absolute"}}
-        value={dateTime ?? dayjs()}
-        onChange={(date) => {
-          if (!date) return;
+    <DateTimePicker
+      value={dateTime ?? dayjs()}
+      label="Time"
+      onChange={(date) => {
+        if (!date) return;
 
-          setDateTime(date);
-        }}
-        formatDensity="dense"
-      />
-    </Grid>
+        setDateTime(date);
+      }}
+      formatDensity="dense"
+    />
   );
 }

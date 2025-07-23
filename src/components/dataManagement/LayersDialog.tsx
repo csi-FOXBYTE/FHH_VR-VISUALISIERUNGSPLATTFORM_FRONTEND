@@ -5,6 +5,7 @@ import {
   DialogContent,
   DialogTitle,
   Grid,
+  LinearProgress,
   MenuItem,
   Select,
   TextField,
@@ -18,6 +19,8 @@ import { useConfigurationProviderContext } from "../configuration/ConfigurationP
 import { useTranslations } from "next-intl";
 import { trpc } from "@/server/trpc/client";
 import { getApis } from "@/server/gatewayApi/client";
+import { BlockBlobClient } from "@azure/storage-blob";
+import { useState } from "react";
 
 export default function LayersDialog({
   open,
@@ -43,6 +46,8 @@ export default function LayersDialog({
     },
   });
 
+  const [uploadProgress, setUploadProgress] = useState<null | number>(null);
+
   const { mutate, isPending } = useMutation({
     mutationFn: async (values: {
       files: File[];
@@ -50,35 +55,42 @@ export default function LayersDialog({
       type: "3D-TILES" | "TERRAIN";
       name: string;
     }) => {
+      setUploadProgress(null);
       const { converter3DApi } = await getApis();
 
-      const formData = new FormData();
+      const sasUrl = await converter3DApi.converter3DGetUploadSASTokenGet();
 
-      formData.append("name", values.name);
-      formData.append("srcSRS", values.srcSRS.value);
+      const blockBlobClient = new BlockBlobClient(sasUrl);
 
-      formData.append("file", values.files[0]);
+      await blockBlobClient.uploadData(values.files[0], {
+        blockSize: 8 * 1024 * 1024, // 8 Mibs
+        concurrency: 4,
+        onProgress: (progress) =>
+          setUploadProgress(progress.loadedBytes / values.files[0].size),
+      });
 
       switch (values.type) {
         case "3D-TILES":
-          await converter3DApi.converter3DUpload3DTilePost({
-            srcSRS: values.srcSRS.value,
-            file: values.files[0],
-            name: values.name,
+          await converter3DApi.converter3DConvert3DTilePost({
+            converter3DConvertTerrainPostRequest: {
+              srcSRS: values.srcSRS.value,
+              blobRef: sasUrl,
+              name: values.name,
+            },
           });
           break;
         case "TERRAIN":
-          await converter3DApi.converter3DUploadTerrainPost({
-            srcSRS: values.srcSRS.value,
-            file: values.files[0],
-            name: values.name,
+          await converter3DApi.converter3DConvertTerrainPost({
+            converter3DConvertTerrainPostRequest: {
+              srcSRS: values.srcSRS.value,
+              blobRef: sasUrl,
+              name: values.name,
+            },
           });
           break;
         default:
           throw new Error("Found no matching type!");
       }
-
-      close();
     },
     onSuccess: () => {
       utils.dataManagementRouter.invalidate();
@@ -89,6 +101,7 @@ export default function LayersDialog({
         }),
       });
       close();
+      setUploadProgress(null);
     },
     onError: (error) => {
       console.error(error);
@@ -98,6 +111,7 @@ export default function LayersDialog({
           entity: t("entities.base-layer"),
         }),
       });
+      setUploadProgress(null);
     },
   });
 
@@ -145,8 +159,21 @@ export default function LayersDialog({
           </Grid>
         </DialogContent>
         <DialogActions>
-          <Button loading={isPending} variant="contained" type="submit">
-            Wandeln
+          <Button disabled={isPending} variant="contained" type="submit">
+            {isPending ? (
+              <Grid container spacing={1} alignItems="center">
+                Hochladen
+                <LinearProgress
+                  sx={{ width: 50 }}
+                  variant={
+                    uploadProgress === null ? "indeterminate" : "determinate"
+                  }
+                  value={(uploadProgress ?? 0) * 100}
+                />
+              </Grid>
+            ) : (
+              "Wandeln"
+            )}
           </Button>
         </DialogActions>
       </form>

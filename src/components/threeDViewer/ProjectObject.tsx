@@ -83,21 +83,20 @@ export default function ProjectObject({
 
   if (!url) return null;
 
-  if (modelRef)
-    return (
-      <Model
-        onClick={() => setSelectedObject(projectObject)}
-        url={url}
-        show={projectObject.visible}
-        modelMatrix={modelMatrix}
-        color={Cesium.Color.YELLOW}
-        colorBlendMode={Cesium.ColorBlendMode.MIX}
-        colorBlendAmount={selectedObject?.id === projectObject.id ? 0.5 : 0}
-        ref={(ref) => {
-          if (!ref?.cesiumElement) return;
+  return (
+    <Model
+      onClick={() => setSelectedObject(projectObject)}
+      url={url}
+      show={projectObject.visible}
+      modelMatrix={modelMatrix}
+      color={Cesium.Color.YELLOW}
+      colorBlendMode={Cesium.ColorBlendMode.MIX}
+      colorBlendAmount={selectedObject?.id === projectObject.id ? 0.5 : 0}
+      ref={(ref) => {
+        if (!ref?.cesiumElement) return;
 
-          setModelRef(ref.cesiumElement);
-        }}
-      />
-    );
+        setModelRef(ref.cesiumElement);
+      }}
+    />
+  );
 }

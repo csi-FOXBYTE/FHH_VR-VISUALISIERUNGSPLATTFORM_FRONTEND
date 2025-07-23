@@ -78,8 +78,8 @@ export default function VisualAxis({
           }
           color={
             visualAxis.id === selectedObject?.id
-              ? Cesium.Color.YELLOW
-              : Cesium.Color.BLACK
+              ? new Cesium.Color(1, 1, 0, 0.6)
+              : new Cesium.Color(0.5, 0.5, 0.5, 0.6)
           }
         />
       ) : null}

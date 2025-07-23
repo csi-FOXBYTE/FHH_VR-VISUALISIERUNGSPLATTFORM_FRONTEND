@@ -51,8 +51,8 @@ export default function ClippingPolygon({
           isConstant: false,
         }}
         outline
-        outlineColor={new Color(1, 1, 0, 0.6)}
-        material={new Color(1, 1, 0, 0.5)}
+        outlineColor={selectedObject?.id === clippingPolygon.id ? new Color(1, 1, 0, 0.6) : new Color(0.5, 0.5, 0.5, 0.6)}
+        material={selectedObject?.id === clippingPolygon.id ? new Color(1, 1, 0, 0.5) : new Color(0.5, 0.5, 0.5, 0.5)}
         fill
       />
     </Entity>

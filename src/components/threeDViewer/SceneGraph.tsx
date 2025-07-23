@@ -240,6 +240,8 @@ export default function SceneGraph() {
                     try {
                       const pickedPoint = await pickPoint();
 
+                      console.log(pickedPoint)
+
                       const modelMatrix =
                         Cesium.Transforms.eastNorthUpToFixedFrame(
                           new Cesium.Cartesian3(
@@ -346,52 +348,6 @@ export default function SceneGraph() {
                     visible: !startingPoint.visible,
                   })
                 }
-              />
-            ))}
-          </List>
-        </AccordionDetails>
-      </Accordion>
-      <Accordion
-        style={{ width: "100%" }}
-        expanded={selectedTab === "VISUAL_AXIS"}
-        onChange={() => setSelectedTab("VISUAL_AXIS")}
-        square
-        disableGutters
-      >
-        <AccordionSummary>
-          <Grid
-            container
-            justifyContent="space-between"
-            width="100%"
-            alignItems="center"
-          >
-            <IconButton>
-              {selectedTab === "VISUAL_AXIS" ? <ExpandLess /> : <ExpandMore />}
-            </IconButton>
-            <Typography>
-              Visual axes&nbsp;
-              <StyledCount style={{ backgroundColor: "#faf5ff" }}>
-                [{visualAxes.value.length}]
-              </StyledCount>
-            </Typography>
-            <Box flex="1" />
-          </Grid>
-        </AccordionSummary>
-        <AccordionDetails sx={{ padding: 0 }}>
-          <List>
-            {visualAxes.value.map((visualAxis) => (
-              <SceneGraphListItem
-                name={visualAxis.name}
-                onSelected={() => setSelectedObject(visualAxis)}
-                selected={selectedObject?.id === visualAxis.id}
-                key={visualAxis.id}
-                onFlyTo={() => visualAxes.helpers.flyTo(visualAxis)}
-                onToggleVisibility={() => {
-                  visualAxes.update({
-                    id: visualAxis.id,
-                    visible: visualAxis.visible,
-                  });
-                }}
               />
             ))}
           </List>

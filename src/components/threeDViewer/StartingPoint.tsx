@@ -3,8 +3,8 @@ import { useEffect, useState } from "react";
 import { Entity, LabelGraphics } from "resium";
 import CameraFrustum from "./CameraFrustum";
 import {
-    StartingPoint as StartingPointType,
-    useViewerStore,
+  StartingPoint as StartingPointType,
+  useViewerStore,
 } from "./ViewerProvider";
 
 export default function StartingPoint({
@@ -64,6 +64,7 @@ export default function StartingPoint({
       </Entity>
       {startingPoint.visible ? (
         <CameraFrustum
+          onClick={() => setSelectedObject(startingPoint)}
           key={startingPoint.id}
           target={
             new Cesium.Cartesian3(
@@ -81,8 +82,8 @@ export default function StartingPoint({
           }
           color={
             startingPoint.id === selectedObject?.id
-              ? Cesium.Color.YELLOW
-              : Cesium.Color.BLACK
+              ? new Cesium.Color(1, 1, 0, 0.6)
+              : new Cesium.Color(0.5, 0.5, 0.5, 0.6)
           }
         />
       ) : null}

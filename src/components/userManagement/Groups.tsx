@@ -106,7 +106,9 @@ export default function Groups() {
             handleDelete: (id) => deleteMutation({ id }),
             handleEdit: openUpdate,
             loading: isDeleteMutationPending,
-            isDisabled: (row: (typeof data)[number]) => row.isAdminGroup,
+            isDisabled: (row: (typeof data)[number]) => ({
+              delete: row.isAdminGroup,
+            }),
           }),
         ]}
         rows={data}
