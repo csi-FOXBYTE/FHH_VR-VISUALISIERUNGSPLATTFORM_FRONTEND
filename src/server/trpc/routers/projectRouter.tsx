@@ -1,16 +1,19 @@
 import { dataGridZod } from "@/components/dataGridServerSide/zodTypes";
 import { tracked } from "@trpc/server";
+import { on } from "events";
 import { z } from "zod";
 import { protectedProcedure, router } from "..";
-import { eachValueFromAbortable } from "@/server/helpers";
 
 const projectRouter = router({
   subscribe: protectedProcedure.subscription(async function* (opts) {
-    for await (const value of eachValueFromAbortable(
+    for await (const [data] of on(
       opts.ctx.subscriberDb.project.subscribe({ operations: ["*"] }),
-      opts.signal
+      "change",
+      {
+        signal: opts.signal,
+      }
     )) {
-      yield tracked(value.id, value);
+      yield tracked(data.id, data);
     }
   }),
   update: protectedProcedure

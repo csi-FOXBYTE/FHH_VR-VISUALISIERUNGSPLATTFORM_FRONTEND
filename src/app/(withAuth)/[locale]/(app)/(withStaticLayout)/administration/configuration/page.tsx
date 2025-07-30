@@ -4,7 +4,7 @@ import EPSGInput from "@/components/common/EPSGInput";
 import PageContainer from "@/components/common/PageContainer";
 import TranslationInput from "@/components/threeDViewer/TransformInputs/TranslationInput";
 import { trpc } from "@/server/trpc/client";
-import { Save } from "@mui/icons-material";
+import { Save, Undo } from "@mui/icons-material";
 import {
   Accordion,
   AccordionDetails,
@@ -15,6 +15,8 @@ import {
   Grid,
   Typography,
 } from "@mui/material";
+import { useTranslations } from "next-intl";
+import { useSnackbar } from "notistack";
 import proj4list from "proj4-list";
 import { Controller, useForm } from "react-hook-form";
 
@@ -29,7 +31,9 @@ export default function ConfigurationPage() {
     },
   ] = trpc.configurationRouter.getFull.useSuspenseQuery();
 
-  const { register, control, handleSubmit } = useForm({
+  const utils = trpc.useUtils();
+
+  const { register, control, handleSubmit, reset } = useForm({
     defaultValues: {
       ...data,
       defaultEPSG: {
@@ -44,13 +48,66 @@ export default function ConfigurationPage() {
     },
   });
 
+  const t = useTranslations();
+
+  const { enqueueSnackbar } = useSnackbar();
+
+  const { mutate: updateConfigurationMutation } =
+    trpc.configurationRouter.update.useMutation({
+      onSuccess: () => {
+        utils.configurationRouter.invalidate();
+        enqueueSnackbar({
+          variant: "success",
+          message: t("generic.crud-notifications.update-success", {
+            entity: t("entities.configuration"),
+          }),
+        });
+        close();
+      },
+      onError: () =>
+        enqueueSnackbar({
+          variant: "error",
+          message: t("generic.crud-notifications.update-failed", {
+            entity: t("entities.configuration"),
+          }),
+        }),
+    });
+
   return (
     <PageContainer>
-      <Button startIcon={<Save />}>Save</Button>
-      <form onSubmit={handleSubmit(console.log)}>
-        <Accordion title="Common">
+      <form
+        onSubmit={handleSubmit(async (values) => {
+          updateConfigurationMutation({
+            id: data.id,
+            defaultEpsg: values.defaultEPSG.value,
+            globalStartPointX: values.globalStartPoint.x,
+            globalStartPointY: values.globalStartPoint.y,
+            globalStartPointZ: values.globalStartPoint.z,
+            invitationEmailText: values.invitationEmailText,
+            localProcessorFolder: values.localProcessorFolder,
+            maxParallelBaseLayerConversions:
+              values.maxParallelBaseLayerConversions,
+            maxParallelFileConversions: values.maxParallelFileConversions,
+          });
+        })}
+      >
+        <Grid pb={2} container justifyContent="flex-end" spacing={2}>
+          <Button type="submit" variant="contained" startIcon={<Save />}>
+            {t("actions.save")}
+          </Button>
+          <Button
+            onClick={() => reset()}
+            variant="outlined"
+            color="secondary"
+            startIcon={<Undo />}
+          >
+            {t("actions.revert")}
+          </Button>
+        </Grid>
+
+        <Accordion>
           <AccordionSummary>
-            <Typography>Common</Typography>
+            <Typography>{t("configuration.common")}</Typography>
           </AccordionSummary>
           <AccordionDetails>
             <Grid container flexDirection="column" spacing={2}>
@@ -61,7 +118,7 @@ export default function ConfigurationPage() {
                   <EPSGInput value={field.value} onChange={field.onChange} />
                 )}
               />
-              <Typography>Global Start point</Typography>
+              <Typography>{t('configuration.global-start-point')}</Typography>
               <Controller
                 control={control}
                 name="globalStartPoint"
@@ -77,13 +134,13 @@ export default function ConfigurationPage() {
         </Accordion>
         <Accordion>
           <AccordionSummary>
-            <Typography>Conversions</Typography>
+            <Typography>{t('configuration.conversions')}</Typography>
           </AccordionSummary>
           <AccordionDetails>
             <Grid container flexDirection="column" spacing={2}>
               <TextField
                 {...register("localProcessorFolder")}
-                label="Local processor folder"
+                label={t('configuration.local-processor-folder')}
               />
               <Divider />
               <TextField
@@ -94,7 +151,7 @@ export default function ConfigurationPage() {
                     max: 9999,
                   },
                 }}
-                label="Max parallel base layer conversions"
+                label={t('configuration.max-parallel-base-layer-conversions')}
                 {...register("maxParallelBaseLayerConversions")}
               />
               <Divider />
@@ -106,7 +163,7 @@ export default function ConfigurationPage() {
                     max: 9999,
                   },
                 }}
-                label="Max parallel file conversions"
+                label={t('configuration.max-parallel-file-conversions')}
                 {...register("maxParallelFileConversions")}
               />
             </Grid>

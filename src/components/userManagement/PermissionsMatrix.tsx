@@ -68,7 +68,7 @@ export default function PermissionsMatrix({
         field: "entity",
         flex: 1,
         headerName: "",
-        valueGetter: (value) => t(`permissions.${value}`),
+        valueGetter: (_, row) => t(`permissions.${row.entity}`),
       },
       {
         field: "all",

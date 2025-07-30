@@ -1,5 +1,6 @@
 import { CRUD_PERMISSIONS_SET } from "@/constants/permissions";
 import { PrismaClient } from "@prisma/client";
+import testImg from "./testImg";
 
 const prisma = new PrismaClient();
 
@@ -7,7 +8,7 @@ const prisma = new PrismaClient();
   await prisma.configuration.create({
     data: {
       defaultEPSG: "EPSG:25832",
-      localProcessorFolder: "D:\\processor",
+      localProcessorFolder: "./processor",
       globalStartPointX: 3764595.8724393756,
       globalStartPointY: 664200.4499076013,
       globalStartPointZ: 5144292.106228131,
@@ -57,7 +58,7 @@ const prisma = new PrismaClient();
   const { id: adminGroupId } = await prisma.group.create({
     data: {
       name: "Administrator",
-      defaultFor: "*@csi-online.de",
+      defaultFor: "*",
       isAdminGroup: true,
       assignedRoles: {
         connect: {
@@ -70,7 +71,7 @@ const prisma = new PrismaClient();
   const { id: guestGroupId } = await prisma.group.create({
     data: {
       name: "Guest",
-      defaultFor: "!*@csi-online.de",
+      defaultFor: "",
       isAdminGroup: false,
       assignedRoles: {
         connect: {
@@ -101,6 +102,7 @@ const prisma = new PrismaClient();
         name: "Test",
         startPointX: 0,
         startPointY: 0,
+        img: testImg,
         startPointZ: 0,
       },
     ],

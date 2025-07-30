@@ -10,7 +10,7 @@ import {
   PerspectiveFrustum,
   Quaternion,
 } from "cesium";
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 import { Primitive } from "resium";
 
 interface CameraFrustumProps {

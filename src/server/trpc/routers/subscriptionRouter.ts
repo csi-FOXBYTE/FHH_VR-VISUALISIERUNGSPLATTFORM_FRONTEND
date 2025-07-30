@@ -1,18 +1,20 @@
 import { tracked } from "@trpc/server";
+import { on } from "events";
 import { z } from "zod";
 import { protectedProcedure, router } from "..";
-import { eachValueFromAbortable } from "@/server/helpers";
 
 const subscriptionRouter = router({
   subscribe: protectedProcedure
     .input(z.string())
     .subscription(async function* (opts) {
-      for await (const value of eachValueFromAbortable(
-        // @ts-expect-error unsafe
+      for await (const [data] of on(
         opts.ctx.subscriberDb[opts.input].subscribe({ operations: ["*"] }),
-        opts.signal
+        "change",
+        {
+          signal: opts.signal,
+        }
       )) {
-        yield tracked(value.id, value);
+        yield tracked(data.id, data);
       }
     }),
 });

@@ -19,6 +19,7 @@ import { ReactNode, useState } from "react";
 import DragAndDropzone from "../common/DragAndDropZone";
 import { useViewerStore } from "./ViewerProvider";
 import { getApis } from "@/server/gatewayApi/client";
+import { BlockBlobClient } from "@azure/storage-blob";
 
 const epsgValues = Object.values(proj4List)
   .map(([epsg, proj4]) => ({
@@ -56,6 +57,8 @@ export default function ImportProjectObjectDialog() {
 
   const [progress, setProgress] = useState(0);
 
+  const [uploadProgress, setUploadProgress] = useState<null | number>(null);
+
   const messageMap: Record<typeof pendingState | "uploading", ReactNode> = {
     active: (
       <Grid container spacing={1} alignItems="center">
@@ -73,7 +76,16 @@ export default function ImportProjectObjectDialog() {
         Warten in der Warteschlange...
       </>
     ),
-    uploading: "Hochladen...",
+    uploading: (
+      <Grid container spacing={1} alignItems="center">
+        Hochladen
+        <LinearProgress
+          sx={{ width: 50 }}
+          variant={uploadProgress === null ? "indeterminate" : "determinate"}
+          value={(uploadProgress ?? 0) * 100}
+        />
+      </Grid>
+    ),
     "waiting-children": null,
     completed: "Konvertierung abgeschlossen...",
     delayed: "Verzögert",
@@ -99,14 +111,25 @@ export default function ImportProjectObjectDialog() {
 
         const { converter3DApi } = await getApis();
 
+        const sasUrl = await converter3DApi.converter3DGetUploadSASTokenGet();
+
+        const blockBlobClient = new BlockBlobClient(sasUrl);
+
+        await blockBlobClient.uploadData(file, {
+          blockSize: 8 * 1024 * 1024, // 8 Mibs
+          concurrency: 4,
+          onProgress: (progress) =>
+            setUploadProgress(progress.loadedBytes / file.size),
+        });
+
         setPendingState("uploading");
 
         const { jobId, secret } =
-          await converter3DApi.converter3DUploadProjectModelPost({
-            converter3DUploadProjectModelPostRequest: {
+          await converter3DApi.converter3DConvertProjectModelPost({
+            converter3DConvertProjectModelPostRequest: {
               epsgCode: selectedEpsg.label,
+              blobRef: sasUrl,
               fileName: file.name,
-              file: file,
             },
           });
 
@@ -115,7 +138,7 @@ export default function ImportProjectObjectDialog() {
         for (let i = 0; i < 512; i++) {
           const result =
             await converter3DApi.converter3DGetProjectModelStatusPost({
-              converter3DUploadProjectModelPost200Response: {
+              converter3DConvertProjectModelPost200Response: {
                 jobId,
                 secret,
               },
@@ -135,7 +158,7 @@ export default function ImportProjectObjectDialog() {
         if (!modelMatrixRaw) throw new Error("FAILED");
 
         const blob = await converter3DApi.converter3DDownloadProjectModelPost({
-          converter3DUploadProjectModelPost200Response: {
+          converter3DConvertProjectModelPost200Response: {
             jobId,
             secret,
           },

@@ -46,7 +46,7 @@ export default function MyAreaPage() {
               href: "/profile",
               label: t("index.show-profile"),
             },
-            title: t("index.welcoming-text", { name: session.data?.user.name }),
+            title: t("index.welcoming-text", { name: session.data?.user.name ?? "-" }),
           },
           {
             key: "project-management",

@@ -46,13 +46,13 @@ export default function CUDialog<Data extends FieldValues>({
     if (fetchedData !== null) {
       form.reset(fetchedData);
     }
-  }, [fetchedData, form.reset]);
+  }, [fetchedData, form, form.reset]);
 
   useEffect(() => {
     if (!open) {
       form.reset(defaultData);
     }
-  }, [open, form.reset]);
+  }, [open, form.reset, form, defaultData]);
 
   return (
     <Dialog fullWidth open={open} onClose={close}>

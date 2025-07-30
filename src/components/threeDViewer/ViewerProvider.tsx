@@ -258,6 +258,7 @@ export const useViewerStore = create<ViewerStoreType>((set, get) => ({
           id: crypto.randomUUID(),
           name: `Clipping polygon ${state.clippingPolygons.value.length}`,
           positions: polygon,
+          affectsTerrain: false,
           type: "CLIPPING_POLYGON",
           visible: true,
         } as const;

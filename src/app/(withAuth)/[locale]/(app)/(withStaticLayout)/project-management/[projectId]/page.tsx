@@ -1,33 +1,26 @@
 "use client";
 
 import PageContainer from "@/components/common/PageContainer";
+import { TabPanel } from "@/components/common/TabPanel";
 import BaseLayers from "@/components/projectManagement/BaseAndProjectLayers";
 import { Link, useRouter } from "@/server/i18n/routing";
 import { trpc } from "@/server/trpc/client";
-import {
-  Add,
-  Cancel,
-  Edit,
-  KeyboardArrowDown,
-  Save,
-} from "@mui/icons-material";
+import { Cancel, Edit, Save } from "@mui/icons-material";
 import {
   Button,
   ButtonGroup,
   Divider,
   Grid,
   InputAdornment,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
-  Menu,
   styled,
+  Tab,
+  Tabs,
   TextField,
 } from "@mui/material";
 import { skipToken } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 import { useParams } from "next/navigation";
 import { useSnackbar } from "notistack";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 
 const CustomTitleInput = styled(TextField)(({ theme }) => ({
@@ -43,10 +36,9 @@ const CustomDescriptionInput = styled(TextField)(({ theme }) => ({
 }));
 
 export default function ProjectPage() {
-  const params = useParams();
+  const t = useTranslations();
 
-  const [menuNewRef, setMenuNewRef] = useState<HTMLElement | null>(null);
-  const [menuNewOpen, setMenuNewOpen] = useState(false);
+  const params = useParams();
 
   const projectId = params.projectId as string;
 
@@ -70,22 +62,28 @@ export default function ProjectPage() {
 
   const { enqueueSnackbar } = useSnackbar();
 
+  const utils = trpc.useUtils();
+
   const {
     mutate: createProjectMutation,
     isPending: isCreateProjectMutationPending,
   } = trpc.projectRouter.create.useMutation({
-    onSuccess: (data) => {
+    onSuccess: () => {
+      utils.projectRouter.invalidate();
       enqueueSnackbar({
         variant: "success",
-        message: "Projekt erfolgreich erstellt!",
+        message: t("generic.crud-notifications.create-success", {
+          entity: t("entities.project"),
+        }),
       });
-      router.push(`/project-management/${data.id}`);
+      close();
     },
     onError: () =>
       enqueueSnackbar({
         variant: "error",
-        message:
-          "Beim erstellen des Projekts ist ein unbekannter Fehler aufgetreten!",
+        message: t("generic.crud-notifications.create-failed", {
+          entity: t("entities.project"),
+        }),
       }),
   });
 
@@ -93,18 +91,22 @@ export default function ProjectPage() {
     mutate: updateProjectMutation,
     isPending: isUpdateProjectMutationPending,
   } = trpc.projectRouter.update.useMutation({
-    onSuccess: (data) => {
+    onSuccess: () => {
+      utils.projectRouter.invalidate();
       enqueueSnackbar({
         variant: "success",
-        message: "Projekt erfolgreich geändert!",
+        message: t("generic.crud-notifications.update-success", {
+          entity: t("entities.project"),
+        }),
       });
-      router.push(`/project-management/${data.id}`);
+      close();
     },
     onError: () =>
       enqueueSnackbar({
         variant: "error",
-        message:
-          "Beim ändern des Projekts ist ein unbekannter Fehler aufgetreten!",
+        message: t("generic.crud-notifications.update-failed", {
+          entity: t("entities.project"),
+        }),
       }),
   });
 
@@ -139,7 +141,9 @@ export default function ProjectPage() {
           variant="standard"
           defaultValue={projectData?.title}
           {...register("title")}
-          placeholder={isNew ? "Neues Projekt..." : undefined}
+          placeholder={
+            isNew ? t("project-management.title-placeholder") : undefined
+          }
         />
         <CustomDescriptionInput
           slotProps={{
@@ -158,7 +162,9 @@ export default function ProjectPage() {
           {...register("description")}
           minRows={2}
           maxRows={10}
-          placeholder={isNew ? "Beschreibung..." : undefined}
+          placeholder={
+            isNew ? t("project-management.description-placeholder") : undefined
+          }
         />
         <Grid container justifyContent="flex-end" gap={2}>
           <ButtonGroup variant="outlined">
@@ -168,7 +174,7 @@ export default function ProjectPage() {
               onClick={() => reset()}
               startIcon={<Cancel />}
             >
-              Abbrechen
+              {t("actions.cancel")}
             </Button>
             <Button
               type="submit"
@@ -180,43 +186,31 @@ export default function ProjectPage() {
               }
               disabled={!formState.isDirty}
             >
-              {isNew ? "Erstellen" : "Speichern"}
+              {isNew ? t("actions.create") : t("actions.save")}
             </Button>
           </ButtonGroup>
           <Divider orientation="vertical" />
           <Button
             variant="contained"
             color="secondary"
-            startIcon={<Add />}
+            LinkComponent={Link}
+            startIcon={<Edit />}
             disabled={isNew}
-            endIcon={<KeyboardArrowDown />}
-            onClick={() => setMenuNewOpen(true)}
-            ref={(ref) => setMenuNewRef(ref ?? null)}
+            href={`/project-management/${projectId}/editor`}
           >
-            Neu
+            {t("project-management.open-editor")}
           </Button>
-          <Menu
-            anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
-            open={menuNewOpen}
-            onClose={() => setMenuNewOpen(false)}
-            anchorEl={menuNewRef}
-          >
-            <ListItemButton
-              LinkComponent={Link}
-              href={`/project-management/${projectId}/editor`}
-            >
-              <ListItemIcon>
-                <Add />
-              </ListItemIcon>
-              <ListItemText>Ebene hinzufügen</ListItemText>
-            </ListItemButton>
-          </Menu>
         </Grid>
       </Grid>
       {isNew ? null : (
         <>
           <Divider />
-          <BaseLayers />
+          <Tabs>
+            <Tab label="Basisdatensätze"></Tab>
+          </Tabs>
+          <TabPanel>
+            <BaseLayers />
+          </TabPanel>
         </>
       )}
     </PageContainer>

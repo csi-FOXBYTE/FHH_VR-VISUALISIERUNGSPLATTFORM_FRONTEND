@@ -49,9 +49,9 @@ function recurseStructure<
   M extends FormFactoryModelConfig
 >(
   structureConfig: C,
-  structureItems: FormFactoryStructure<C, any>,
+  structureItems: FormFactoryStructure<C, any>, // eslint-disable-line @typescript-eslint/no-explicit-any
   modelConfig: M,
-  modelItems: Map<string, FormFactoryModel<M, any>[number]>,
+  modelItems: Map<string, FormFactoryModel<M, any>[number]>, // eslint-disable-line @typescript-eslint/no-explicit-any
   form: UseFormReturn,
   layer = 0
 ) {

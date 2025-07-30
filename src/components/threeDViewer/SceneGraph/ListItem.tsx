@@ -1,7 +1,6 @@
 import {
-    CameraAlt,
+  CameraAlt,
   Delete,
-  LocationCity,
   LocationOn,
   Visibility,
   VisibilityOff,

@@ -4,10 +4,16 @@ import { TabPanel } from "../common/TabPanel";
 import ObjectInfo from "./ObjectInfo";
 import TransformSwitch from "./TransformSwitch";
 import { useSelectedObject } from "./ViewerProvider";
+import Attributes from "./Attributes";
 
 export default function ObjectProperties() {
   const [selectedTab, setSelectedTab] = useState(0);
   const selectedObject = useSelectedObject();
+
+  const [test, setTest] = useState<Record<string, string>>({
+    a: "Hallo",
+    b: "spdfkwef",
+  });
 
   return (
     <Grid flex={1} container flexDirection="column" width="100%" padding={2}>
@@ -49,9 +55,7 @@ export default function ObjectProperties() {
           visible={selectedObject === null}
           index={selectedTab}
           value={selectedTab}
-        >
-          Please select a entity...
-        </TabPanel>
+        ></TabPanel>
         <TabPanel
           style={{ paddingTop: 16 }}
           visible={selectedObject !== null}
@@ -73,7 +77,9 @@ export default function ObjectProperties() {
           visible={selectedObject !== null}
           index={2}
           value={selectedTab}
-        ></TabPanel>
+        >
+          <Attributes value={test} onChange={setTest} />
+        </TabPanel>
       </Box>
     </Grid>
   );

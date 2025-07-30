@@ -82,7 +82,13 @@
     "title": "Administration"
   },
   "configuration": {
-    "title": "Konfiguration"
+    "title": "Konfiguration",
+    "common": "Allgemein",
+    "global-start-point": "Globaler Startpunkt",
+    "conversions": "Wandlung",
+    "local-processor-folder": "Lokaler Ablege Ordner",
+    "max-parallel-base-layer-conversions": "Maximale parallele Basisdatenwandlungen",
+    "max-parallel-file-conversions": "Maximale parallele Dateiwandlungen"
   },
   "user-management": {
     "title": "Nutzer- und Gruppenverwaltung",
@@ -112,7 +118,10 @@
   "project-management": {
     "title": "Projektverwaltung",
     "my-projects": "Meine Projekte",
-    "shared-projects": "Mit mir geteilte Projekte"
+    "shared-projects": "Mit mir geteilte Projekte",
+    "open-editor": "Editor öffnen",
+    "description-placeholder": "Beschreibung...",
+    "title-placeholder": "Titel..."
   },
   "components": {
     "list-with-pagination": {
@@ -150,7 +159,9 @@
     "starting-point": "Startpunkt",
     "visual-axis": "Sichtachse",
     "project-file": "Projekt Datei",
-    "event": "Veranstaltung"
+    "event": "Veranstaltung",
+    "configuration": "Konfiguration",
+    "project": "Projekt"
   },
   "generic": {
     "crud-notifications": {
@@ -168,7 +179,9 @@
     "update": "Ändern",
     "save": "Speichern",
     "delete": "Löschen",
-    "invite": "Einladen"
+    "invite": "Einladen",
+    "revert": "Zurücksetzen",
+    "add": "Hinzufügen"
   },
   "data-mangement": {
     "title": "Titel"
@@ -188,5 +201,10 @@
     "we-are-working-hard": "Wir arbeiten hart um euch bald neue Features zeigen zu können.",
     "go-back": "Zurück gehen",
     "title": "Seite in Bearbeitung"
+  },
+  "attributes": {
+    "please-add-an-attribute": "Bitte fügen Sie ein Attribut hinzu...",
+    "key": "Schlüssel",
+    "value": "Wert"
   }
 }

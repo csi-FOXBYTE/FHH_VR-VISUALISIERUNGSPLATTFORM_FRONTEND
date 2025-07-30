@@ -1,5 +1,4 @@
 import { Box, styled } from "@mui/material";
-import { Math as CesiumMath } from "cesium";
 import { useCallback, useEffect, useRef } from "react";
 import { useCesium } from "resium";
 

@@ -1,5 +1,11 @@
 import { Redo, Save, Undo, Upload } from "@mui/icons-material";
-import { Autocomplete, Grid, IconButton, TextField, Tooltip } from "@mui/material";
+import {
+  Autocomplete,
+  Grid,
+  IconButton,
+  TextField,
+  Tooltip,
+} from "@mui/material";
 import BreadCrumbs from "../navbar/BreadCrumbs";
 import ImportProjectObjectDialog from "./ImportProjectObjectDialog";
 import TimePicker from "./TimePicker";
@@ -13,7 +19,13 @@ export default function AppBar() {
   );
 
   return (
-    <Grid width="100%" zIndex={5} boxShadow={2} container flexDirection="column">
+    <Grid
+      width="100%"
+      zIndex={5}
+      boxShadow={2}
+      container
+      flexDirection="column"
+    >
       <ImportProjectObjectDialog />
       <Grid
         container
@@ -49,9 +61,24 @@ export default function AppBar() {
           </Tooltip>
         </Grid>
       </Grid>
-      <Grid padding="8px 32px" boxShadow={2} container sx={{ backgroundColor: "#eee" }}>
+      <Grid
+        padding="8px 32px"
+        boxShadow={2}
+        spacing={2}
+        container
+        sx={{ backgroundColor: "#eee" }}
+      >
         <TimePicker />
-        <Autocomplete options={[]} renderInput={(params) => <TextField label="Sichtachsen" {...params} />} />
+        <Autocomplete
+          options={[]}
+          renderInput={(params) => (
+            <TextField
+              sx={{ width: 200, minWidth: 100 }}
+              label="Sichtachsen"
+              {...params}
+            />
+          )}
+        />
       </Grid>
     </Grid>
   );
