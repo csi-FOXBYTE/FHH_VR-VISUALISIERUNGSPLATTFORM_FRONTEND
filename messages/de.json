@@ -208,7 +208,9 @@
   "import-model-dialog": {
     "upload-new-model": "Neues Modell hochladen",
     "reuse-existing-model": "Bestehendes Modell wiederverwenden",
-    "name": "Name"
+    "name": "Name",
+    "import-successful": "Modell Import war erfolgreich!",
+    "import-failed": "Modell Import fehlgeschlagen!"
   },
   "data-mangement": {
     "title": "Titel"

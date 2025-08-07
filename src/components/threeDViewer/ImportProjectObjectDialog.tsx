@@ -136,12 +136,12 @@ export default function ImportProjectObjectDialog() {
       onSuccess: () => {
         enqueueSnackbar({
           variant: "success",
-          message: "File import successful!",
+          message: t("import-model-dialog.import-successful"),
         });
       },
       onError: (error) => {
         console.error(error);
-        enqueueSnackbar({ variant: "error", message: "File import failed!" });
+        enqueueSnackbar({ variant: "error", message: t("import-model-dialog.import-failed") });
       },
       mutationFn: async () => {
         if (!file) return;
