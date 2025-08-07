@@ -2,6 +2,7 @@ import { Button, Grid } from "@mui/material";
 import Separate from "./Separate";
 import { Camera } from "@mui/icons-material";
 import { useViewerStore } from "./ViewerProvider";
+import { useTranslations } from "next-intl";
 
 export function useIsScreenshotDialogOpen() {
   const screenshotDialogOpen = useViewerStore(
@@ -12,6 +13,8 @@ export function useIsScreenshotDialogOpen() {
 }
 
 export default function ScreenshotDialog() {
+  const t = useTranslations();
+  
   const tools = useViewerStore((state) => state.tools);
 
   if (!tools.screenshotDialogOpen) return null;
@@ -31,7 +34,7 @@ export default function ScreenshotDialog() {
             onClick={() => tools.screenshotButtonPressedResolve()}
             startIcon={<Camera />}
           >
-            Screenshot aufnehmen
+            {t('editor.take-screenshot')}
           </Button>
         </Grid>
       </Separate>

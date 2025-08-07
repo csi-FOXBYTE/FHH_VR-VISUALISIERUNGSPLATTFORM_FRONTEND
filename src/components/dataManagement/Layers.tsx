@@ -2,7 +2,6 @@ import { trpc } from "@/server/trpc/client";
 import { Add, Check, Close } from "@mui/icons-material";
 import { DataGrid } from "@mui/x-data-grid";
 import { keepPreviousData } from "@tanstack/react-query";
-import createEditDeleteActions from "../dataGridServerSide/createEditDeleteActions";
 import useDataGridServerSideHelper from "../dataGridServerSide/useDataGridServerSideOptions";
 import { useTranslations } from "next-intl";
 import {
@@ -16,6 +15,7 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import LayersDialog from "./LayersDialog";
+import useCreateEditDeleteActions from "../dataGridServerSide/useCreateEditDeleteActions";
 
 function CircularProgressWithLabel(
   props: CircularProgressProps & { value: number }
@@ -61,6 +61,12 @@ export default function Layers() {
     ],
   });
 
+  const createEditDeleteActions = useCreateEditDeleteActions({
+    handleDelete: () => {},
+    handleEdit: () => {},
+    isDisabled: () => ({ delete: true, edit: true }),
+  });
+
   const utils = trpc.useUtils();
 
   const { data: { data, count } = { count: 0, data: [] }, isLoading } =
@@ -77,11 +83,6 @@ export default function Layers() {
 
   return (
     <>
-      <Button
-        onClick={() => utils.dataManagementRouter.listBaseLayers.refetch()}
-      >
-        Refresh
-      </Button>
       <LayersDialog open={open} close={() => setOpen(false)} />
       <DataGrid
         {...props}
@@ -107,6 +108,7 @@ export default function Layers() {
           },
           {
             field: "progress",
+            headerName: "Fortschritt",
             type: "number",
             renderCell: ({ row }) => {
               switch (row.status) {
@@ -195,11 +197,7 @@ export default function Layers() {
             field: "createdAt",
             type: "date",
           },
-          createEditDeleteActions({
-            handleDelete: () => {},
-            handleEdit: () => {},
-            isDisabled: () => ({ delete: true, edit: true }),
-          }),
+          createEditDeleteActions,
         ]}
       />
     </>

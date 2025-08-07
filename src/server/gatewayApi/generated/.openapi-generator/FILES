@@ -5,6 +5,7 @@ apis/ProjectApi.ts
 apis/StatsApi.ts
 apis/index.ts
 index.ts
+models/Converter3DCommitUploadPostRequest.ts
 models/Converter3DConvertProjectModelPost200Response.ts
 models/Converter3DConvertProjectModelPostRequest.ts
 models/Converter3DConvertTerrainPost200Response.ts
@@ -24,6 +25,7 @@ models/EventsIdHostPostRequest.ts
 models/EventsUpdatePostRequest.ts
 models/ProjectIdGet200Response.ts
 models/ProjectIdGet200ResponseAllAvailableBaseLayersInner.ts
+models/ProjectIdGet200ResponseExtensionLayersInner.ts
 models/ProjectIdGet200ResponseLayersInner.ts
 models/ProjectIdGet200ResponseLayersInnerClippingPolygonsInner.ts
 models/ProjectIdGet200ResponseLayersInnerProjectModelsInner.ts

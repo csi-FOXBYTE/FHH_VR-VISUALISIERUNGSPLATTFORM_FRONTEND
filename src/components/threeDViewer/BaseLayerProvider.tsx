@@ -1,12 +1,5 @@
 import * as Cesium from "cesium";
-import {
-  createContext,
-  ReactNode,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-} from "react";
+import { createContext, ReactNode, useContext, useMemo } from "react";
 
 type TileSetLayer = {
   name: string;
@@ -93,15 +86,12 @@ export default function BaseLayerProvider({
     return result;
   }, [resources]);
 
-  console.log({ providers, resources })
-
   return (
     <BaseLayerProviderContext.Provider value={providers}>
       {children}
     </BaseLayerProviderContext.Provider>
   );
 }
-
 
 export function useBaseLayerProviderContext() {
   const ctx = useContext(BaseLayerProviderContext);

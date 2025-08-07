@@ -2,7 +2,14 @@
 
 import { getApis } from "@/server/gatewayApi/client";
 import { ProjectApi } from "@/server/gatewayApi/generated";
-import { Cartesian3, Cesium3DTileset, Entity, Model } from "cesium";
+import {
+  Cartesian3,
+  Cesium3DTileset,
+  Ellipsoid,
+  Entity,
+  Model,
+  Rectangle,
+} from "cesium";
 import { createContext, ReactNode, useContext, useState } from "react";
 import { ResiumContext } from "resium";
 import { create, StoreApi, UseBoundStore } from "zustand";
@@ -16,7 +23,7 @@ export type ClippingPolygon = {
   id: string;
 };
 
-export type ProjectObject = {
+export type ProjectModel = {
   type: "PROJECT_OBJECT";
   href: string;
   name: string;
@@ -50,8 +57,10 @@ export type Layer = {
   name: string;
   id: string;
   type: "LAYER";
-  projectObjects: ProjectObject[];
+  projectObjects: ProjectModel[];
   clippingPolygons: ClippingPolygon[];
+  selectedBaseLayers: string[];
+  selectedExtensionLayers: string[];
 };
 
 export type BaseLayer = {
@@ -61,15 +70,22 @@ export type BaseLayer = {
   href: string;
 };
 
+export type ExtensionLayer = {
+  name: string;
+  id: string;
+  type: string;
+  href: string;
+};
+
 export type SelectedObject =
   | {
-      type: (ClippingPolygon | ProjectObject | StartingPoint)["type"];
+      type: (ClippingPolygon | ProjectModel | StartingPoint)["type"];
       id: string;
     }
   | Tile3D;
 export type SelectedObjectResolved =
   | ClippingPolygon
-  | ProjectObject
+  | ProjectModel
   | StartingPoint
   | Tile3D;
 
@@ -78,13 +94,14 @@ export type ViewerStoreType = {
   setCtx: (ctx: ResiumContext) => void;
 
   lastCameraPosition: {
-    lon: number;
-    lat: number;
-    height: number;
+    x: number;
+    y: number;
+    z: number;
     heading: number;
     pitch: number;
     roll: number;
-  };
+  } | null;
+  saveLastCameraPosition: () => void;
 
   project: Project;
   updateProject: (
@@ -93,8 +110,14 @@ export type ViewerStoreType = {
   saveProject: () => Promise<void>;
   savingBlockerOpen: boolean;
 
+  region: { east: number; north: number; west: number; south: number } | null;
+  pickRegion: () => Promise<void>;
+  updateRegion: (
+    region: { east: number; north: number; west: number; south: number } | null
+  ) => void;
+
   layers: {
-    selectedLayer: string;
+    selectedLayerId: string;
     value: Layer[];
     changeToLayer: (id: string) => Promise<void>;
     save: () => void;
@@ -105,9 +128,16 @@ export type ViewerStoreType = {
 
   baseLayers: {
     value: BaseLayer[];
-    selectedBaseLayers: string[];
-    add: (id: string) => void;
-    remove: (id: string) => void;
+    selected: string[];
+    select: (id: string) => void;
+    unselect: (id: string) => void;
+  };
+
+  extensionLayers: {
+    value: ExtensionLayer[];
+    selected: string[];
+    select: (id: string) => void;
+    unselect: (id: string) => void;
   };
 
   tools: {
@@ -120,8 +150,12 @@ export type ViewerStoreType = {
     }) => Promise<string | null>;
     safeCameraZoneVisible: boolean;
     toggleSafeCameraZoneVisibility: () => void;
-    pickPoint: () => Promise<{ x: number; y: number; z: number }>;
-    pickPolygon: () => Promise<{ x: number; y: number; z: number }[]>;
+    pickPoint: (
+      cb?: (point: { x: number; y: number; z: number }) => void
+    ) => Promise<{ x: number; y: number; z: number }>;
+    pickPolygon: (
+      cb?: (point: { x: number; y: number; z: number }) => void
+    ) => Promise<{ x: number; y: number; z: number }[]>;
     shadowVisible: boolean;
     toggleShadowVisibility: () => void;
   };
@@ -129,6 +163,9 @@ export type ViewerStoreType = {
 
   clippingPolygons: {
     value: ClippingPolygon[];
+    helpers: {
+      flyTo: (clippingPolygon: ClippingPolygon) => void;
+    };
     set: (clippingPolgons: ClippingPolygon[]) => void;
     update: (
       clippingPolygon: Partial<ClippingPolygon> & { id: string }
@@ -138,20 +175,26 @@ export type ViewerStoreType = {
   };
 
   projectObjects: {
-    value: ProjectObject[];
+    value: ProjectModel[];
     _importerOpen: boolean;
+    helpers: {
+      flyTo: (projectModel: ProjectModel) => void;
+    };
     toggleImport: () => void;
     toggleVisibility: (id: string) => void;
-    set: (projectObjects: ProjectObject[]) => void;
-    update: (projectObject: Partial<ProjectObject> & { id: string }) => void;
+    set: (projectObjects: ProjectModel[]) => void;
+    update: (projectObject: Partial<ProjectModel> & { id: string }) => void;
+    add: (projectObject: ProjectModel) => void;
     delete: (id: string) => void;
-    create: () => Promise<void>;
   };
 
   startingPoints: {
     value: StartingPoint[];
     helpers: {
-      flyTo: (startingPoint: StartingPoint) => void;
+      flyTo: (directedPoint: {
+        target: { x: number; y: number; z: number };
+        position: { x: number; y: number; z: number };
+      }) => void;
       takeScreenshot: (startingPoint: StartingPoint) => void;
     };
     set: (startingPoints: StartingPoint[]) => void;
@@ -160,7 +203,7 @@ export type ViewerStoreType = {
     create: () => Promise<void>;
   };
 
-  selectedObject: SelectedObject | null; // this is dangerous -> need to get it here
+  selectedObject: SelectedObject | null;
   setSelectedObject: (selectedObject: SelectedObject | null) => void;
 
   history: {
@@ -173,6 +216,12 @@ export type ViewerStoreType = {
       startingPoints: ViewerStoreType["startingPoints"]["value"];
       projectObjects: ViewerStoreType["projectObjects"]["value"];
       selectedObject: ViewerStoreType["selectedObject"];
+      layers: Pick<ViewerStoreType["layers"], "selectedLayerId" | "value">;
+      baseLayers: ViewerStoreType["baseLayers"]["selected"];
+      extensionLayers: Pick<
+        ViewerStoreType["extensionLayers"],
+        "selected" | "value"
+      >;
       project: {
         title: string;
         description: string;
@@ -192,14 +241,14 @@ export type ViewerStoreType = {
     args:
       | { type: ClippingPolygon["type"]; id: string; objectRef: Entity }
       | { type: StartingPoint["type"]; id: string; objectRef: Entity }
-      | { type: ProjectObject["type"]; id: string; objectRef: Model }
+      | { type: ProjectModel["type"]; id: string; objectRef: Model }
   ) => void;
   unregisterObjectRef: (args: {
     id: string;
     type:
       | ClippingPolygon["type"]
       | StartingPoint["type"]
-      | ProjectObject["type"];
+      | ProjectModel["type"];
   }) => void;
 };
 
@@ -241,13 +290,55 @@ export const ViewerProvider = ({
 }) => {
   const [viewerContext] = useState(() => {
     const store = create<ViewerStoreType>((set, get) => ({
-      lastCameraPosition: {
-        heading: 0,
-        height: 0,
-        lat: 0,
-        lon: 0,
-        pitch: 0,
-        roll: 0,
+      region: null,
+      async pickRegion() {
+        try {
+          const a = await get().tools.pickPoint();
+
+          const b = await get().tools.pickPoint();
+
+          const rect = Rectangle.fromCartesianArray([
+            new Cartesian3(a.x, a.y, a.z),
+            new Cartesian3(b.x, b.y, b.z),
+          ]);
+
+          get().saveLastCameraPosition();
+
+          set(() => ({
+            region: {
+              east: rect.east,
+              north: rect.north,
+              south: rect.south,
+              west: rect.west,
+            },
+          }));
+        } catch (e) {
+          console.error(e);
+        }
+      },
+      updateRegion(region) {
+        set(() => ({
+          region,
+        }));
+      },
+      lastCameraPosition: project.camera ? JSON.parse(project.camera) : null,
+      saveLastCameraPosition() {
+        set((state) => {
+          const camera = state.ctx?.camera;
+
+          return {
+            lastCameraPosition: camera
+              ? {
+                  heading: camera.heading,
+                  pitch: camera.pitch,
+                  roll: camera.roll,
+                  x: camera.position.x,
+                  y: camera.position.y,
+                  z: camera.position.z,
+                }
+              : null,
+          };
+        });
       },
       baseLayers: {
         value: project.allAvailableBaseLayers.map((baseLayer) => ({
@@ -256,30 +347,82 @@ export const ViewerProvider = ({
           name: baseLayer.name,
           type: baseLayer.type,
         })),
-        selectedBaseLayers: project.includedBaseLayers,
-        add(id) {
-          set((state) => ({
-            baseLayers: {
-              ...state.baseLayers,
-              selectedBaseLayers: Array.from(
-                new Set([...state.baseLayers.selectedBaseLayers, id])
-              ),
-            },
-          }));
-        },
-        remove(id) {
+        selected: project.layers[0].includedBaseLayers,
+        select(id) {
           set((state) => {
-            const newSet = new Set(state.baseLayers.selectedBaseLayers);
+            const newSet = new Set(state.baseLayers.selected);
 
-            newSet.delete(id);
+            newSet.add(id);
+
+            state.saveLastCameraPosition();
 
             return {
               baseLayers: {
                 ...state.baseLayers,
-                selectedBaseLayers: Array.from(newSet),
+                selected: Array.from(newSet),
               },
             };
           });
+
+          get().history.takeSnapshot();
+        },
+        unselect(id) {
+          set((state) => {
+            const newSet = new Set(state.baseLayers.selected);
+
+            newSet.delete(id);
+
+            state.saveLastCameraPosition();
+
+            return {
+              baseLayers: {
+                ...state.baseLayers,
+                selected: Array.from(newSet),
+              },
+            };
+          });
+
+          get().history.takeSnapshot();
+        },
+      },
+      extensionLayers: {
+        value: project.extensionLayers,
+        selected: project.layers[0].includedExtensionLayers,
+        select(id) {
+          set((state) => {
+            const newSet = new Set(state.extensionLayers.selected);
+
+            newSet.add(id);
+
+            state.saveLastCameraPosition();
+
+            return {
+              extensionLayers: {
+                ...state.extensionLayers,
+                selected: Array.from(newSet),
+              },
+            };
+          });
+
+          get().history.takeSnapshot();
+        },
+        unselect(id) {
+          set((state) => {
+            const newSet = new Set(state.extensionLayers.selected);
+
+            newSet.delete(id);
+
+            state.saveLastCameraPosition();
+
+            return {
+              extensionLayers: {
+                ...state.extensionLayers,
+                selected: Array.from(newSet),
+              },
+            };
+          });
+
+          get().history.takeSnapshot();
         },
       },
       project,
@@ -289,7 +432,9 @@ export const ViewerProvider = ({
           project: {
             ...state.project,
             ...(project.title ? { title: project.title } : {}),
-            ...(project.description ? { description: project.description } : {}),
+            ...(project.description
+              ? { description: project.description }
+              : {}),
           },
         }));
 
@@ -302,6 +447,8 @@ export const ViewerProvider = ({
           savingBlockerOpen: true,
         }));
 
+        get().saveLastCameraPosition();
+
         try {
           get().layers.save();
 
@@ -310,19 +457,22 @@ export const ViewerProvider = ({
 
           const project = get().project;
 
-          console.log({ project, title: project.title });
-
           await projectApi.projectIdPost({
             id: project.id,
             projectIdGet200Response: {
-              includedBaseLayers: get().baseLayers.selectedBaseLayers,
               allAvailableBaseLayers: [],
+              camera: get().lastCameraPosition
+                ? JSON.stringify(get().lastCameraPosition)
+                : null,
               description: project.description,
               id: project.id,
+              extensionLayers: get().extensionLayers.value,
               img,
               layers: get().layers.value.map((l) => ({
                 id: l.id,
                 name: l.name,
+                includedBaseLayers: l.selectedBaseLayers,
+                includedExtensionLayers: l.selectedExtensionLayers,
                 projectModels: l.projectObjects.map<
                   Project["layers"][number]["projectModels"][number]
                 >((p) => ({
@@ -362,11 +512,21 @@ export const ViewerProvider = ({
               ...state.history,
               value: [
                 {
-                  clippingPolygons: [],
-                  projectObjects: [],
-                  selectedObject: null,
-                  startingPoints: [],
-                  visualAxes: [],
+                  clippingPolygons: [...state.clippingPolygons.value],
+                  projectObjects: [...state.projectObjects.value],
+                  selectedObject: state.selectedObject
+                    ? { ...state.selectedObject }
+                    : null,
+                  layers: {
+                    selectedLayerId: state.layers.selectedLayerId,
+                    value: [...state.layers.value],
+                  },
+                  startingPoints: [...state.startingPoints.value],
+                  baseLayers: [...state.baseLayers.selected],
+                  extensionLayers: {
+                    selected: state.extensionLayers.selected,
+                    value: [...state.extensionLayers.value],
+                  },
                   project: {
                     description: state.project.description,
                     title: state.project.title,
@@ -390,7 +550,7 @@ export const ViewerProvider = ({
             const currentProjectObjects = [...state.projectObjects.value];
 
             const foundLayerIndex = state.layers.value.findIndex(
-              (layer) => layer.id === state.layers.selectedLayer
+              (layer) => layer.id === state.layers.selectedLayerId
             );
 
             if (foundLayerIndex === -1) throw new Error("No layer found!");
@@ -399,6 +559,8 @@ export const ViewerProvider = ({
               ...state.layers.value[foundLayerIndex],
               clippingPolygons: currentClippingPolygons,
               projectObjects: currentProjectObjects,
+              selectedBaseLayers: [...state.baseLayers.selected],
+              selectedExtensionLayers: [...state.extensionLayers.selected],
             };
 
             const newLayers = [...state.layers.value];
@@ -413,7 +575,7 @@ export const ViewerProvider = ({
             };
           });
         },
-        selectedLayer: project.layers[0].id,
+        selectedLayerId: project.layers[0].id,
         value: project.layers.map((layer) => ({
           clippingPolygons: layer.clippingPolygons.map<ClippingPolygon>(
             (c) => ({
@@ -425,9 +587,11 @@ export const ViewerProvider = ({
               visible: true,
             })
           ),
+          selectedBaseLayers: layer.includedBaseLayers,
+          selectedExtensionLayers: layer.includedExtensionLayers,
           id: layer.id,
           name: layer.name,
-          projectObjects: layer.projectModels.map<ProjectObject>((p) => ({
+          projectObjects: layer.projectModels.map<ProjectModel>((p) => ({
             attributes: p.attributes,
             href: p.href,
             id: p.id,
@@ -462,6 +626,8 @@ export const ViewerProvider = ({
               },
             };
           });
+
+          get().history.takeSnapshot();
         },
         remove(id) {
           set((state) => {
@@ -474,7 +640,7 @@ export const ViewerProvider = ({
             return {
               layers: {
                 ...state.layers,
-                selectedLayer: selectedLayer.id,
+                selectedLayerId: selectedLayer.id,
                 value: newLayers,
               },
               clippingPolygons: {
@@ -485,6 +651,14 @@ export const ViewerProvider = ({
                 ...state.projectObjects,
                 value: selectedLayer.projectObjects,
               },
+              baseLayers: {
+                ...state.baseLayers,
+                selected: selectedLayer.selectedBaseLayers,
+              },
+              extensionLayers: {
+                ...state.extensionLayers,
+                selected: selectedLayer.selectedExtensionLayers,
+              },
               selectedObject: null,
               objectRefs: {
                 ...state.objectRefs,
@@ -493,6 +667,8 @@ export const ViewerProvider = ({
               },
             };
           });
+
+          get().history.takeSnapshot();
         },
         add() {
           const layerNames = new Set(
@@ -514,6 +690,8 @@ export const ViewerProvider = ({
             id: crypto.randomUUID(),
             name: layerName,
             projectObjects: [],
+            selectedBaseLayers: [],
+            selectedExtensionLayers: [],
             type: "LAYER",
           };
 
@@ -526,6 +704,8 @@ export const ViewerProvider = ({
             };
           });
 
+          get().history.takeSnapshot();
+
           return layer;
         },
         async changeToLayer(id) {
@@ -535,7 +715,7 @@ export const ViewerProvider = ({
             const currentProjectObjects = [...state.projectObjects.value];
 
             const foundLayerIndex = state.layers.value.findIndex(
-              (layer) => layer.id === state.layers.selectedLayer
+              (layer) => layer.id === state.layers.selectedLayerId
             );
 
             if (foundLayerIndex === -1) throw new Error("No layer found!");
@@ -544,6 +724,8 @@ export const ViewerProvider = ({
               ...state.layers.value[foundLayerIndex],
               clippingPolygons: currentClippingPolygons,
               projectObjects: currentProjectObjects,
+              selectedBaseLayers: [...state.baseLayers.selected],
+              selectedExtensionLayers: [...state.extensionLayers.selected],
             };
 
             const newLayers = [...state.layers.value];
@@ -559,8 +741,16 @@ export const ViewerProvider = ({
             return {
               layers: {
                 ...state.layers,
-                selectedLayer: id,
+                selectedLayerId: id,
                 value: newLayers,
+              },
+              baseLayers: {
+                ...state.baseLayers,
+                selected: selectedLayer.selectedBaseLayers,
+              },
+              extensionLayers: {
+                ...state.extensionLayers,
+                selected: selectedLayer.selectedExtensionLayers,
               },
               clippingPolygons: {
                 ...state.clippingPolygons,
@@ -578,6 +768,8 @@ export const ViewerProvider = ({
               },
             };
           });
+
+          get().history.takeSnapshot();
         },
       },
       ctx: null,
@@ -585,6 +777,28 @@ export const ViewerProvider = ({
         set({ ctx });
       },
       clippingPolygons: {
+        helpers: {
+          flyTo(clippingPolygon) {
+            const camera = get().ctx?.camera;
+
+            if (!camera) return;
+
+            const cartographic = Ellipsoid.WGS84.cartesianToCartographic(
+              new Cartesian3(
+                clippingPolygon.positions[0].x,
+                clippingPolygon.positions[0].y,
+                clippingPolygon.positions[0].z
+              )
+            );
+
+            cartographic.height += 200;
+
+            camera.flyTo({
+              destination:
+                Ellipsoid.WGS84.cartographicToCartesian(cartographic),
+            });
+          },
+        },
         value:
           project.layers[0]?.clippingPolygons.map((c) => ({
             affectsTerrain: c.affectsTerrain,
@@ -836,7 +1050,36 @@ export const ViewerProvider = ({
         },
       },
       projectObjects: {
-        async create() {},
+        async add(projectObject) {
+          set((state) => ({
+            projectObjects: {
+              ...state.projectObjects,
+              value: [...state.projectObjects.value, projectObject],
+            },
+          }));
+        },
+        helpers: {
+          flyTo(projectModel) {
+            const camera = get().ctx?.camera;
+
+            if (!camera) return;
+
+            const cartographic = Ellipsoid.WGS84.cartesianToCartographic(
+              new Cartesian3(
+                projectModel.translation.x,
+                projectModel.translation.y,
+                projectModel.translation.z
+              )
+            );
+
+            cartographic.height += 200;
+
+            camera.flyTo({
+              destination:
+                Ellipsoid.WGS84.cartographicToCartesian(cartographic),
+            });
+          },
+        },
         set(projectObjects) {
           set((state) => ({
             projectObjects: {
@@ -844,6 +1087,8 @@ export const ViewerProvider = ({
               value: projectObjects,
             },
           }));
+
+          get().history.takeSnapshot();
         },
         _importerOpen: false,
         toggleVisibility(id) {
@@ -1096,16 +1341,25 @@ export const ViewerProvider = ({
         }));
       },
       history: {
+        // its not important to set the correct values here since the history gets initialized via initialize()!
         value: [
           {
             clippingPolygons: [],
             projectObjects: [],
             selectedObject: null,
             startingPoints: [],
-            visualAxes: [],
+            baseLayers: [],
+            layers: {
+              selectedLayerId: "",
+              value: [],
+            },
+            extensionLayers: {
+              selected: [],
+              value: [],
+            },
             project: {
-              description: project.description,
-              title: project.title,
+              description: "",
+              title: "",
             },
           },
         ],
@@ -1114,9 +1368,12 @@ export const ViewerProvider = ({
           const {
             history,
             clippingPolygons,
+            baseLayers,
+            extensionLayers,
             startingPoints,
             projectObjects,
             selectedObject,
+            layers,
           } = get();
 
           // Trim any redo entries if not at the end
@@ -1126,11 +1383,20 @@ export const ViewerProvider = ({
           }
 
           // Create a shallow snapshot
-          const entry = {
+          const entry: ViewerStoreType["history"]["value"][number] = {
             clippingPolygons: clippingPolygons.value.slice(),
             startingPoints: startingPoints.value.slice(),
             projectObjects: projectObjects.value.slice(),
             selectedObject: selectedObject ? { ...selectedObject } : null,
+            baseLayers: [...baseLayers.selected],
+            layers: {
+              selectedLayerId: layers.selectedLayerId,
+              value: [...layers.value],
+            },
+            extensionLayers: {
+              selected: [...extensionLayers.selected],
+              value: [...extensionLayers.value],
+            },
             project: {
               title: project.title,
               description: project.description,
@@ -1162,6 +1428,15 @@ export const ViewerProvider = ({
                     description: state.project.description,
                     title: state.project.title,
                   },
+                  layers: {
+                    selectedLayerId: state.layers.selectedLayerId,
+                    value: [...state.layers.value],
+                  },
+                  baseLayers: [...state.baseLayers.selected],
+                  extensionLayers: {
+                    selected: [...state.extensionLayers.selected],
+                    value: [...state.extensionLayers.value],
+                  },
                   projectObjects: state.projectObjects.value.map((s) => ({
                     ...s,
                   })),
@@ -1192,6 +1467,18 @@ export const ViewerProvider = ({
               ...state.startingPoints,
               value: entry.startingPoints,
             },
+            layers: {
+              ...state.layers,
+              ...entry.layers,
+            },
+            baseLayers: {
+              ...state.baseLayers,
+              selected: entry.baseLayers,
+            },
+            extensionLayers: {
+              ...state.extensionLayers,
+              ...entry.extensionLayers,
+            },
             projectObjects: {
               ...state.projectObjects,
               value: entry.projectObjects,
@@ -1221,6 +1508,18 @@ export const ViewerProvider = ({
             startingPoints: {
               ...state.startingPoints,
               value: entry.startingPoints,
+            },
+            baseLayers: {
+              ...state.baseLayers,
+              selected: entry.baseLayers,
+            },
+            layers: {
+              ...state.layers,
+              ...entry.layers,
+            },
+            extensionLayers: {
+              ...state.extensionLayers,
+              ...entry.extensionLayers,
             },
             projectObjects: {
               ...state.projectObjects,

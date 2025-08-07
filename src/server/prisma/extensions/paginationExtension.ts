@@ -35,6 +35,8 @@ export default function paginationExtension() {
             );
             const orderBy = createSort(modelName, dataGridZod.sortModel);
 
+            console.log({orderBy});
+
             return {
               data: await context.findMany({
                 take: dataGridZod.paginationModel.pageSize,

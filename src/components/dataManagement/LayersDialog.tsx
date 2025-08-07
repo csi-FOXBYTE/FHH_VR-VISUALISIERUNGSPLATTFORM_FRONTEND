@@ -19,8 +19,8 @@ import { useConfigurationProviderContext } from "../configuration/ConfigurationP
 import { useTranslations } from "next-intl";
 import { trpc } from "@/server/trpc/client";
 import { getApis } from "@/server/gatewayApi/client";
-import { BlockBlobClient } from "@azure/storage-blob";
 import { useState } from "react";
+import pLimit from "p-limit";
 
 export default function LayersDialog({
   open,
@@ -58,15 +58,40 @@ export default function LayersDialog({
       setUploadProgress(null);
       const { converter3DApi } = await getApis();
 
-      const sasUrl = await converter3DApi.converter3DGetUploadSASTokenGet();
+      const token = await converter3DApi.converter3DGetUploadTokenGet();
 
-      const blockBlobClient = new BlockBlobClient(sasUrl);
+      const chunkSize = 4 * 1024 * 1024;
+      const total = Math.ceil(values.files[0].size / chunkSize);
 
-      await blockBlobClient.uploadData(values.files[0], {
-        blockSize: 8 * 1024 * 1024, // 8 Mibs
-        concurrency: 4,
-        onProgress: (progress) =>
-          setUploadProgress(progress.loadedBytes / values.files[0].size),
+      const limit = pLimit(4);
+
+      let transferredBytes = 0;
+
+      await Promise.all(
+        Array.from({ length: total }).map((_, i) =>
+          limit(async () => {
+            const start = i * chunkSize;
+            const end = Math.min(start + chunkSize, values.files[0].size);
+            const chunk = values.files[0].slice(start, end);
+
+            await converter3DApi.converter3DUploadBlockPost({
+              block: chunk,
+              index: String(i),
+              token: String(token),
+              total: String(total),
+            });
+
+            transferredBytes += end - start;
+
+            setUploadProgress(transferredBytes / values.files[0].size);
+          })
+        )
+      );
+
+      await converter3DApi.converter3DCommitUploadPost({
+        converter3DCommitUploadPostRequest: {
+          token: token,
+        },
       });
 
       switch (values.type) {
@@ -74,7 +99,7 @@ export default function LayersDialog({
           await converter3DApi.converter3DConvert3DTilePost({
             converter3DConvertTerrainPostRequest: {
               srcSRS: values.srcSRS.value,
-              blobRef: sasUrl,
+              token: token,
               name: values.name,
             },
           });
@@ -83,7 +108,7 @@ export default function LayersDialog({
           await converter3DApi.converter3DConvertTerrainPost({
             converter3DConvertTerrainPostRequest: {
               srcSRS: values.srcSRS.value,
-              blobRef: sasUrl,
+              token: token,
               name: values.name,
             },
           });

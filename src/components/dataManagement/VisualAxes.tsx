@@ -5,17 +5,17 @@ import { Add } from "@mui/icons-material";
 import { DataGrid } from "@mui/x-data-grid";
 import { keepPreviousData } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
-import createEditDeleteActions from "../dataGridServerSide/createEditDeleteActions";
+import { useSnackbar } from "notistack";
+import useCreateEditDeleteActions from "../dataGridServerSide/useCreateEditDeleteActions";
 import useDataGridServerSideHelper from "../dataGridServerSide/useDataGridServerSideOptions";
 import VisualAxisCUDialog, {
   useVisualAxisCUDialogState,
 } from "./VisualAxisCUDialog";
-import { useSnackbar } from "notistack";
 
 export default function VisualAxes() {
   const t = useTranslations();
 
-  const [, { openCreate }] = useVisualAxisCUDialogState();
+  const [, { openCreate, openUpdate }] = useVisualAxisCUDialogState();
 
   const { props } = useDataGridServerSideHelper("data-management-visual-axes", {
     extraActions: [
@@ -65,6 +65,14 @@ export default function VisualAxes() {
       }
     );
 
+    const createDeleteActions = useCreateEditDeleteActions({
+      handleDelete: (id) => deleteMutation({ id }),
+      loading: isDeleteMutationPending,
+      handleEdit: (id) => {
+        openUpdate(id);
+      },
+    })
+
   return (
     <>
       <VisualAxisCUDialog />
@@ -98,11 +106,7 @@ export default function VisualAxes() {
               return `(${row.startPointX}, ${row.startPointY}, ${row.startPointZ})`;
             },
           },
-          createEditDeleteActions({
-            handleDelete: (id) => deleteMutation({ id }),
-            loading: isDeleteMutationPending,
-            handleEdit: () => {},
-          }),
+          createDeleteActions
         ]}
       />
     </>

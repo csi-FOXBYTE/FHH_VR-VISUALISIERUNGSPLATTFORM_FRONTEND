@@ -174,7 +174,7 @@ function AttributeField({
     }));
 
     return () => unregister(index);
-  }, [index]);
+  }, [index, register, unregister]);
 
   return (
     <tr>

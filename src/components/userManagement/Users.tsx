@@ -6,11 +6,12 @@ import { Chip, Grid, Typography } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { keepPreviousData } from "@tanstack/react-query";
 import UserAvatar from "../common/UserAvatar";
-import createEditDeleteActions from "../dataGridServerSide/createEditDeleteActions";
+import createEditDeleteActions from "../dataGridServerSide/useCreateEditDeleteActions";
 import useDataGridServerSideHelper from "../dataGridServerSide/useDataGridServerSideOptions";
 import UserCUDialog, { useUserCUDialogState } from "./UserCUDialog";
 import { useSnackbar } from "notistack";
 import { useTranslations } from "next-intl";
+import useCreateEditDeleteActions from "../dataGridServerSide/useCreateEditDeleteActions";
 
 export default function Users() {
   const [, { openCreate, openUpdate }] = useUserCUDialogState();
@@ -65,6 +66,12 @@ export default function Users() {
         }),
     });
 
+  const createEditDeleteActions = useCreateEditDeleteActions({
+    handleDelete: (id) => deleteMutation({ id }),
+    handleEdit: openUpdate,
+    loading: isDeleteMutationPending,
+  });
+
   return (
     <>
       <UserCUDialog />
@@ -107,11 +114,7 @@ export default function Users() {
               </Grid>
             ),
           },
-          createEditDeleteActions({
-            handleDelete: (id) => deleteMutation({ id }),
-            handleEdit: openUpdate,
-            loading: isDeleteMutationPending,
-          }),
+          createEditDeleteActions,
         ]}
         rowCount={count}
       />

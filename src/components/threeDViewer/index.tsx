@@ -13,14 +13,16 @@ import SavingBlocker from "./SavingBlocker";
 const ResiumViewer = dynamic(async () => (await import("./Viewer")).default, {
   ssr: false,
   loading: () => (
-    <CircularProgress
-      size={64}
-      sx={{
-        position: "absolute",
-        top: "calc(50% - 32px)",
-        left: "calc(50% - 32px)",
-      }}
-    />
+    <div style={{ width: "100%", height: "100%", maxWidth: "100%", maxHeight: "100%", position: "absolute", top: 0, left: 0 }}>
+      <CircularProgress
+        size={64}
+        sx={{
+          position: "absolute",
+          top: "calc(50% - 32px)",
+          left: "calc(50% - 32px)",
+        }}
+      />
+    </div>
   ),
 });
 

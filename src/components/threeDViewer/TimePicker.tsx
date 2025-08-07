@@ -4,6 +4,7 @@ import dayjs, { Dayjs } from "dayjs";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { useCesium } from "resium";
+import useIsReadOnly from "./useIsReadOnly";
 
 export default function TimePicker() {
   const { viewer } = useCesium();
@@ -29,7 +30,7 @@ export default function TimePicker() {
   return (
     <DateTimePicker
       value={dateTime ?? dayjs()}
-      label={t('editor.time')}
+      label={t("editor.time")}
       onChange={(date) => {
         if (!date) return;
 

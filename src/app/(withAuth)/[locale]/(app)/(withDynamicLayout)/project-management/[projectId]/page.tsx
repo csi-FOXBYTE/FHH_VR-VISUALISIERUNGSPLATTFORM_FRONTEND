@@ -10,9 +10,7 @@ export default function ThreeDViewerPage() {
   return (
     <BaseLayerProvider
       resources={baseLayers.value
-        .filter((baseLayer) =>
-          baseLayers.selectedBaseLayers.includes(baseLayer.id)
-        )
+        .filter((baseLayer) => baseLayers.selected.includes(baseLayer.id))
         .map((baseLayer) => ({
           id: baseLayer.id,
           name: baseLayer.name,

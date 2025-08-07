@@ -5,21 +5,25 @@ import "event"
 import "layer"
 
 model Project extends Base, Ownable {
-    title                 String          @db.Text
-    description           String          @db.Text
+    title                 String           @db.Text
+    description           String           @db.Text
 
     visibleForGroups      Group[]
-    visibleForUsers       User[]          @relation("visibleForUsers")
+    visibleForUsers       User[]           @relation("visibleForUsers")
 
     startingPoints        StartingPoint[]
-    includedBaseLayers    BaseLayer[]
-    includedProjectLayers ProjectLayer[]  @relation("includedInProjects")
+    extensionLayers       ExtensionLayer[]
+    includedProjectLayers ProjectLayer[]   @relation("includedInProjects")
     projectLayers         ProjectLayer[]
 
-    img                   String?         @db.Text
-    camera                String?         @db.Text
+    img                   String?          @db.Text
+    camera                String?          @db.Text
+    region                String?          @db.Text
 
     events                Event[]
+
+    @@allow('read', visibleForUsers?[id == auth().id])
+    @@allow('read', visibleForGroups?[assignedUsers?[id == auth().id]])
 
     @@allow('create', auth().assignedGroups?[assignedRoles?[assignedPermissions?[name == 'PROJECT:CREATE']]])
     @@allow('read', auth().assignedGroups?[assignedRoles?[assignedPermissions?[name == 'PROJECT:READ']]])
@@ -36,6 +40,9 @@ model ClippingPolygon extends Base, Ownable {
     projectLayerId String
 
     affectsTerrain Boolean      @default(false)
+
+    @@allow('read', projectLayer.project.visibleForUsers?[id == auth().id])
+    @@allow('read', projectLayer.project.visibleForGroups?[assignedUsers?[id == auth().id]])
 
     @@allow('all', projectLayer.project.owner.id == auth().id)
     @@allow('create', auth().assignedGroups?[assignedRoles?[assignedPermissions?[name == 'CLIPPING_POLYGON:CREATE']]])
@@ -66,6 +73,9 @@ model ProjectModel extends Base {
     translationY   Float
     translationZ   Float
 
+    @@allow('read', projectLayer.project.visibleForUsers?[id == auth().id])
+    @@allow('read', projectLayer.project.visibleForGroups?[assignedUsers?[id == auth().id]])
+
     @@allow('all', projectLayer.project.owner.id == auth().id)
     @@allow('create', auth().assignedGroups?[assignedRoles?[assignedPermissions?[name == 'PROJECT_FILE:CREATE']]])
     @@allow('read', auth().assignedGroups?[assignedRoles?[assignedPermissions?[name == 'PROJECT_FILE:READ']]])
@@ -86,6 +96,9 @@ model StartingPoint extends DirectedPoint {
     project   Project? @relation(fields: [projectId], references: [id])
     projectId String?
     img       String   @db.Text
+
+    @@allow('read', project.visibleForUsers?[id == auth().id])
+    @@allow('read', project.visibleForGroups?[assignedUsers?[id == auth().id]])
 
     @@allow('all', auth().id == project.owner.id)
     @@allow('create', auth().assignedGroups?[assignedRoles?[assignedPermissions?[name == 'STARTING_POINT:CREATE']]])

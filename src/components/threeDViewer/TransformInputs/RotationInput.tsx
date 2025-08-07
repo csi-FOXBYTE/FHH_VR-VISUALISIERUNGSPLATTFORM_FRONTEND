@@ -13,6 +13,7 @@ export default function RotationInput({
   value,
   origin,
   onImmediateChange,
+  disabled
 }: {
   value?: { x: number; y: number; z: number; w: number };
   origin: { x: number; y: number; z: number };
@@ -22,6 +23,7 @@ export default function RotationInput({
     z: number;
     w: number;
   }) => void;
+  disabled?: boolean;
 }) {
   const [prevHprText, setPrevHprText] = useState({
     heading: "0",
@@ -121,6 +123,7 @@ export default function RotationInput({
     <Grid container flexDirection="column" spacing={2}>
       {(["heading", "pitch", "roll"] as const).map((field) => (
         <TextField
+          disabled={disabled}
           key={field}
           variant="standard"
           type="number"

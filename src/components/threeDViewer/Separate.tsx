@@ -76,7 +76,7 @@ export default function Separate({
     return () => {
       window.removeEventListener("resize", updateOverlays);
     };
-  }, []);
+  }, [selector]);
 
   // render four panels that dim everything except the rectangle
   return createPortal(

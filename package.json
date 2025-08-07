@@ -1,6 +1,6 @@
 {
   "name": "fhhvr-webfrontend",
-  "version": "0.0.15",
+  "version": "0.0.19",
   "private": true,
   "husky": {
     "hooks": {
@@ -21,9 +21,9 @@
     "generate-gateway-api": "pnpm rimraf ./src/server/gatewayApi/generated && pnpm openapi-generator-cli generate -i http://localhost:5000/docs/json -g typescript-fetch -o ./src/server/gatewayApi/generated",
     "zenstack-generate": "pnpm zenstack generate --schema zmodel/schema.zmodel",
     "preinstall": "npx only-allow pnpm",
-    "db:reset": "pnpm zenstack generate --schema zmodel/schema.zmodel && pnpm tsx src/server/prisma/extensions/resetSystemVersionedTables.ts && pnpm prisma db push --force-reset",
+    "db:reset": "pnpm zenstack generate --schema zmodel/schema.zmodel && pnpm prisma db push --force-reset",
     "db:eject": "pnpm prisma migrate diff --from-empty --to-schema-datamodel ./prisma/schema.prisma --script > ./prisma/migration.sql",
-    "publish:docker": "docker build -t fhhvr-webfrontend:0.0.15 . --secret id=npmrc,src=%USERPROFILE%/.npmrc --secret id=env,src=.env && docker tag fhhvr-webfrontend:0.0.15 fhhvrdockerregistry.azurecr.io/fhhvr-webfrontend:0.0.15 && docker push fhhvrdockerregistry.azurecr.io/fhhvr-webfrontend:0.0.15"
+    "publish:docker": "docker build -t fhhvr-webfrontend:0.0.19 . --secret id=npmrc,src=%USERPROFILE%/.npmrc --secret id=env,src=.env && docker tag fhhvr-webfrontend:0.0.19 fhhvrdockerregistry.azurecr.io/fhhvr-webfrontend:0.0.19 && docker push fhhvrdockerregistry.azurecr.io/fhhvr-webfrontend:0.0.19"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.7.4",
@@ -75,6 +75,7 @@
     "next-intl": "^4.3.4",
     "notistack": "^3.0.2",
     "nuqs": "^2.2.1",
+    "p-limit": "^6.2.0",
     "pkce-challenge": "^5.0.0",
     "prisma": "^6.2.1",
     "proj4": "^2.17.0",

@@ -1,8 +1,8 @@
+import * as Cesium from "cesium";
+import { useSnackbar } from "notistack";
+import { useCallback, useEffect } from "react";
 import { useCesium } from "resium";
 import { useViewerStore } from "./ViewerProvider";
-import * as Cesium from "cesium";
-import { useCallback, useEffect } from "react";
-import { useSnackbar } from "notistack";
 
 export default function ToolsProvider() {
   const { viewer } = useCesium();
@@ -122,8 +122,10 @@ export default function ToolsProvider() {
       });
 
       const clickAwayHandler = (event: MouseEvent) => {
-        if (!event.composedPath().includes(viewer.canvas))
+        if (!event.composedPath().includes(viewer.canvas)) {
+          console.log(event.composedPath(), viewer.canvas);
           rejectRef.ref("Aborted by user!");
+        }
       };
 
       document.addEventListener("click", clickAwayHandler, {
@@ -165,89 +167,114 @@ export default function ToolsProvider() {
     }
   }, [closeSnackbar, enqueueSnackbar, pickPointOnTerrain, viewer]);
 
-  const pickPoint = useCallback(async () => {
-    if (!viewer) throw new Error("Viewer not initialized!");
+  const pickPoint = useCallback(
+    async (cb?: (point: { x: number; y: number; z: number }) => void) => {
+      if (!viewer) throw new Error("Viewer not initialized!");
 
-    const abortController = new AbortController();
+      const abortController = new AbortController();
 
-    document.body.style.cursor = "crosshair";
+      document.body.style.cursor = "crosshair";
 
-    const snackId = crypto.randomUUID();
+      const snackId = crypto.randomUUID();
 
-    enqueueSnackbar({
-      key: snackId,
-      autoHideDuration: null,
-      variant: "info",
-      persist: true,
-      message:
-        "To abort either picking a point click outside the viewer or press escape.",
-    });
+      enqueueSnackbar({
+        key: snackId,
+        autoHideDuration: null,
+        variant: "info",
+        persist: true,
+        message:
+          "To abort either picking a point click outside the viewer or press escape.",
+      });
 
-    try {
-      const resolveRef: {
-        ref: (value: { x: number; y: number; z: number }) => void;
-      } = { ref: () => {} };
-      const rejectRef: { ref: (reason: unknown) => void } = { ref: () => {} };
+      try {
+        const resolveRef: {
+          ref: (value: { x: number; y: number; z: number }) => void;
+        } = { ref: () => {} };
+        const rejectRef: { ref: (reason: unknown) => void } = { ref: () => {} };
 
-      const handler = async (event: MouseEvent) => {
-        try {
-          const point = await pickPointOnTerrain(
-            event.clientX,
-            event.clientY,
-            viewer
+        let mouseMoveRafId = -1;
+
+        const handleMouseMove = async (event: MouseEvent) => {
+          window.cancelAnimationFrame(mouseMoveRafId);
+          mouseMoveRafId = window.requestAnimationFrame(() =>
+            handleMouseMoveCallback(event.clientX, event.clientY)
           );
+        };
 
-          if (!point) throw new Error("No point on terrain found!");
+        const handleMouseMoveCallback = async (x: number, y: number) => {
+          try {
+            const point = await pickPointOnTerrain(x, y, viewer);
+            if (point) cb?.(point);
+          } catch {}
+        };
 
-          resolveRef.ref(point);
-        } catch (e) {
-          rejectRef.ref(e);
-        }
-      };
+        const handler = async (event: MouseEvent) => {
+          try {
+            const point = await pickPointOnTerrain(
+              event.clientX,
+              event.clientY,
+              viewer
+            );
 
-      viewer.canvas.addEventListener("click", handler, {
-        signal: abortController.signal,
-      });
+            if (!point) throw new Error("No point on terrain found!");
 
-      const clickAwayHandler = (event: MouseEvent) => {
-        if (!event.composedPath().includes(viewer.canvas))
-          rejectRef.ref("Aborted by user!");
-      };
+            resolveRef.ref(point);
+          } catch (e) {
+            rejectRef.ref(e);
+          }
+        };
 
-      document.addEventListener("click", clickAwayHandler, {
-        signal: abortController.signal,
-      });
+        viewer.canvas.addEventListener("mousemove", handleMouseMove, {
+          signal: abortController.signal,
+        });
 
-      const escapeHandler = (event: KeyboardEvent) => {
-        if (event.code === "Escape") rejectRef.ref("Aborted by user!");
-      };
+        viewer.canvas.addEventListener("click", handler, {
+          signal: abortController.signal,
+        });
 
-      document.addEventListener("keydown", escapeHandler, {
-        signal: abortController.signal,
-      });
+        const clickAwayHandler = (event: MouseEvent) => {
+          if (!event.composedPath().includes(viewer.canvas)) {
+            console.log(event.composedPath(), viewer.canvas);
+            rejectRef.ref("Aborted by user!");
+          }
+        };
 
-      return new Promise<{ x: number; y: number; z: number }>(
-        (resolve, reject) => {
-          resolveRef.ref = (value) => {
-            closeSnackbar(snackId);
-            document.body.style.cursor = "auto";
-            abortController.abort();
-            resolve(value);
-          };
-          rejectRef.ref = (reason) => {
-            closeSnackbar(snackId);
-            document.body.style.cursor = "auto";
-            abortController.abort();
-            reject(reason);
-          };
-        }
-      );
-    } catch (e) {
-      closeSnackbar(snackId);
-      document.body.style.cursor = "auto";
-      throw e;
-    }
-  }, [viewer, enqueueSnackbar, pickPointOnTerrain, closeSnackbar]);
+        document.addEventListener("click", clickAwayHandler, {
+          signal: abortController.signal,
+        });
+
+        const escapeHandler = (event: KeyboardEvent) => {
+          if (event.code === "Escape") rejectRef.ref("Aborted by user!");
+        };
+
+        document.addEventListener("keydown", escapeHandler, {
+          signal: abortController.signal,
+        });
+
+        return new Promise<{ x: number; y: number; z: number }>(
+          (resolve, reject) => {
+            resolveRef.ref = (value) => {
+              closeSnackbar(snackId);
+              document.body.style.cursor = "auto";
+              abortController.abort();
+              resolve(value);
+            };
+            rejectRef.ref = (reason) => {
+              closeSnackbar(snackId);
+              document.body.style.cursor = "auto";
+              abortController.abort();
+              reject(reason);
+            };
+          }
+        );
+      } catch (e) {
+        closeSnackbar(snackId);
+        document.body.style.cursor = "auto";
+        throw e;
+      }
+    },
+    [viewer, enqueueSnackbar, pickPointOnTerrain, closeSnackbar]
+  );
 
   useEffect(() => {
     updateTools({

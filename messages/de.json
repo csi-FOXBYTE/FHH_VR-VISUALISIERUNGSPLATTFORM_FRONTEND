@@ -123,7 +123,12 @@
     "description-placeholder": "Beschreibung...",
     "title-placeholder": "Titel...",
     "table-title": "Titel",
-    "preview": "Vorschau"
+    "preview": "Vorschau",
+    "preview-image": "Vorschaubild",
+    "visible-for-users": "Sichtbar für folgende Nutzer",
+    "visible-for-groups": "Sichtbar für folgende Gruppen",
+    "description": "Beschreibung",
+    "owner": "Besitzer"
   },
   "components": {
     "list-with-pagination": {
@@ -183,7 +188,27 @@
     "delete": "Löschen",
     "invite": "Einladen",
     "revert": "Zurücksetzen",
-    "add": "Hinzufügen"
+    "add": "Hinzufügen",
+    "upload": "Hochladen",
+    "uploading": "Hochladen",
+    "waiting-in-line": "Warten in der Warteschlange",
+    "converting": "Konvertieren",
+    "delayed": "Verzögert",
+    "completed": "Abgeschlossen",
+    "failed": "Fehlgeschlagen",
+    "fly-to": "Hinfliegen",
+    "place": "Platzieren",
+    "toggle-visibility": "Sichtbarkeit schalten"
+  },
+  "create-project-dialog": {
+    "create-project": "Projekt erstellen",
+    "title": "Titel",
+    "description": "Beschreibung"
+  },
+  "import-model-dialog": {
+    "upload-new-model": "Neues Modell hochladen",
+    "reuse-existing-model": "Bestehendes Modell wiederverwenden",
+    "name": "Name"
   },
   "data-mangement": {
     "title": "Titel"
@@ -232,6 +257,20 @@
     "undo": "Undo",
     "redo": "Redo",
     "clipping-polygons": "Ausschnittpolygone",
-    "base-layers": "Basisdaten"
+    "base-layers": "Basisdaten",
+    "name-of-the-variant": "Name der Variante",
+    "variants": "Varianten",
+    "pick-a-point-message": "Punkt durch klicken auswählen. Zum abbrechen ESC drücken, oder aus der 3D Ansicht klicken.",
+    "take-screenshot": "Screenshot aufnehmen",
+    "origin": "Ursprung",
+    "target": "Ziel"
+  },
+  "error": {
+    "go-home": "Zur Startseite",
+    "500-oooops-something-went-wrong-on-our-side": "500: Uuuuups, da ist was schiefgelaufen!"
+  },
+  "not-found": {
+    "404-we-did-not-find-this-page": "404: Leider haben wir diese Seite nicht gefunden.",
+    "go-home": "Zur Startseite"
   }
 }

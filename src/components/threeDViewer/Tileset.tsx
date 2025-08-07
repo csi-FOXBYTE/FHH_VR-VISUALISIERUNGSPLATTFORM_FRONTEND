@@ -23,7 +23,7 @@ export default function Tileset({
     useState<CesiumComponentRef<Cesium.Cesium3DTileset> | null>(null);
 
   useLayoutEffect(() => {
-    if (!tilesetRef?.cesiumElement) {
+    if (!tilesetRef?.cesiumElement || tilesetRef.cesiumElement.isDestroyed()) {
       return;
     }
 

@@ -1,12 +1,22 @@
 import {
-  CameraAlt,
+  Adjust,
   Delete,
   LocationOn,
+  MoreVert,
   Visibility,
   VisibilityOff,
-  WavingHand,
 } from "@mui/icons-material";
-import { ListItem, ListItemButton, ListItemText } from "@mui/material";
+import {
+  Divider,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  Menu,
+  MenuItem,
+} from "@mui/material";
+import PopupState, { bindMenu, bindToggle } from "material-ui-popup-state";
+import { useTranslations } from "next-intl";
 import { ReactNode } from "react";
 
 export default function SceneGraphListItem({
@@ -18,7 +28,8 @@ export default function SceneGraphListItem({
   onToggleVisibility,
   visible,
   onFlyTo,
-  extras
+  extras,
+  disabled,
 }: {
   name: string;
   selected: boolean;
@@ -29,7 +40,10 @@ export default function SceneGraphListItem({
   onPlace?: () => void;
   onFlyTo?: () => void;
   extras?: ReactNode;
+  disabled?: boolean;
 }) {
+  const t = useTranslations();
+
   return (
     <ListItem
       onClick={onSelected}
@@ -40,74 +54,87 @@ export default function SceneGraphListItem({
     >
       <ListItemText>{name}</ListItemText>
       {extras ?? null}
-      {onToggleVisibility ? (
-        <ListItemButton
-          sx={{
-            flex: 0,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-          dense
-          onClick={(event) => {
-            event.stopPropagation();
-            onToggleVisibility();
-          }}
-        >
-          {visible ? <Visibility /> : <VisibilityOff />}
-        </ListItemButton>
-      ) : null}
-      {onPlace ? (
-        <ListItemButton
-          sx={{
-            flex: 0,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-          dense
-          onClick={(event) => {
-            event.stopPropagation();
-            onPlace();
-          }}
-        >
-          <LocationOn />
-        </ListItemButton>
-      ) : null}
-      {onFlyTo ? (
-        <ListItemButton
-          sx={{
-            flex: 0,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-          dense
-          onClick={(event) => {
-            event.stopPropagation();
-            onFlyTo();
-          }}
-        >
-          <WavingHand />
-        </ListItemButton>
-      ) : null}
-      {onDelete ? (
-        <ListItemButton
-          sx={{
-            flex: 0,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-          dense
-          onClick={(event) => {
-            event.stopPropagation();
-            onDelete();
-          }}
-        >
-          <Delete />
-        </ListItemButton>
-      ) : null}
+      <PopupState variant="popover">
+        {(popupState) => (
+          <>
+            <ListItemButton
+              {...bindToggle(popupState)}
+              disabled={disabled}
+              sx={{
+                flex: 0,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+              dense
+            >
+              <MoreVert />
+            </ListItemButton>
+            <Menu {...bindMenu(popupState)}>
+              {onToggleVisibility ? (
+                <MenuItem
+                  disabled={disabled}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    onToggleVisibility();
+                  }}
+                >
+                  <ListItemIcon>
+                    {visible ? <Visibility /> : <VisibilityOff />}
+                  </ListItemIcon>
+                  <ListItemText primary={t("actions.toggle-visibility")} />
+                </MenuItem>
+              ) : null}
+              {onPlace ? (
+                <MenuItem
+                  disabled={disabled}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    popupState.close();
+                    onPlace();
+                  }}
+                >
+                  <ListItemIcon>
+                    <LocationOn />
+                  </ListItemIcon>
+                  <ListItemText primary={t("actions.place")} />
+                </MenuItem>
+              ) : null}
+              {onFlyTo ? (
+                <MenuItem
+                  disabled={disabled}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    onFlyTo();
+                  }}
+                >
+                  <ListItemIcon>
+                    <Adjust />
+                  </ListItemIcon>
+                  <ListItemText>{t("actions.fly-to")}</ListItemText>
+                </MenuItem>
+              ) : null}
+              {onDelete ? (
+                <>
+                  <Divider />
+                  <MenuItem
+                    disabled={disabled}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      onDelete();
+                    }}
+                  >
+                    <ListItemIcon>
+                      <Delete />
+                    </ListItemIcon>
+                    <ListItemText>{t("actions.delete")}</ListItemText>
+                  </MenuItem>
+                </>
+              ) : null}
+            </Menu>
+          </>
+        )}
+      </PopupState>
     </ListItem>
   );
 }

@@ -1,9 +1,7 @@
 "use client";
 
 import * as Cesium from "cesium";
-import { useMemo } from "react";
-import { CameraFlyTo, ImageryLayer, Viewer } from "resium";
-import { useConfigurationProviderContext } from "../configuration/ConfigurationProvider";
+import { ImageryLayer, Viewer } from "resium";
 import { useBaseLayerProviderContext } from "./BaseLayerProvider";
 import ClippingPolygons from "./ClippingPolygons";
 import Compass from "./Compass";
@@ -11,10 +9,12 @@ import GetResiumCtx from "./GetResiumCtx";
 import ProjectObjects from "./ProjectObjects";
 import { ScaleBar } from "./ScaleBar";
 import ScreenshotDialog from "./ScreenshotDialog";
+import SetCamera from "./SetCamera";
 import StartingPoints from "./StartingPoints";
 import Tileset from "./Tileset";
 import ToolsProvider from "./Tools";
 import { useViewerStore } from "./ViewerProvider";
+import PlayRegion from "./PlayRegion";
 
 const openStreetMapImagerProvider = new Cesium.OpenStreetMapImageryProvider({
   url: "https://tile.openstreetmap.org/",
@@ -24,25 +24,11 @@ const openStreetMapImagerProvider = new Cesium.OpenStreetMapImageryProvider({
 export default function ResiumViewer() {
   const layers = useBaseLayerProviderContext();
 
-  const configuration = useConfigurationProviderContext();
-
   const safeCameraZoneVisible = useViewerStore(
     (state) => state.tools.safeCameraZoneVisible
   );
 
   const setSelectedObject = useViewerStore((state) => state.setSelectedObject);
-
-  const destination = useMemo(() => {
-    return new Cesium.Cartesian3(
-      configuration.globalStartPoint.x,
-      configuration.globalStartPoint.y,
-      configuration.globalStartPoint.z
-    );
-  }, [
-    configuration.globalStartPoint.x,
-    configuration.globalStartPoint.y,
-    configuration.globalStartPoint.z,
-  ]);
 
   return (
     <Viewer
@@ -84,19 +70,24 @@ export default function ResiumViewer() {
       targetFrameRate={30}
       infoBox={false}
     >
-      {/* <CesiumGizmo /> */}
       <ScaleBar />
       <Compass />
       <ScreenshotDialog />
       <GetResiumCtx />
       <ProjectObjects />
       <StartingPoints />
+      <SetCamera />
       <ToolsProvider />
-      <CameraFlyTo once duration={0} key="flyto" destination={destination} />
       <ClippingPolygons />
-      <ImageryLayer imageryProvider={openStreetMapImagerProvider} />
+      <ImageryLayer
+        imageryProvider={openStreetMapImagerProvider}
+      />
+      <PlayRegion />
       {layers.imageries.map((imagery) => (
-        <ImageryLayer key={imagery.id} imageryProvider={imagery.resource} />
+        <ImageryLayer
+          key={imagery.id}
+          imageryProvider={imagery.resource}
+        />
       ))}
       {layers.tileSets.map((tileSet) => (
         <Tileset id={tileSet.id} resource={tileSet.resource} key={tileSet.id} />

@@ -2,6 +2,7 @@
 
 import {
   Add,
+  Adjust,
   CameraAlt,
   Delete,
   ExpandLess,
@@ -45,6 +46,8 @@ import {
   useSelectedObject,
   useViewerStore,
 } from "./ViewerProvider";
+import useIsReadOnly from "./useIsReadOnly";
+import { useCesium } from "resium";
 
 const StyledCount = styled("div")`
   display: inline-block;
@@ -56,9 +59,7 @@ const StyledCount = styled("div")`
 export default function SceneGraph() {
   const t = useTranslations();
 
-  const clippingPolygons = useViewerStore(
-    (state) => state.clippingPolygons.value
-  );
+  const clippingPolygons = useViewerStore((state) => state.clippingPolygons);
   const createClippingPolygon = useViewerStore(
     (state) => state.clippingPolygons.create
   );
@@ -69,7 +70,7 @@ export default function SceneGraph() {
     (state) => state.clippingPolygons.update
   );
 
-  const projectObjects = useViewerStore((state) => state.projectObjects.value);
+  const projectObjects = useViewerStore((state) => state.projectObjects);
   const updateProjectObject = useViewerStore(
     (state) => state.projectObjects.update
   );
@@ -88,9 +89,9 @@ export default function SceneGraph() {
     if (!layerNameInputRef.current) return;
 
     layerNameInputRef.current.value =
-      layers.value.find((layer) => layer.id === layers.selectedLayer)?.name ??
+      layers.value.find((layer) => layer.id === layers.selectedLayerId)?.name ??
       "-";
-  }, [layers.selectedLayer]);
+  }, [layers.selectedLayerId, layers.value]);
 
   const createStartingPoint = useViewerStore(
     (state) => state.startingPoints.create
@@ -114,6 +115,10 @@ export default function SceneGraph() {
     "" | SelectedObject["type"] | "BASE_LAYER"
   >("");
 
+  const viewer = useViewerStore((state) => state.ctx?.viewer);
+
+  const isReadOnly = useIsReadOnly();
+
   useEffect(() => {}, []);
 
   useEffect(() => {
@@ -126,12 +131,14 @@ export default function SceneGraph() {
         <CardContent sx={{ gap: 2, display: "flex", flexDirection: "column" }}>
           <Grid container flexDirection="row">
             <FormControl sx={{ flex: 1 }}>
-              <InputLabel id="editor-layer-select">Varianten</InputLabel>
+              <InputLabel id="editor-layer-select">
+                {t("editor.variants")}
+              </InputLabel>
               <Select
                 fullWidth
-                label="Varianten"
+                label={t("editor.variants")}
                 labelId="editor-layer-select"
-                value={layers.selectedLayer}
+                value={layers.selectedLayerId}
                 onChange={(event) => {
                   layers.changeToLayer(event.target.value);
                 }}
@@ -145,42 +152,47 @@ export default function SceneGraph() {
                 ))}
               </Select>
             </FormControl>
-
-            <IconButton
-              onClick={() => {
-                const layer = layers.add();
-                layers.changeToLayer(layer.id);
-              }}
-            >
-              <Add />
-            </IconButton>
-            <IconButton
-              onClick={() => {
-                layers.remove(layers.selectedLayer);
-              }}
-              disabled={layers.value.length === 1}
-            >
-              <Delete />
-            </IconButton>
+            <Tooltip title={t("actions.add")}>
+              <IconButton
+                disabled={isReadOnly}
+                onClick={() => {
+                  const layer = layers.add();
+                  layers.changeToLayer(layer.id);
+                }}
+              >
+                <Add />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title={t("actions.delete")}>
+              <IconButton
+                onClick={() => {
+                  layers.remove(layers.selectedLayerId);
+                }}
+                disabled={layers.value.length === 1 || isReadOnly}
+              >
+                <Delete />
+              </IconButton>
+            </Tooltip>
           </Grid>
           <TextField
             fullWidth
             inputRef={layerNameInputRef}
+            disabled={isReadOnly}
             onKeyDown={(event) => {
               if (event.key !== "Enter") return;
 
               layers.update({
-                id: layers.selectedLayer,
+                id: layers.selectedLayerId,
                 name: (event.target as HTMLInputElement).value,
               });
             }}
             onBlur={(event) => {
               layers.update({
-                id: layers.selectedLayer,
+                id: layers.selectedLayerId,
                 name: (event.target as HTMLInputElement).value,
               });
             }}
-            label="Name der Variante"
+            label={t("editor.name-of-the-variant")}
             sx={{ background: "white" }}
           />
           <Divider />
@@ -208,12 +220,16 @@ export default function SceneGraph() {
                 <Typography>
                   {t("editor.models")}&nbsp;
                   <StyledCount style={{ backgroundColor: "#eff6ff" }}>
-                    [{projectObjects.length}]
+                    [{projectObjects.value.length}]
                   </StyledCount>
                 </Typography>
                 <Box flex="1" />
                 <ButtonGroup size="small">
-                  <IconButton size="small" onClick={toggleImport}>
+                  <IconButton
+                    disabled={isReadOnly}
+                    size="small"
+                    onClick={toggleImport}
+                  >
                     <Add />
                   </IconButton>
                 </ButtonGroup>
@@ -221,12 +237,14 @@ export default function SceneGraph() {
             </AccordionSummary>
             <AccordionDetails sx={{ padding: 0 }}>
               <List>
-                {projectObjects.map((projectObject) => (
+                {projectObjects.value.map((projectObject) => (
                   <SceneGraphListItem
                     name={projectObject.name}
                     onSelected={() => setSelectedObject(projectObject)}
                     key={projectObject.id}
                     visible={projectObject.visible}
+                    disabled={isReadOnly}
+                    onFlyTo={() => projectObjects.helpers.flyTo(projectObject)}
                     onToggleVisibility={() =>
                       toggleVisibilityProjectObject(projectObject.id)
                     }
@@ -238,8 +256,7 @@ export default function SceneGraph() {
 
                       enqueueSnackbar({
                         variant: "info",
-                        message:
-                          "Picking a point. To abort press either right click or escape.",
+                        message: t("editor.pick-a-point-message"),
                         key: id,
                         autoHideDuration: null,
                       });
@@ -289,7 +306,7 @@ export default function SceneGraph() {
                       closeSnackbar(id);
                     }}
                     selected={selectedObject?.id === projectObject.id}
-                  ></SceneGraphListItem>
+                  />
                 ))}
               </List>
             </AccordionDetails>
@@ -318,13 +335,14 @@ export default function SceneGraph() {
                 <Typography>
                   {t("editor.clipping-polygons")}&nbsp;
                   <StyledCount style={{ backgroundColor: "#fef2f2" }}>
-                    [{clippingPolygons.length}]
+                    [{clippingPolygons.value.length}]
                   </StyledCount>
                 </Typography>
                 <Box flex="1" />
                 <ButtonGroup size="small">
                   <IconButton
                     size="small"
+                    disabled={isReadOnly}
                     onClick={async (event) => {
                       event.preventDefault();
                       event.stopPropagation();
@@ -338,12 +356,16 @@ export default function SceneGraph() {
             </AccordionSummary>
             <AccordionDetails sx={{ padding: 0 }}>
               <List disablePadding>
-                {clippingPolygons.map((clippingPolygon) => (
+                {clippingPolygons.value.map((clippingPolygon) => (
                   <SceneGraphListItem
+                    disabled={isReadOnly}
                     key={clippingPolygon.id}
                     name={clippingPolygon.name}
                     onSelected={() => setSelectedObject(clippingPolygon)}
                     visible={clippingPolygon.visible}
+                    onFlyTo={() =>
+                      clippingPolygons.helpers.flyTo(clippingPolygon)
+                    }
                     onToggleVisibility={() =>
                       updateClippingPolygon({
                         id: clippingPolygon.id,
@@ -372,6 +394,77 @@ export default function SceneGraph() {
                     }
                     selected={selectedObject?.id === clippingPolygon.id}
                   />
+                ))}
+              </List>
+            </AccordionDetails>
+          </Accordion>
+          <Accordion
+            expanded={selectedTab === "BASE_LAYER"}
+            onChange={() => setSelectedTab("BASE_LAYER")}
+            style={{ width: "100%" }}
+            square
+            disableGutters
+          >
+            <AccordionSummary>
+              <Grid
+                container
+                justifyContent="space-between"
+                width="100%"
+                alignItems="center"
+              >
+                <IconButton>
+                  {selectedTab === "BASE_LAYER" ? (
+                    <ExpandLess />
+                  ) : (
+                    <ExpandMore />
+                  )}
+                </IconButton>
+                <Typography>
+                  {t("editor.base-layers")}&nbsp;
+                  <StyledCount style={{ backgroundColor: "#f0fdf4" }}>
+                    [{baseLayers.selected.length}]
+                  </StyledCount>
+                </Typography>
+                <Box flex="1" />
+              </Grid>
+            </AccordionSummary>
+            <AccordionDetails>
+              <List>
+                {baseLayers.value.map((baseLayer) => (
+                  <ListItem key={baseLayer.id}>
+                    <Checkbox
+                      onChange={(_, checked) => {
+                        if (checked) return baseLayers.select(baseLayer.id);
+                        baseLayers.unselect(baseLayer.id);
+                      }}
+                      disabled={isReadOnly}
+                      checked={baseLayers.selected.includes(baseLayer.id)}
+                    />
+                    <ListItemText sx={{ flex: 1 }} primary={baseLayer.name} />
+                    <Tooltip arrow title={t("actions.fly-to")}>
+                      <IconButton
+                        disabled={!baseLayers.selected.includes(baseLayer.id)}
+                        onClick={() => {
+                          for (
+                            let i = 0;
+                            i < (viewer?.scene.primitives.length ?? 0);
+                            i++
+                          ) {
+                            const primitive = viewer?.scene.primitives.get(i);
+
+                            if (
+                              primitive?._resource?.request?.url ===
+                              baseLayer.href
+                            ) {
+                              viewer?.zoomTo(primitive);
+                            }
+                          }
+                        }}
+                      >
+                        <Adjust />
+                      </IconButton>
+                    </Tooltip>
+                  </ListItem>
                 ))}
               </List>
             </AccordionDetails>
@@ -409,6 +502,7 @@ export default function SceneGraph() {
             <ButtonGroup size="small">
               <Tooltip title={t("editor.add-starting-point")}>
                 <IconButton
+                  disabled={isReadOnly}
                   size="small"
                   onClick={(event) => {
                     event.preventDefault();
@@ -435,6 +529,7 @@ export default function SceneGraph() {
                 visible={startingPoint.visible}
                 extras={
                   <IconButton
+                    disabled={isReadOnly}
                     onClick={() => {
                       startingPoints.helpers.takeScreenshot(startingPoint);
                     }}
@@ -450,49 +545,6 @@ export default function SceneGraph() {
                   })
                 }
               />
-            ))}
-          </List>
-        </AccordionDetails>
-      </Accordion>
-      <Accordion
-        expanded={selectedTab === "BASE_LAYER"}
-        onChange={() => setSelectedTab("BASE_LAYER")}
-        style={{ width: "100%" }}
-        square
-        disableGutters
-      >
-        <AccordionSummary>
-          <Grid
-            container
-            justifyContent="space-between"
-            width="100%"
-            alignItems="center"
-          >
-            <IconButton>
-              {selectedTab === "BASE_LAYER" ? <ExpandLess /> : <ExpandMore />}
-            </IconButton>
-            <Typography>
-              {t("editor.base-layers")}&nbsp;
-              <StyledCount style={{ backgroundColor: "#f0fdf4" }}>
-                [{baseLayers.value.length}]
-              </StyledCount>
-            </Typography>
-            <Box flex="1" />
-          </Grid>
-        </AccordionSummary>
-        <AccordionDetails>
-          <List>
-            {baseLayers.value.map((baseLayer) => (
-              <ListItem key={baseLayer.id}>
-                <Checkbox
-                  onChange={(_, checked) => {
-                    if (checked) return baseLayers.add(baseLayer.id);
-                    baseLayers.remove(baseLayer.id);
-                  }}
-                  checked={baseLayers.selectedBaseLayers.includes(baseLayer.id)}
-                />
-                <ListItemText primary={baseLayer.name} />
-              </ListItem>
             ))}
           </List>
         </AccordionDetails>

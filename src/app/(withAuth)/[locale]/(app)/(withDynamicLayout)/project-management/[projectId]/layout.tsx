@@ -20,9 +20,14 @@ export default async function ThreeDViewerLayout({
 }) {
   const apis = await getApis();
 
-  const project = await apis.projectApi.projectIdGet({
-    id: (await params).projectId,
-  });
+  try {
+    const project = await apis.projectApi.projectIdGet({
+      id: (await params).projectId,
+    });
 
-  return <ViewerProvider project={project}>{children}</ViewerProvider>;
+    return <ViewerProvider project={project}>{children}</ViewerProvider>;
+  } catch (e) {
+    console.error(e);
+    throw e;
+  }
 }

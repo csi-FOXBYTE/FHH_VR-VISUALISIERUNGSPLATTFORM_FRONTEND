@@ -1,113 +1,134 @@
 {
   "index": {
-    "my-area": "My area",
-    "project-management": "Project management",
+    "my-area": "My Area",
+    "project-management": "Project Management",
     "collaboration": "Collaboration",
     "administration": "Administration",
     "welcoming-text": "Hello, {name}!",
-    "show-profile": "View profile",
-    "manage-projects": "Manage projects",
-    "show-collaboration": "Open collaboration",
-    "show-administration": "Open administration",
+    "show-profile": "View Profile",
+    "manage-projects": "Manage Projects",
+    "show-collaboration": "Access Collaboration",
+    "show-administration": "Open Administration",
     "last-logged-in-message": "Last logged in on {date}.",
-    "events-text": "The following events are scheduled for today, {date}:",
-    "no-events-pending": "No upcoming events",
-    "administration-description": "In this area you have access to the system’s central administrative functions. Here you can upload and organize base data, configure system settings such as APIs and applications, view system activities and security logs, and manage users and groups.",
-    "project-management-description": "In this area you centrally and efficiently manage your projects. You can create new projects, delete or edit existing ones, and upload project-specific data to make it available as layers within the system."
+    "events-text": "The following appointments are scheduled today on {date}:",
+    "no-events-pending": "No upcoming appointments",
+    "administration-description": "Through this area, you can access central administrative functions of the system. Here you can upload and organize base data, configure system settings such as APIs and applications, view system activities and security logs, and manage users and groups.",
+    "project-management-description": "In this area, you centrally and efficiently manage your projects. You can create new projects, delete or edit existing ones. Additionally, you can upload project-specific data and make it available as layers within the system."
   },
   "navbar": {
     "profile": "Profile",
-    "project-management": "Project management",
+    "project-management": "Project Management",
     "collaboration": "Collaboration",
     "administration": "Administration",
-    "sign-out": "Sign out",
-    "system-version": "System version",
+    "sign-out": "Sign Out",
+    "system-version": "System Version",
     "help": "Help",
     "settings": "Settings",
-    "login": "Sign in",
+    "login": "Sign In",
     "register": "Register"
   },
   "landingpage": {
-    "in-3d-and-virtual-reality": "in 3D and virtual reality",
+    "in-3d-and-virtual-reality": "in 3D and Virtual Reality",
     "download": "Download"
   },
   "navigation": {
-    "my-area": "My area",
+    "my-area": "My Area",
     "profile": "Profile",
-    "not-found": "Not found",
+    "not-found": "Not Found",
     "administration": "Administration",
-    "project-management": "Project management",
+    "project-management": "Project Management",
     "collaboration": "Collaboration",
     "editor": "Editor",
-    "new-project": "New project",
+    "new-project": "New Project",
     "project": "Project",
-    "user-management": "User and group management",
+    "user-management": "User and Group Management",
     "configuration": "Configuration",
-    "system-activities-and-logs": "System activities and logs",
-    "data-management": "Data management"
+    "system-activities-and-logs": "System Activities and Logs",
+    "data-management": "Data Management"
   },
   "footer": {
     "imprint": "Imprint",
-    "gdpr": "Privacy policy"
+    "gdpr": "Privacy Policy"
   },
   "profile": {
     "profile": "Profile",
     "name": "Name",
-    "email": "Email address",
-    "user-group": "User group",
-    "personal-data": "Personal data",
-    "last-login": "Last login",
-    "delete-account": "Delete account",
-    "update-account": "Edit account"
+    "email": "Email Address",
+    "user-group": "User Group",
+    "personal-data": "Personal Data",
+    "last-login": "Last Login",
+    "delete-account": "Delete Account",
+    "update-account": "Edit Account"
   },
   "collaboration": {
     "collaboration": "Collaboration",
-    "to-project": "Go to project",
+    "to-project": "To Project",
     "copied-to-clipboard-success": "Code successfully copied to clipboard!",
     "code": "Code"
   },
   "administration": {
-    "data-management": "Data management",
-    "user-management": "User and group management",
+    "data-management": "Data Management",
+    "user-management": "User and Group Management",
     "configuration": "Configuration",
-    "system-activities-and-logs": "System activities and logs",
-    "go-to-configuration": "Go to configuration",
-    "go-to-data-management": "Go to data management",
-    "go-to-system-activities": "Go to system activities",
-    "go-to-user-management": "Go to user and group management",
+    "system-activities-and-logs": "System Activities and Logs",
+    "go-to-configuration": "Go to Configuration",
+    "go-to-data-management": "Go to Data Management",
+    "go-to-system-activities": "Go to System Activities",
+    "go-to-user-management": "Go to User and Group Management",
     "system-activities-and-logs-description": "All log entries for system, database, users, and security.",
     "configuration-description": "Manage system settings for data, APIs, and applications.",
-    "data-management-description": "Upload and manage base data and set visual axes.",
+    "data-management-description": "Upload and manage base data and set viewpoints.",
     "user-management-description": "Add users, manage permissions, and organize groups.",
     "title": "Administration"
   },
   "configuration": {
-    "title": "Configuration"
+    "title": "Configuration",
+    "common": "General",
+    "global-start-point": "Global Starting Point",
+    "conversions": "Conversions",
+    "local-processor-folder": "Local Processor Folder",
+    "max-parallel-base-layer-conversions": "Maximum Parallel Base Layer Conversions",
+    "max-parallel-file-conversions": "Maximum Parallel File Conversions"
   },
   "user-management": {
-    "title": "User and group management",
+    "title": "User and Group Management",
     "email": "Email",
-    "assigned-groups": "Assigned groups",
+    "assigned-groups": "Assigned Groups",
     "name": "Name",
-    "default-for": "Default for",
-    "is-admin-group": "Is admin group",
-    "assigned-roles": "Assigned roles"
+    "default-for": "Default For",
+    "is-admin-group": "Is Admin Group",
+    "assigned-roles": "Assigned Roles"
   },
   "system-activities": {
-    "title": "System activities and logs"
+    "title": "System Activities and Logs"
   },
   "data-management": {
-    "title": "Data management",
-    "starting-point": "Starting point",
-    "start-point": "Starting point",
-    "end-point": "End point",
+    "title": "Data Management",
+    "starting-point": "Starting Point",
+    "start-point": "Starting Point",
+    "end-point": "End Point",
     "description": "Description",
-    "name": "Name"
+    "name": "Name",
+    "owner": "Owner",
+    "size-in-gb": "Size in GB",
+    "create-at": "Created At",
+    "visible-for-groups": "Visible to the following groups",
+    "only-visible-for-groups": "Only visible to the following groups"
   },
   "project-management": {
-    "title": "Project management",
-    "my-projects": "My projects",
-    "shared-projects": "Projects shared with me"
+    "title": "Project Management",
+    "my-projects": "My Projects",
+    "shared-projects": "Projects Shared With Me",
+    "open-editor": "Open Editor",
+    "description-placeholder": "Description...",
+    "title-placeholder": "Title...",
+    "table-title": "Title",
+    "preview": "Preview",
+    "preview-image": "Preview Image",
+    "visible-for-users": "Visible to the following users",
+    "visible-for-groups": "Visible to the following groups",
+    "description": "Description",
+    "owner": "Owner"
   },
   "components": {
     "list-with-pagination": {
@@ -122,17 +143,17 @@
     "READ": "Read",
     "ALL": "All",
     "EVENT": "Event",
-    "EVENT_ATTENDEE": "Event attendee",
-    "BASE_LAYER": "Base layer",
-    "PROJECT_LAYER": "Project layer",
+    "EVENT_ATTENDEE": "Event Attendee",
+    "BASE_LAYER": "Base Layer",
+    "PROJECT_LAYER": "Project Layer",
     "GROUP": "Group",
     "ROLE": "Role",
     "PERMISSION": "Permission",
     "PROJECT": "Project",
-    "CLIPPING_POLYGON": "Clipping polygon",
-    "PROJECT_FILE": "Project file",
-    "VISUAL_AXIS": "Visual axis",
-    "STARTING_POINT": "Starting point",
+    "CLIPPING_POLYGON": "Clipping Polygon",
+    "PROJECT_FILE": "Project File",
+    "VISUAL_AXIS": "Visual Axis",
+    "STARTING_POINT": "Starting Point",
     "USER": "User",
     "VIEWS": "Views"
   },
@@ -140,12 +161,14 @@
     "user": "User",
     "group": "Group",
     "role": "Role",
-    "base-layer": "Base layer",
-    "project-layer": "Project layer",
-    "starting-point": "Starting point",
-    "visual-axis": "Visual axis",
-    "project-file": "Project file",
-    "event": "Event"
+    "base-layer": "Base Layer",
+    "project-layer": "Project Layer",
+    "starting-point": "Starting Point",
+    "visual-axis": "Visual Axis",
+    "project-file": "Project File",
+    "event": "Event",
+    "configuration": "Configuration",
+    "project": "Project"
   },
   "generic": {
     "crud-notifications": {
@@ -163,20 +186,91 @@
     "update": "Update",
     "save": "Save",
     "delete": "Delete",
-    "invite": "Invite"
+    "invite": "Invite",
+    "revert": "Revert",
+    "add": "Add",
+    "upload": "Upload",
+    "uploading": "Uploading",
+    "waiting-in-line": "Waiting in queue",
+    "converting": "Converting",
+    "delayed": "Delayed",
+    "completed": "Completed",
+    "failed": "Failed",
+    "fly-to": "Fly to",
+    "place": "Place",
+    "toggle-visibility": "Toggle visibility"
+  },
+  "create-project-dialog": {
+    "create-project": "Create Project",
+    "title": "Title",
+    "description": "Description"
+  },
+  "import-model-dialog": {
+    "upload-new-model": "Upload New Model",
+    "reuse-existing-model": "Reuse Existing Model",
+    "name": "Name"
   },
   "data-mangement": {
     "title": "Title"
   },
   "events": {
-    "end-time": "End time",
-    "start-time": "Start time",
+    "end-time": "End Time",
+    "start-time": "Start Time",
     "attendees": "Attendees",
     "project": "Project",
     "title": "Title",
-    "create-event": "Create event",
-    "cancel-event": "Cancel meeting",
-    "update-event": "Update meeting",
+    "create-event": "Create Event",
+    "cancel-event": "Cancel Meeting",
+    "update-event": "Update Meeting",
     "no-events": "No events"
+  },
+  "under-construction": {
+    "we-are-working-hard": "We are working hard to show you new features soon.",
+    "go-back": "Go back",
+    "title": "Page Under Construction"
+  },
+  "attributes": {
+    "key": "Key",
+    "value": "Value",
+    "title": "Attributes",
+    "no-attributes-present": "No attributes present"
+  },
+  "editor": {
+    "saving-project-please-do-not-close-this-window": "Project is being saved, please do not close this window!",
+    "description": "Description",
+    "name": "Name",
+    "informations": "Information",
+    "transform": "Transformation",
+    "visual-axes": "Visual Axes",
+    "time": "Time",
+    "create-starting-point": "Create Starting Point",
+    "create-clipping-polygon": "Create Clipping Polygon",
+    "toggle-shadows": "Toggle Shadows",
+    "toggle-camera-safe-zone": "Toggle Camera Safe Zone",
+    "save-project": "Save Project",
+    "add-starting-point": "Add Starting Point",
+    "starting-points": "Starting Points",
+    "models": "Models",
+    "project-name": "Project Name",
+    "project-description": "Project Description",
+    "import-model": "Import Model",
+    "undo": "Undo",
+    "redo": "Redo",
+    "clipping-polygons": "Clipping Polygons",
+    "base-layers": "Base Layers",
+    "name-of-the-variant": "Variant Name",
+    "variants": "Variants",
+    "pick-a-point-message": "Select a point by clicking. To cancel, press ESC or click outside the 3D view.",
+    "take-screenshot": "Take Screenshot",
+    "origin": "Origin",
+    "target": "Target"
+  },
+  "error": {
+    "go-home": "Go to Home",
+    "500-oooops-something-went-wrong-on-our-side": "500: Oops, something went wrong on our side!"
+  },
+  "not-found": {
+    "404-we-did-not-find-this-page": "404: Unfortunately, we did not find this page.",
+    "go-home": "Go to Home"
   }
 }

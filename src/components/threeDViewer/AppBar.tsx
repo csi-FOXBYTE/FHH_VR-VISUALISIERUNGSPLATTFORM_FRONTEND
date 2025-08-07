@@ -11,6 +11,8 @@ import BreadCrumbs from "../navbar/BreadCrumbs";
 import ImportProjectObjectDialog from "./ImportProjectObjectDialog";
 import TimePicker from "./TimePicker";
 import { useViewerStore } from "./ViewerProvider";
+import useIsReadOnly from "./useIsReadOnly";
+import { useState } from "react";
 
 export default function AppBar() {
   const history = useViewerStore((state) => state.history);
@@ -25,6 +27,17 @@ export default function AppBar() {
 
   const project = useViewerStore((state) => state.project);
   const saveProject = useViewerStore((state) => state.saveProject);
+
+  const pickRegion = useViewerStore((state) => state.pickRegion);
+
+  const flyTo = useViewerStore((state) => state.startingPoints.helpers.flyTo);
+
+  const isReadOnly = useIsReadOnly();
+
+  const [selectedVisualAxis, setSelectedVisualAxis] = useState<null | {
+    label: string;
+    value: string;
+  }>(null);
 
   return (
     <Grid
@@ -45,26 +58,36 @@ export default function AppBar() {
         <BreadCrumbs style={{ marginBottom: 0 }} />
         <Grid container spacing={1}>
           <Tooltip arrow title={t("editor.import-model")}>
-            <IconButton onClick={() => toggleImport()}>
+            <IconButton
+              disabled={isReadOnly}
+              color="secondary"
+              onClick={() => toggleImport()}
+            >
               <Upload />
             </IconButton>
           </Tooltip>
           <Tooltip arrow title={t("editor.save-project")}>
             <IconButton
-              disabled={history.index === 0}
+              color="primary"
+              disabled={history.index === 0 || isReadOnly}
               onClick={() => saveProject()}
             >
               <Save />
             </IconButton>
           </Tooltip>
           <Tooltip arrow title={t("editor.undo")}>
-            <IconButton disabled={history.index === 0} onClick={history.undo}>
+            <IconButton
+              disabled={history.index === 0 || isReadOnly}
+              onClick={history.undo}
+            >
               <Undo />
             </IconButton>
           </Tooltip>
           <Tooltip arrow title={t("editor.redo")}>
             <IconButton
-              disabled={history.value.length === history.index + 1}
+              disabled={
+                history.value.length === history.index + 1 || isReadOnly
+              }
               onClick={history.redo}
             >
               <Redo />
@@ -81,6 +104,7 @@ export default function AppBar() {
       >
         <TextField
           defaultValue={project.title}
+          disabled={isReadOnly}
           onKeyDown={(event) => {
             if (event.key !== "Enter") return;
 
@@ -96,6 +120,7 @@ export default function AppBar() {
 
         <TextField
           sx={{ flex: 1 }}
+          disabled={isReadOnly}
           defaultValue={project.description}
           onKeyDown={(event) => {
             if (event.key !== "Enter") return;
@@ -113,7 +138,27 @@ export default function AppBar() {
         />
         <TimePicker />
         <Autocomplete
-          options={[]}
+          options={project.visualAxes.map((v) => ({
+            label: v.name,
+            value: v.id,
+          }))}
+          onChange={(_, option) => {
+            setSelectedVisualAxis(option);
+
+            if (!option) return;
+
+            const foundVisualAxis = project.visualAxes.find(
+              (v) => v.id === option.value
+            );
+
+            if (!foundVisualAxis) return;
+
+            flyTo({
+              position: foundVisualAxis.startPoint,
+              target: foundVisualAxis.endPoint,
+            });
+          }}
+          value={selectedVisualAxis}
           renderInput={(params) => (
             <TextField
               sx={{ width: 200, minWidth: 100 }}
@@ -122,6 +167,7 @@ export default function AppBar() {
             />
           )}
         />
+        {/* <Button disabled={isReadOnly} onClick={pickRegion}>Pick region</Button> */}
       </Grid>
     </Grid>
   );

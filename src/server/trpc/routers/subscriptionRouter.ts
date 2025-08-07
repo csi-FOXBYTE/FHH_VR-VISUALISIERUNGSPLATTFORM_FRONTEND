@@ -8,6 +8,7 @@ const subscriptionRouter = router({
     .input(z.string())
     .subscription(async function* (opts) {
       for await (const [data] of on(
+        // @ts-expect-error wrong type
         opts.ctx.subscriberDb[opts.input].subscribe({ operations: ["*"] }),
         "change",
         {

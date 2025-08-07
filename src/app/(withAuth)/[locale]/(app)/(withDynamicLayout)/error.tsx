@@ -1,3 +1,6 @@
+"use client";
+
+import { Link } from "@/server/i18n/routing";
 import {
   Button,
   Card,
@@ -8,9 +11,8 @@ import {
 } from "@mui/material";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
-import Link from "next/link";
 
-export default function NotFound() {
+export default function ErrorView() {
   const t = useTranslations();
 
   return (
@@ -24,14 +26,16 @@ export default function NotFound() {
       alignContent="center"
     >
       <Card elevation={4}>
-        <CardHeader title={t("not-found.404-we-did-not-find-this-page")} />
-        <CardContent sx={{ display: "flex", justifyItems: "center"}}>
+        <CardHeader
+          title={t("error.500-oooops-something-went-wrong-on-our-side")}
+        />
+        <CardContent>
           <Image
             alt="Error"
-            src="/not-found.jpg"
+            src="/error.jpg"
             width={1024}
             height={1024}
-            style={{ maxWidth: 512, margin: "0 auto", height: "auto" }}
+            style={{ width: 512, height: 512 }}
           />
         </CardContent>
         <CardActions>
@@ -41,7 +45,7 @@ export default function NotFound() {
             color="primary"
             variant="contained"
           >
-            {t("not-found.go-home")}
+            {t("error.go-home")}
           </Button>
         </CardActions>
       </Card>

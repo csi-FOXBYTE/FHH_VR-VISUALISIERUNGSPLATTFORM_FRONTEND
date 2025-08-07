@@ -4,9 +4,11 @@ import { useEffect, useState } from "react";
 export default function ScaleInput({
   value,
   onImmediateChange,
+  disabled,
 }: {
   value?: { x: number; y: number; z: number };
   onImmediateChange?: (value: { x: number; y: number; z: number }) => void;
+  disabled?: boolean;
 }) {
   const [prevTransformedValue, setPrevTransformedValue] = useState<{
     x: string;
@@ -78,6 +80,7 @@ export default function ScaleInput({
   return (
     <Grid container flexDirection="column" spacing={2}>
       <TextField
+        disabled={disabled}
         variant="standard"
         type="number"
         value={transformedValue.x}
@@ -94,6 +97,7 @@ export default function ScaleInput({
         }}
       />
       <TextField
+        disabled={disabled}
         variant="standard"
         type="number"
         value={transformedValue.y}
@@ -110,6 +114,7 @@ export default function ScaleInput({
         }}
       />
       <TextField
+        disabled={disabled}
         variant="standard"
         type="number"
         value={transformedValue.z}

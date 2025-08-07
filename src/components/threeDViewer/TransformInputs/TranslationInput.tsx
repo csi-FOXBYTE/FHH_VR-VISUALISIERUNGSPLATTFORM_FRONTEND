@@ -20,17 +20,20 @@ const initialEpsg = epsgValues.find((epsg) => epsg.label === "EPSG:25832");
 
 const srcSRS = "+proj=geocent +datum=WGS84 +units=m +no_defs +type=crs";
 
+// TODO does not work correctly yet!
 export default function TranslationInput({
   value,
   readOnly = false,
   onImmediateChange,
   label,
+  disabled,
 }: {
   value?: { x: number; y: number; z: number };
   onChange?: (value: { x: number; y: number; z: number }) => void;
   onImmediateChange?: (value: { x: number; y: number; z: number }) => void;
   label?: string;
   readOnly?: boolean;
+  disabled?: boolean;
 }) {
   const [selectedEpsg, setSelectedEpsg] = useState<{
     value: string;
@@ -111,6 +114,7 @@ export default function TranslationInput({
         renderInput={(params) => <TextField {...params} label="EPSG" />}
         value={selectedEpsg}
         disableClearable
+        disabled={disabled}
         size="small"
         onChange={(_, newValue) => setSelectedEpsg(newValue)}
         options={epsgValues}
@@ -132,7 +136,7 @@ export default function TranslationInput({
           }))
         }
         value={transformedValue?.x ?? ""}
-        disabled={readOnly}
+        disabled={readOnly || disabled}
       />
       <TextField
         type="number"
@@ -151,7 +155,7 @@ export default function TranslationInput({
           }))
         }
         value={transformedValue?.y ?? ""}
-        disabled={readOnly}
+        disabled={readOnly || disabled}
       />
       <TextField
         type="number"
@@ -170,7 +174,7 @@ export default function TranslationInput({
           }))
         }
         value={transformedValue?.z ?? ""}
-        disabled={readOnly}
+        disabled={readOnly || disabled}
       />
     </Grid>
   );

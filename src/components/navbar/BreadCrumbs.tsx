@@ -1,26 +1,15 @@
 "use client";
 
 import { Link as NextLink, usePathname } from "@/server/i18n/routing";
-import { trpc } from "@/server/trpc/client";
 import { HomeOutlined } from "@mui/icons-material";
 import { Breadcrumbs, Link } from "@mui/material";
-import { skipToken } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
-import { useParams } from "next/navigation";
 import { CSSProperties, ReactNode, useMemo } from "react";
 
 export default function BreadCrumbs({ style = {} }: { style?: CSSProperties }) {
   const t = useTranslations();
 
   const pathname = usePathname();
-
-  const params = useParams();
-
-  const projectId = params.projectId as string | undefined;
-
-  const { data: projectTitle } = trpc.projectRouter.getTitle.useQuery(
-    projectId && projectId !== "new" ? { id: projectId } : skipToken
-  );
 
   const crumbs = useMemo(() => {
     const crumbs: { href: string; content: ReactNode }[] = [
@@ -48,7 +37,7 @@ export default function BreadCrumbs({ style = {} }: { style?: CSSProperties }) {
         }
 
         crumbs.push({
-          content: projectTitle?.title ?? "...",
+          content: t("navigation.editor"),
           href: `${crumbs[crumbs.length - 1].href}${part}/`,
         });
         continue;
@@ -63,7 +52,7 @@ export default function BreadCrumbs({ style = {} }: { style?: CSSProperties }) {
     crumbs[0].href = "/my-area";
 
     return crumbs;
-  }, [pathname, t, projectTitle]);
+  }, [pathname, t]);
 
   return (
     <Breadcrumbs

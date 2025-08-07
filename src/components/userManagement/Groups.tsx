@@ -1,15 +1,15 @@
 "use client";
 
 import { trpc } from "@/server/trpc/client";
-import { DataGrid } from "@mui/x-data-grid";
-import useDataGridServerSideHelper from "../dataGridServerSide/useDataGridServerSideOptions";
-import { keepPreviousData } from "@tanstack/react-query";
-import createEditDeleteActions from "../dataGridServerSide/createEditDeleteActions";
-import GroupsCUDialog, { useGroupCUDialogState } from "./GroupCUDialog";
 import { Add } from "@mui/icons-material";
-import { useSnackbar } from "notistack";
-import { useTranslations } from "next-intl";
 import { Chip, Grid } from "@mui/material";
+import { DataGrid } from "@mui/x-data-grid";
+import { keepPreviousData } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
+import { useSnackbar } from "notistack";
+import useCreateEditDeleteActions from "../dataGridServerSide/useCreateEditDeleteActions";
+import useDataGridServerSideHelper from "../dataGridServerSide/useDataGridServerSideOptions";
+import GroupsCUDialog, { useGroupCUDialogState } from "./GroupCUDialog";
 
 export default function Groups() {
   const [, { openCreate, openUpdate }] = useGroupCUDialogState();
@@ -64,6 +64,15 @@ export default function Groups() {
         }),
     });
 
+  const createEditDeleteActions = useCreateEditDeleteActions({
+    handleDelete: (id) => deleteMutation({ id }),
+    handleEdit: openUpdate,
+    loading: isDeleteMutationPending,
+    isDisabled: (row: (typeof data)[number]) => ({
+      delete: row.isAdminGroup,
+    }),
+  });
+
   return (
     <>
       <GroupsCUDialog />
@@ -102,14 +111,7 @@ export default function Groups() {
             headerName: t("user-management.is-admin-group"),
             valueGetter: (value) => (value ? "✅" : "❌"),
           },
-          createEditDeleteActions({
-            handleDelete: (id) => deleteMutation({ id }),
-            handleEdit: openUpdate,
-            loading: isDeleteMutationPending,
-            isDisabled: (row: (typeof data)[number]) => ({
-              delete: row.isAdminGroup,
-            }),
-          }),
+          createEditDeleteActions,
         ]}
         rows={data}
         rowCount={count}

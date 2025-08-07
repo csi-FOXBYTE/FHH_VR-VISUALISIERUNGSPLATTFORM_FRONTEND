@@ -15,6 +15,8 @@ import RotationInput from "./TransformInputs/RotationInput";
 import ScaleInput from "./TransformInputs/ScaleInput";
 import TranslationInput from "./TransformInputs/TranslationInput";
 import { SelectedObjectResolved, useViewerStore } from "./ViewerProvider";
+import useIsReadOnly from "./useIsReadOnly";
+import { useTranslations } from "next-intl";
 
 export default function TransformSwitch({
   selectedObject,
@@ -23,12 +25,16 @@ export default function TransformSwitch({
 }) {
   const objectRefs = useViewerStore((state) => state.objectRefs);
 
+  const t = useTranslations();
+
   const updateProjectObject = useViewerStore(
     (state) => state.projectObjects.update
   );
   const updateStartingPoint = useViewerStore(
     (state) => state.startingPoints.update
   );
+
+  const isReadOnly = useIsReadOnly();
 
   const { viewer } = useCesium();
 
@@ -208,17 +214,20 @@ export default function TransformSwitch({
       return (
         <Grid container flexDirection="column" spacing={2}>
           <TranslationInput
+            disabled={isReadOnly}
             value={selectedObject.translation}
             onImmediateChange={handleTranslationChange}
           />
           <Divider />
           <RotationInput
+            disabled={isReadOnly}
             value={selectedObject.rotation}
             origin={selectedObject.translation}
             onImmediateChange={handleRotationChange}
           />
           <Divider />
           <ScaleInput
+            disabled={isReadOnly}
             value={selectedObject.scale}
             onImmediateChange={handleScaleChange}
           />
@@ -227,15 +236,17 @@ export default function TransformSwitch({
     case "STARTING_POINT":
       return (
         <Grid container spacing={2} flexDirection="column">
-          <Typography>Ursprung</Typography>
+          <Typography>{t('editor.origin')}</Typography>
           <TranslationInput
+            disabled={isReadOnly}
             onImmediateChange={(position) =>
               handleTranslationChangeStartingPoint(position, undefined)
             }
             value={selectedObject.position}
           />
-          <Typography>Ziel</Typography>
+          <Typography>{t('editor.target')}</Typography>
           <TranslationInput
+            disabled={isReadOnly}
             onImmediateChange={(target) =>
               handleTranslationChangeStartingPoint(undefined, target)
             }

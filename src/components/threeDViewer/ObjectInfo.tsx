@@ -3,6 +3,7 @@ import { SelectedObjectResolved, useViewerStore } from "./ViewerProvider";
 import { useCallback, useEffect, useRef } from "react";
 import Attributes from "./Attributes";
 import { useTranslations } from "next-intl";
+import useIsReadOnly from "./useIsReadOnly";
 
 export default function ObjectInfo({
   selectedObject,
@@ -25,6 +26,8 @@ export default function ObjectInfo({
 
   const descriptionRef = useRef<HTMLInputElement>(null);
 
+  const isReadOnly = useIsReadOnly();
+
   useEffect(() => {
     if (selectedObject.type === "TILE_3D") return;
 
@@ -35,30 +38,38 @@ export default function ObjectInfo({
       descriptionRef.current.value = selectedObject.description;
   }, [selectedObject]);
 
-  const handleUpdate = useCallback((name?: string, description?: string) => {
-    switch (selectedObject.type) {
-      case "CLIPPING_POLYGON":
-        updateClippingPolygons({
-          id: selectedObject.id,
-          ...(name ? { name } : {}),
-        });
-        break;
-      case "PROJECT_OBJECT":
-        updateProjectObject({
-          id: selectedObject.id,
-          ...(name ? { name } : {}),
-        });
-        break;
-      case "STARTING_POINT":
-        console.log(name, description);
-        updateStartingPoints({
-          id: selectedObject.id,
-          ...(name ? { name } : {}),
-          ...(description ? { description } : {}),
-        });
-        break;
-    }
-  }, []);
+  const handleUpdate = useCallback(
+    (name?: string, description?: string) => {
+      switch (selectedObject.type) {
+        case "CLIPPING_POLYGON":
+          updateClippingPolygons({
+            id: selectedObject.id,
+            ...(name ? { name } : {}),
+          });
+          break;
+        case "PROJECT_OBJECT":
+          updateProjectObject({
+            id: selectedObject.id,
+            ...(name ? { name } : {}),
+          });
+          break;
+        case "STARTING_POINT":
+          updateStartingPoints({
+            id: selectedObject.id,
+            ...(name ? { name } : {}),
+            ...(description ? { description } : {}),
+          });
+          break;
+      }
+    },
+    [
+      selectedObject.type,
+      selectedObject.id,
+      updateClippingPolygons,
+      updateProjectObject,
+      updateStartingPoints,
+    ]
+  );
 
   return (
     <Grid
@@ -79,6 +90,7 @@ export default function ObjectInfo({
           if (event.target.value === selectedObject.name) return;
           handleUpdate(event.target.value);
         }}
+        disabled={isReadOnly}
         variant="filled"
         label={t("editor.name")}
         fullWidth
@@ -88,7 +100,7 @@ export default function ObjectInfo({
         fullWidth
         label={t("editor.description")}
         variant="filled"
-        disabled={selectedObject.type !== "STARTING_POINT"}
+        disabled={selectedObject.type !== "STARTING_POINT" || isReadOnly}
         inputRef={descriptionRef}
         onKeyDown={(event) => {
           if (event.key !== "Enter") return;
@@ -105,7 +117,7 @@ export default function ObjectInfo({
       ) : null}
       <Divider />
       <Attributes
-        disabled={selectedObject.type !== "PROJECT_OBJECT"}
+        disabled={selectedObject.type !== "PROJECT_OBJECT" || isReadOnly}
         value={
           selectedObject.type === "TILE_3D" ||
           selectedObject.type === "PROJECT_OBJECT"

@@ -7,6 +7,7 @@ import {
 import { Divider, Grid, IconButton, Tooltip, useTheme } from "@mui/material";
 import { useViewerStore } from "./ViewerProvider";
 import { useTranslations } from "next-intl";
+import useIsReadOnly from "./useIsReadOnly";
 
 export default function Toolbar() {
   const theme = useTheme();
@@ -33,6 +34,8 @@ export default function Toolbar() {
     (state) => state.tools.toggleShadowVisibility
   );
 
+  const isReadOnly = useIsReadOnly();
+
   return (
     <div
       style={{
@@ -47,7 +50,7 @@ export default function Toolbar() {
         <Tooltip
           arrow
           placement="right"
-          title={t('editor.toggle-camera-safe-zone')}
+          title={t("editor.toggle-camera-safe-zone")}
         >
           <IconButton
             color={safeCameraZoneVisible ? "primary" : undefined}
@@ -70,7 +73,7 @@ export default function Toolbar() {
           placement="right"
           title={t("editor.create-clipping-polygon")}
         >
-          <IconButton onClick={createClippingPolygon}>
+          <IconButton disabled={isReadOnly} onClick={createClippingPolygon}>
             <ContentCut />
           </IconButton>
         </Tooltip>
@@ -79,7 +82,7 @@ export default function Toolbar() {
           placement="right"
           title={t("editor.create-starting-point")}
         >
-          <IconButton onClick={createStartingPoint}>
+          <IconButton disabled={isReadOnly} onClick={createStartingPoint}>
             <AddLocationAlt />
           </IconButton>
         </Tooltip>

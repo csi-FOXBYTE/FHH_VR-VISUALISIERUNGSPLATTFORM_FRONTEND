@@ -2,7 +2,7 @@ import * as Cesium from "cesium";
 import { useEffect, useMemo, useState } from "react";
 import { Model } from "resium";
 import {
-  ProjectObject as ProjectObjectType,
+  ProjectModel as ProjectObjectType,
   useViewerStore,
 } from "./ViewerProvider";
 
