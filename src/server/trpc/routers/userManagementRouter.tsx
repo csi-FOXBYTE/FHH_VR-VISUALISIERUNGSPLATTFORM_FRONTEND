@@ -130,7 +130,7 @@ const userManagementRouter = router({
         z.object({
           name: z.string(),
           assignedRoles: z.array(z.string()),
-          defaultFor: z.array(z.string()),
+          defaultFor: z.string(),
         })
       )
       .mutation(async (opts) => {
@@ -142,7 +142,7 @@ const userManagementRouter = router({
                 id: assignedRole,
               })),
             },
-            defaultFor: opts.input.defaultFor,
+            defaultFor: opts.input.defaultFor.split(","),
           },
         });
       }),
@@ -152,7 +152,7 @@ const userManagementRouter = router({
           name: z.string(),
           assignedRoles: z.array(z.string()),
           id: z.string(),
-          defaultFor: z.array(z.string()),
+          defaultFor: z.string(),
         })
       )
       .mutation(async (opts) => {
@@ -166,7 +166,7 @@ const userManagementRouter = router({
                 id: assignedRole,
               })),
             },
-            defaultFor: opts.input.defaultFor,
+            defaultFor: opts.input.defaultFor.split(","),
             name: opts.input.name,
           },
         });
@@ -201,6 +201,7 @@ const userManagementRouter = router({
 
         return {
           ...group,
+          defaultFor: group.defaultFor.join(","),
           assignedRoles: group.assignedRoles.map((assignedRole) => ({
             label: assignedRole.name,
             value: assignedRole.id,
@@ -227,15 +228,18 @@ const userManagementRouter = router({
       }),
   },
   roles: {
-    list: protectedProcedure.query(
-      async (opts) => {
-        const roles = await opts.ctx.db.role.findMany({
-          select: { name: true, id: true, isAdminRole: true, assignedPermissions: true },
-        });
+    list: protectedProcedure.query(async (opts) => {
+      const roles = await opts.ctx.db.role.findMany({
+        select: {
+          name: true,
+          id: true,
+          isAdminRole: true,
+          assignedPermissions: true,
+        },
+      });
 
-        return roles;
-      }
-    ),
+      return roles;
+    }),
     delete: protectedProcedure
       .input(z.object({ id: z.string() }))
       .mutation(async (opts) => {
@@ -276,7 +280,9 @@ const userManagementRouter = router({
         z.object({
           id: z.string(),
           name: z.string(),
-          permissions: z.array(z.enum(["BASE_LAYER_OWNER", ...Object.values($Enums.PERMISSIONS)])),
+          permissions: z.array(
+            z.enum(["BASE_LAYER_OWNER", ...Object.values($Enums.PERMISSIONS)])
+          ),
         })
       )
       .mutation(async (opts) => {

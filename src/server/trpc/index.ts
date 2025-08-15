@@ -6,6 +6,7 @@ import prisma from "@/server/prisma";
 import { createOTelPlugin } from "./otelMiddleware";
 import eventBus from "@/server/events";
 import { enhance } from "@zenstackhq/runtime";
+import realtimeExtension from "../prisma/extensions/realtimeExtension";
 
 export const { createCallerFactory, router, procedure } = initTRPC
   .context<typeof createTRPCContext>()
@@ -43,7 +44,7 @@ export const protectedProcedure = procedure
       ctx: {
         ...ctx,
         session: session,
-      ***REMOVED***enhance(prisma, session),
+      ***REMOVED***enhance(prisma, session).$extends(realtimeExtension()),
         subscriberDb: prisma,
         storage: null,
         eventBus,
