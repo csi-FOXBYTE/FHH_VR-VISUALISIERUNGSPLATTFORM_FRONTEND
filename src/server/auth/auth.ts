@@ -44,7 +44,6 @@ export const { auth, handlers, signIn, signOut, unstable_update } = NextAuth({
   callbacks: {
     async signIn({ account, user, profile }) {
       try {
-        console.log({ account, user, profile })
         const foundUser = await prisma.user.findFirst({
           where: {
             email: user.email!,
@@ -62,7 +61,7 @@ export const { auth, handlers, signIn, signOut, unstable_update } = NextAuth({
         }
 
         if (!user.email) {
-          console.error("NO EMAIL PROVIEDD");
+          console.error("NO EMAIL PROVIDED");
           return false;
         }
 
@@ -199,10 +198,12 @@ export const { auth, handlers, signIn, signOut, unstable_update } = NextAuth({
             select: {
               id: true,
               name: true,
+              isAdminGroup: true,
               assignedRoles: {
                 select: {
                   name: true,
                   id: true,
+                  isAdminRole: true,
                   assignedPermissions: true,
                 },
               },

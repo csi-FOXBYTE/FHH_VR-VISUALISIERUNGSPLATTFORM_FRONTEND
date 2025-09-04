@@ -1,4 +1,5 @@
 import {
+  BaseLayerApi,
   Configuration,
   Converter3DApi,
   EventsApi,
@@ -31,6 +32,14 @@ export async function getApis() {
   const converter3DApi = new Converter3DApi(config);
   const projectApi = new ProjectApi(config);
   const userApi = new UserApi(config);
+  const baseLayerApi = new BaseLayerApi(config);
 
-  return { eventsApi, statsApi, converter3DApi, projectApi, userApi };
+  return {
+    eventsApi,
+    statsApi,
+    converter3DApi,
+    projectApi,
+    userApi,
+    baseLayerApi,
+  };
 }

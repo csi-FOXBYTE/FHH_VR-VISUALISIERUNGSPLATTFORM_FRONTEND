@@ -56,18 +56,16 @@ export default function useCreateEditDeleteActions({
                 const { confirmed } = await confirm({
                   description: (
                     <>
-                      <p>
-                        {t('actions.are-you-sure-that-you-want-to-delete')}
-                      </p>
-                      
+                      <p>{t("actions.are-you-sure-that-you-want-to-delete")}</p>
+
                       <Alert severity="error">
-                        {t('actions.this-action-is-irreversible')}
-                        </Alert>
+                        {t("actions.this-action-is-irreversible")}
+                      </Alert>
                     </>
                   ),
                   title: t("actions.delete"),
                   cancellationText: t("actions.cancel"),
-                  confirmationText: t("actions.delete")
+                  confirmationText: t("actions.delete"),
                 });
 
                 if (!confirmed) return;

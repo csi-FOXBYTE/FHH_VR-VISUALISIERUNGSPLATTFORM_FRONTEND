@@ -28,7 +28,7 @@ export default function AppBar() {
   const project = useViewerStore((state) => state.project);
   const saveProject = useViewerStore((state) => state.saveProject);
 
-  const pickRegion = useViewerStore((state) => state.pickRegion);
+  // const pickRegion = useViewerStore((state) => state.pickRegion);
 
   const flyTo = useViewerStore((state) => state.startingPoints.helpers.flyTo);
 

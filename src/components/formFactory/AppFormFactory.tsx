@@ -23,8 +23,8 @@ export const AppFormFactory = createFormFactory(
       valueType: 0 as number,
     },
     text: {
-      render(name, { label }: { label?: string }, { register }) {
-        return <TextField label={label} {...register(name)} />;
+      render(name, { label, disabled }: { label?: string, disabled?: boolean }, { register }) {
+        return <TextField label={label} disabled={disabled} {...register(name)} />;
       },
       valueType: "" as string,
     },

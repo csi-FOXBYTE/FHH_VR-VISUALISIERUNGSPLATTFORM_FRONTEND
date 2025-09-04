@@ -1,4 +1,5 @@
 import { PERMISSIONS, PrismaClient } from "@prisma/client";
+import { readFileSync } from "fs";
 
 const prisma = new PrismaClient();
 
@@ -13,6 +14,17 @@ const prisma = new PrismaClient();
       invitationEmailText: "",
       maxParallelBaseLayerConversions: 1,
       maxParallelFileConversions: 1,
+      invitationCancelledEmailDE: readFileSync("./prisma/scripts/templates/mail-invitation-cancelled-de.html").toString("utf-8"),
+      invitationCancelledEmailEN: readFileSync("./prisma/scripts/templates/mail-invitation-cancelled-en.html").toString("utf-8"),
+
+      invitationEmailDE: readFileSync("./prisma/scripts/templates/mail-invitation-de.html").toString("utf-8"),
+      invitationEmailEN: readFileSync("./prisma/scripts/templates/mail-invitation-en.html").toString("utf-8"),
+
+      invitationUpdatedEmailDE: readFileSync("./prisma/scripts/templates/mail-invitation-updated-de.html").toString("utf-8"),
+      invitationUpdatedEmailEN: readFileSync("./prisma/scripts/templates/mail-invitation-updated-en.html").toString("utf-8"),
+
+      predeletionEmailDE: readFileSync("./prisma/scripts/templates/mail-predeletion-de.html").toString("utf-8"),
+      predeletionEmailEN: readFileSync("./prisma/scripts/templates/mail-predeletion-en.html").toString("utf-8"),
     },
   });
 

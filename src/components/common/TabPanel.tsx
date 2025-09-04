@@ -3,8 +3,8 @@ import { Grid, GridProps } from "@mui/material";
 interface TabPanelProps {
   children?: React.ReactNode;
   visible: boolean;
-  index: number;
-  value: number;
+  index: number | string;
+  value: number | string;
 }
 
 export function TabPanel(props: TabPanelProps & GridProps) {

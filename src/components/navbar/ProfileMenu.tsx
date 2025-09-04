@@ -1,7 +1,9 @@
 import { Link } from "@/server/i18n/routing";
 import {
   AdminPanelSettingsOutlined,
-  DesktopWindows,
+  AssignmentOutlined,
+  DesktopWindowsOutlined,
+  GroupWorkOutlined,
   Logout,
   PersonOutlined,
 } from "@mui/icons-material";
@@ -53,7 +55,7 @@ export default function ProfileMenu({
       <Divider />
       <MenuItem>
         <ListItemIcon>
-          <DesktopWindows />
+          <DesktopWindowsOutlined />
         </ListItemIcon>
         <Grid>
           <Typography variant="body1">{t("navbar.system-version")}</Typography>
@@ -69,13 +71,13 @@ export default function ProfileMenu({
       </MenuItem>
       <MenuItem component={Link} href="/project-management">
         <ListItemIcon>
-          <Logout />
+          <AssignmentOutlined />
         </ListItemIcon>
         {t("navbar.project-management")}
       </MenuItem>
       <MenuItem component={Link} href="/collaboration">
         <ListItemIcon>
-          <Logout />
+          <GroupWorkOutlined />
         </ListItemIcon>
         {t("navbar.collaboration")}
       </MenuItem>

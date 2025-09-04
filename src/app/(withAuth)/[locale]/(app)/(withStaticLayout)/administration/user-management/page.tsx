@@ -7,42 +7,42 @@ import Roles from "@/components/userManagement/Roles";
 import Users from "@/components/userManagement/Users";
 import { Tab, Tabs } from "@mui/material";
 import { useTranslations } from "next-intl";
-import { parseAsFloat, useQueryState } from "nuqs";
+import { parseAsStringLiteral, useQueryState } from "nuqs";
 
 export default function UserManagementPage() {
   const t = useTranslations();
 
   const [selectedTab, setSelectedTab] = useQueryState(
     "tab",
-    parseAsFloat.withDefault(0)
+    parseAsStringLiteral(["user", "group", "role"]).withDefault("user")
   );
 
   return (
     <PageContainer>
       <Tabs value={selectedTab}>
         <Tab
-          value={0}
-          onClick={() => setSelectedTab(0)}
+          value={"user"}
+          onClick={() => setSelectedTab("user")}
           label={t("entities.user")}
         />
         <Tab
-          value={1}
-          onClick={() => setSelectedTab(1)}
+          value={"group"}
+          onClick={() => setSelectedTab("group")}
           label={t("entities.group")}
         />
         <Tab
-          value={2}
-          onClick={() => setSelectedTab(2)}
+          value={"role"}
+          onClick={() => setSelectedTab("role")}
           label={t("entities.role")}
         />
       </Tabs>
-      <TabPanel index={0} value={selectedTab} visible>
+      <TabPanel index={"user"} value={selectedTab} visible>
         <Users />
       </TabPanel>
-      <TabPanel index={1} value={selectedTab} visible>
+      <TabPanel index={"group"} value={selectedTab} visible>
         <Groups />
       </TabPanel>
-      <TabPanel index={2} value={selectedTab} visible>
+      <TabPanel index={"role"} value={selectedTab} visible>
         <Roles />
       </TabPanel>
     </PageContainer>

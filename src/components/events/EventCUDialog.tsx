@@ -6,7 +6,10 @@ import { useState } from "react";
 import { EasyCUDialog, useEasyCUDialogState } from "../common/EasyCUDialog";
 import { useTranslations } from "next-intl";
 import { getApis } from "@/server/gatewayApi/client";
-import { EventsPutRequest } from "@/server/gatewayApi/generated";
+import {
+  EventsIdPatchRequest,
+  EventsPutRequest,
+} from "@/server/gatewayApi/generated";
 
 export const useEventCUDialogState = () =>
   useEasyCUDialogState("event-cu-dialog-state");
@@ -75,7 +78,15 @@ export default function EventCUDialog() {
       },
     });
   const { mutate: updateMutation, isPending: isUpdateMutationPending } =
-    trpc.eventsRouter.update.useMutation({
+    useMutation({
+      mutationFn: async (values: EventsIdPatchRequest) => {
+        const apis = await getApis();
+
+        await apis.eventsApi.eventsIdPatch({
+          eventsIdPatchRequest: values,
+          id: state.id ?? "-",
+        });
+      },
       onSuccess: () => {
         utils.eventsRouter.invalidate();
         enqueueSnackbar({
@@ -121,10 +132,10 @@ export default function EventCUDialog() {
         updateMutation({
           attendees: values.attendees.map((attendee) => attendee.value),
           moderators: values.moderators.map((moderator) => moderator.value),
-          endTime: values.endTime,
-          startTime: values.startTime,
+          endTime: values.endTime.toISOString(),
+          startTime: values.startTime.toISOString(),
           title: values.title,
-          project: values.project?.value ?? null,
+          project: values.project?.value,
           id: state.id,
         });
       }}
@@ -137,6 +148,7 @@ export default function EventCUDialog() {
           type: "text",
           name: "title",
           props: {
+            disabled: state.mode === "UPDATE",
             label: t("events.title"),
           },
         },

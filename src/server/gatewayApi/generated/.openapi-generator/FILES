@@ -1,4 +1,5 @@
 .openapi-generator-ignore
+apis/BaseLayerApi.ts
 apis/Converter3DApi.ts
 apis/EventsApi.ts
 apis/ProjectApi.ts
@@ -6,6 +7,8 @@ apis/StatsApi.ts
 apis/UserApi.ts
 apis/index.ts
 index.ts
+models/BaseLayerPutRequest.ts
+models/BaseLayerPutRequestType.ts
 models/Converter3DCommitUploadPostRequest.ts
 models/Converter3DConvertProjectModelPost200Response.ts
 models/Converter3DConvertProjectModelPostRequest.ts

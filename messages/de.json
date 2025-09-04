@@ -91,7 +91,12 @@
     "conversions": "Wandlung",
     "local-processor-folder": "Lokaler Ablege Ordner",
     "max-parallel-base-layer-conversions": "Maximale parallele Basisdatenwandlungen",
-    "max-parallel-file-conversions": "Maximale parallele Dateiwandlungen"
+    "max-parallel-file-conversions": "Maximale parallele Dateiwandlungen",
+    "mail-templates": "Mail Templates",
+    "mail-invitation-template": "Event Einladungsmail",
+    "mail-invitation-canceled-template": "Event abgesagt Mail",
+    "mail-invitation-updated-template": "Event geändert Mail",
+    "mail-predeletion-template": "30 Tage Löschwarnungsmail"
   },
   "user-management": {
     "title": "Nutzer- und Gruppenverwaltung",
@@ -116,7 +121,10 @@
     "size-in-gb": "Größe in GB",
     "create-at": "Erstellt am",
     "visible-for-groups": "Sichtbar für folgende Gruppen",
-    "only-visible-for-groups": "Nur sichtbar für folgende Gruppen"
+    "only-visible-for-groups": "Nur sichtbar für folgende Gruppen",
+    "type": "Typ",
+    "progress": "Fortschritt",
+    "href": "Link"
   },
   "project-management": {
     "title": "Projektverwaltung",
@@ -172,9 +180,24 @@
       "create-success": "{entity} erfolgreich erstellt!",
       "delete-success": "{entity} erfolgreich gelöscht!",
       "update-success": "{entity} erfolgreich geändert!",
+      "save-success": "{entity} erfolgreich gespeichert!",
       "create-failed": "Erstellen von {entity} fehlgeschlagen!",
       "delete-failed": "Löschen von {entity} fehlgeschlagen!",
-      "update-failed": "Ändern von {entity} fehlgeschlagen!"
+      "update-failed": "Ändern von {entity} fehlgeschlagen!",
+      "save-failed": "Speichern von {entity} fehlgeschlagen!"
+    }
+  },
+  "enums": {
+    "event-status": {
+      "MISSING_HOST": "Host fehlt",
+      "ACTIVE": "Aktiv",
+      "PLANNED": "Geplant",
+      "CANCELED": "Abgebrochen",
+      "END": "Beendet"
+    },
+    "event-attendee-roles": {
+      "GUEST": "Gast",
+      "MODERATOR": "Moderator"
     }
   },
   "actions": {
@@ -296,5 +319,8 @@
   "not-found": {
     "404-we-did-not-find-this-page": "404: Leider haben wir diese Seite nicht gefunden.",
     "go-home": "Zur Startseite"
+  },
+  "layers": {
+    "type": "Typ"
   }
 }

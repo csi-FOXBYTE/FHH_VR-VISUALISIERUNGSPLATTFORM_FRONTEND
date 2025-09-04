@@ -6,15 +6,18 @@ import {
   CircularProgress,
   CircularProgressProps,
   Grid,
-  Typography
+  Typography,
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
-import { keepPreviousData } from "@tanstack/react-query";
+import { keepPreviousData, useMutation } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import useCreateEditDeleteActions from "../dataGridServerSide/useCreateEditDeleteActions";
 import useDataGridServerSideHelper from "../dataGridServerSide/useDataGridServerSideOptions";
-import LayersDialog from "./LayersDialog";
+import ConvertingDialog from "./ConvertingDialog";
+import AddingDialog from "./AddingDialog";
+import { useSnackbar } from "notistack";
+import { getApis } from "@/server/gatewayApi/client";
 
 function CircularProgressWithLabel(
   props: CircularProgressProps & { value: number }
@@ -47,26 +50,62 @@ function CircularProgressWithLabel(
 export default function Layers() {
   const t = useTranslations();
 
-  const [open, setOpen] = useState(false);
+  const [convertingDialogOpen, setConvertingDialogOpen] = useState(false);
+  const [addingDialogOpen, setAddingDialogOpen] = useState(false);
 
   const { props } = useDataGridServerSideHelper("data-management-layers", {
     extraActions: [
       {
         icon: <Add />,
-        label: t("actions.create"),
+        label: t("actions.add"),
+        key: "add",
+        onClick: () => setAddingDialogOpen(true),
+      },
+      {
+        icon: <Add />,
+        label: t("actions.converting"),
         key: "base",
-        onClick: () => setOpen(true),
+        onClick: () => setConvertingDialogOpen(true),
       },
     ],
   });
 
-  const createEditDeleteActions = useCreateEditDeleteActions({
-    handleDelete: () => {},
-    handleEdit: () => {},
-    isDisabled: () => ({ delete: true, edit: true }),
+  const utils = trpc.useUtils();
+
+  const { enqueueSnackbar } = useSnackbar();
+
+  const { mutate: deleteMutation } = useMutation({
+    mutationFn: async (values: { id: string }) => {
+      const apis = await getApis();
+
+      await apis.baseLayerApi.baseLayerIdDelete({ id: values.id });
+    },
+    onSuccess: () => {
+      utils.dataManagementRouter.invalidate();
+      enqueueSnackbar({
+        variant: "success",
+        message: t("generic.crud-notifications.create-success", {
+          entity: t("entities.base-layer"),
+        }),
+      });
+    },
+    onError: (error) => {
+      console.error(error);
+      enqueueSnackbar({
+        variant: "error",
+        message: t("generic.crud-notifications.create-failed", {
+          entity: t("entities.base-layer"),
+        }),
+      });
+    },
   });
 
-  const utils = trpc.useUtils();
+  const createEditDeleteActions = useCreateEditDeleteActions({
+    handleDelete: (id) => {
+      deleteMutation({ id });
+    },
+    isDisabled: () => ({ delete: false, edit: true }),
+  });
 
   const { data: { data, count } = { count: 0, data: [] }, isLoading } =
     trpc.dataManagementRouter.listBaseLayers.useQuery(
@@ -82,7 +121,14 @@ export default function Layers() {
 
   return (
     <>
-      <LayersDialog open={open} close={() => setOpen(false)} />
+      <ConvertingDialog
+        open={convertingDialogOpen}
+        close={() => setConvertingDialogOpen(false)}
+      />
+      <AddingDialog
+        open={addingDialogOpen}
+        close={() => setAddingDialogOpen(false)}
+      />
       <DataGrid
         {...props}
         loading={isLoading}
@@ -92,7 +138,7 @@ export default function Layers() {
           {
             field: "type",
             type: "singleSelect",
-            headerName: "Type",
+            headerName: t("data-management.type"),
             valueOptions: [
               { label: "🏢 - 3D Tile", value: "TILES3D" },
               { label: "⛰️ - Terrain", value: "TERRAIN" },
@@ -107,7 +153,7 @@ export default function Layers() {
           },
           {
             field: "progress",
-            headerName: "Fortschritt",
+            headerName: t("data-management.progress"),
             type: "number",
             renderCell: ({ row }) => {
               switch (row.status) {

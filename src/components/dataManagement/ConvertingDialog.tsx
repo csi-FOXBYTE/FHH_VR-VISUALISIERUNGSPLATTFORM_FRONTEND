@@ -22,7 +22,7 @@ import { getApis } from "@/server/gatewayApi/client";
 import { useState } from "react";
 import pLimit from "p-limit";
 
-export default function LayersDialog({
+export default function ConvertingDialog({
   open,
   close,
 }: {
@@ -142,7 +142,7 @@ export default function LayersDialog({
 
   return (
     <Dialog open={open} onClose={close} fullWidth>
-      <DialogTitle>Basisdatensatz wandeln</DialogTitle>
+      <DialogTitle>{t("actions.converting")}</DialogTitle>
       <form onSubmit={handleSubmit((values) => mutate(values))}>
         <DialogContent>
           <Grid container pt={1} flexDirection="column" spacing={2}>
@@ -152,13 +152,13 @@ export default function LayersDialog({
               name="type"
               render={({ field }) => (
                 <Select
-                  label="Typ"
+                  label={t("data-management.type")}
                   fullWidth
                   value={field.value}
                   onChange={field.onChange}
                 >
-                  <MenuItem value={"TILES3D"}>CityGML</MenuItem>
-                  <MenuItem value={"TERRAIN"}>DGM (e.g. dxf, geojson)</MenuItem>
+                  <MenuItem value={"TILES3D"}>CityGML (3D Tiles)</MenuItem>
+                  <MenuItem value={"TERRAIN"}>DGM (Terrain)</MenuItem>
                 </Select>
               )}
             />
@@ -187,7 +187,7 @@ export default function LayersDialog({
           <Button disabled={isPending} variant="contained" type="submit">
             {isPending ? (
               <Grid container spacing={1} alignItems="center">
-                Hochladen
+                {t("actions.uploading")}
                 <LinearProgress
                   sx={{ width: 50 }}
                   variant={
@@ -197,7 +197,7 @@ export default function LayersDialog({
                 />
               </Grid>
             ) : (
-              "Wandeln"
+              t("actions.converting")
             )}
           </Button>
         </DialogActions>

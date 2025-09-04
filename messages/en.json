@@ -12,8 +12,8 @@
     "last-logged-in-message": "Last logged in on {date}.",
     "events-text": "The following events are scheduled today on {date}:",
     "no-events-pending": "No upcoming events",
-    "administration-description": "This area provides access to the system’s central administration functions. You can upload and organize basic data, configure system settings such as APIs and applications, view system activities and security-relevant logs, and manage users and groups.",
-    "project-management-description": "In this area, you can centrally and efficiently manage your projects. You can create new projects, delete or edit existing ones. Additionally, you can upload project-specific data and make it available as layers within the system."
+    "administration-description": "This area provides access to the system’s central administration functions. Here you can upload and organize base data, configure system settings such as APIs and applications, review system activities and security logs, and manage users and groups.",
+    "project-management-description": "In this area you can centrally and efficiently manage your projects. You can create new projects, edit or delete existing ones. In addition, you can upload project-specific data and make them available as layers within the system."
   },
   "navbar": {
     "profile": "Profile",
@@ -58,11 +58,14 @@
     "personal-data": "Personal Data",
     "last-login": "Last Login",
     "delete-account": "Delete Account",
-    "update-account": "Edit Account"
+    "update-account": "Edit Account",
+    "are-you-sure-that-you-want-to-delete-your-account": "Are you sure you want to delete this account?",
+    "this-action-is-irreversible": "This action cannot be undone!",
+    "ok": "Ok"
   },
   "collaboration": {
     "collaboration": "Collaboration",
-    "to-project": "Go to Project",
+    "to-project": "To Project",
     "copied-to-clipboard-success": "Code successfully copied to clipboard!",
     "code": "Code"
   },
@@ -75,9 +78,9 @@
     "go-to-data-management": "Go to Data Management",
     "go-to-system-activities": "Go to System Activities",
     "go-to-user-management": "Go to User and Group Management",
-    "system-activities-and-logs-description": "All log entries related to the system, database, users, and security.",
+    "system-activities-and-logs-description": "All log entries related to system, database, users, and security.",
     "configuration-description": "Manage system settings for data, APIs, and applications.",
-    "data-management-description": "Upload and manage basic data and define visual axes.",
+    "data-management-description": "Upload, manage base data, and define visual axes.",
     "user-management-description": "Add users, manage permissions, and organize groups.",
     "title": "Administration"
   },
@@ -87,8 +90,13 @@
     "global-start-point": "Global Starting Point",
     "conversions": "Conversion",
     "local-processor-folder": "Local Storage Folder",
-    "max-parallel-base-layer-conversions": "Max Parallel Base Data Conversions",
-    "max-parallel-file-conversions": "Max Parallel File Conversions"
+    "max-parallel-base-layer-conversions": "Maximum Parallel Base Data Conversions",
+    "max-parallel-file-conversions": "Maximum Parallel File Conversions",
+    "mail-templates": "Mail Templates",
+    "mail-invitation-template": "Event Invitation Mail",
+    "mail-invitation-canceled-template": "Event Canceled Mail",
+    "mail-invitation-updated-template": "Event Updated Mail",
+    "mail-predeletion-template": "30-Day Deletion Warning Mail"
   },
   "user-management": {
     "title": "User and Group Management",
@@ -111,9 +119,12 @@
     "name": "Name",
     "owner": "Owner",
     "size-in-gb": "Size in GB",
-    "create-at": "Created On",
-    "visible-for-groups": "Visible for the Following Groups",
-    "only-visible-for-groups": "Only Visible for the Following Groups"
+    "create-at": "Created At",
+    "visible-for-groups": "Visible for the following Groups",
+    "only-visible-for-groups": "Only visible for the following Groups",
+    "type": "Type",
+    "progress": "Progress",
+    "href": "Link"
   },
   "project-management": {
     "title": "Project Management",
@@ -125,37 +136,31 @@
     "table-title": "Title",
     "preview": "Preview",
     "preview-image": "Preview Image",
-    "visible-for-users": "Visible for the Following Users",
-    "visible-for-groups": "Visible for the Following Groups",
+    "visible-for-users": "Visible for the following Users",
+    "visible-for-groups": "Visible for the following Groups",
     "description": "Description",
     "owner": "Owner"
   },
   "components": {
     "list-with-pagination": {
       "search": "Search",
-      "search-placeholder": "Enter search term..."
+      "search-placeholder": "Enter term..."
     }
   },
   "permissions": {
-    "CREATE": "Create",
-    "UPDATE": "Update",
-    "DELETE": "Delete",
-    "READ": "Read",
-    "ALL": "All",
-    "EVENT": "Event",
-    "EVENT_ATTENDEE": "Event Attendee",
-    "BASE_LAYER": "Base Layer",
-    "PROJECT_LAYER": "Project Layer",
-    "GROUP": "Group",
-    "ROLE": "Role",
-    "PERMISSION": "Permission",
-    "PROJECT": "Project",
-    "CLIPPING_POLYGON": "Clipping Polygon",
-    "PROJECT_FILE": "Project File",
-    "VISUAL_AXIS": "Visual Axis",
-    "STARTING_POINT": "Starting Point",
-    "USER": "User",
-    "VIEWS": "Views"
+    "selected": "Selected",
+    "PROJECT_OWNER": "Project Administrator",
+    "PROJECT_OWNER-description": "Can create, edit, and delete projects.",
+    "EVENT_OWNER": "Event Administrator",
+    "EVENT_OWNER-description": "Can create, edit, and delete events.",
+    "BASE_LAYER_OWNER": "Base Data Administrator",
+    "BASE_LAYER_OWNER-description": "Can create, edit, and delete base data.",
+    "CONFIGURATION_ADMINISTRATOR": "Configuration Administrator",
+    "CONFIGURATION_ADMINISTRATOR-description": "Can create, edit, and delete configurations.",
+    "DATA_MANAGEMENT_ADMINISTRATOR": "Data Management Administrator",
+    "DATA_MANAGEMENT_ADMINISTRATOR-description": "Can create, edit, and delete base data as well as visual axes.",
+    "USER_ADMINISTRATOR": "User Administrator",
+    "USER_ADMINISTRATOR-description": "Can invite, edit, and delete users."
   },
   "entities": {
     "user": "User",
@@ -172,12 +177,27 @@
   },
   "generic": {
     "crud-notifications": {
-      "create-success": "{entity} created successfully!",
-      "delete-success": "{entity} deleted successfully!",
-      "update-success": "{entity} updated successfully!",
+      "create-success": "{entity} successfully created!",
+      "delete-success": "{entity} successfully deleted!",
+      "update-success": "{entity} successfully updated!",
+      "save-success": "{entity} successfully saved!",
       "create-failed": "Failed to create {entity}!",
       "delete-failed": "Failed to delete {entity}!",
-      "update-failed": "Failed to update {entity}!"
+      "update-failed": "Failed to update {entity}!",
+      "save-failed": "Failed to save {entity}!"
+    }
+  },
+  "enums": {
+    "event-status": {
+      "MISSING_HOST": "Missing Host",
+      "ACTIVE": "Active",
+      "PLANNED": "Planned",
+      "CANCELED": "Canceled",
+      "END": "Ended"
+    },
+    "event-attendee-roles": {
+      "GUEST": "Guest",
+      "MODERATOR": "Moderator"
     }
   },
   "actions": {
@@ -212,7 +232,7 @@
     "upload-new-model": "Upload New Model",
     "reuse-existing-model": "Reuse Existing Model",
     "name": "Name",
-    "import-successful": "Model import successful!",
+    "import-successful": "Model import was successful!",
     "import-failed": "Model import failed!"
   },
   "data-mangement": {
@@ -227,7 +247,8 @@
     "create-event": "Create Event",
     "cancel-event": "Cancel Meeting",
     "update-event": "Update Meeting",
-    "no-events": "No Events"
+    "no-events": "No Events",
+    "moderators": "Moderators"
   },
   "under-construction": {
     "we-are-working-hard": "We are working hard to bring you new features soon.",
@@ -238,10 +259,10 @@
     "key": "Key",
     "value": "Value",
     "title": "Attributes",
-    "no-attributes-present": "No attributes present"
+    "no-attributes-present": "No attributes available"
   },
   "editor": {
-    "saving-project-please-do-not-close-this-window": "Project is being saved, please do not close this window!",
+    "saving-project-please-do-not-close-this-window": "Saving project, please do not close this window!",
     "description": "Description",
     "name": "Name",
     "informations": "Information",
@@ -265,38 +286,41 @@
     "base-layers": "Base Data",
     "name-of-the-variant": "Variant Name",
     "variants": "Variants",
-    "pick-a-point-message": "Select a point by clicking. Press ESC to cancel or click outside the 3D view.",
+    "pick-a-point-message": "Select a point by clicking. Press ESC to cancel, or click outside the 3D view.",
     "take-screenshot": "Take Screenshot",
     "origin": "Origin",
     "target": "Target"
   },
   "error": {
-    "go-home": "Go to Home Page",
-    "500-oooops-something-went-wrong-on-our-side": "500: Oops, something went wrong on our side!"
+    "go-home": "Go to Home",
+    "500-oooops-something-went-wrong-on-our-side": "500: Oooops, something went wrong!"
   },
   "cookie-consent": {
     "banner": {
-      "description": "<p>We use technically necessary cookies for login and security (CSRF token, callback URL, session token). The CSRF token and callback URL are deleted at the end of the session, the session token after 3 days. No tracking cookies.</p>",
+      "description": "<p>We use technically necessary cookies for login and security (CSRF token, callback URL, session token). CSRF token and callback URL are deleted at the end of the session, the session token after 3 days. No tracking cookies.</p>",
       "acceptAllButtonText": "Accept All",
-      "acceptAllButtonAccessibleLabel": "Accept All Cookies",
+      "acceptAllButtonAccessibleLabel": "Accept all cookies",
       "rejectNonEssentialButtonText": "Reject Non-Essential",
-      "rejectNonEssentialButtonAccessibleLabel": "Reject Non-Essential Cookies",
+      "rejectNonEssentialButtonAccessibleLabel": "Reject non-essential cookies",
       "preferencesButtonText": "Preferences",
       "preferencesButtonAccessibleLabel": "Show / Hide Preferences"
     },
     "preferences": {
-      "title": "Customize Your Cookie Settings",
-      "description": "<p>We respect your right to privacy. You can choose not to allow certain types of cookies. Your cookie settings apply to our entire website.</p>",
+      "title": "Adjust Your Cookie Settings",
+      "description": "<p>We respect your right to privacy. You can choose not to allow certain types of cookies. Your cookie settings apply across our entire website.</p>",
       "creditLinkText": "Get this banner for free",
       "creditLinkAccessibleLabel": "Get this banner for free"
     },
     "technical-cookies": {
-      "description": "We use technically necessary cookies for login and security (CSRF token, callback URL, session token). The CSRF token and callback URL are deleted at the end of the session, the session token after 3 days.",
+      "description": "We use technically necessary cookies for login and security (CSRF token, callback URL, session token). CSRF token and callback URL are deleted at the end of the session, the session token after 3 days.",
       "name": "Technically Necessary Cookies"
     }
   },
   "not-found": {
-    "404-we-did-not-find-this-page": "404: Unfortunately, we could not find this page.",
-    "go-home": "Go to Home Page"
+    "404-we-did-not-find-this-page": "404: Unfortunately, we couldn’t find this page.",
+    "go-home": "Go to Home"
+  },
+  "layers": {
+    "type": "Type"
   }
 }

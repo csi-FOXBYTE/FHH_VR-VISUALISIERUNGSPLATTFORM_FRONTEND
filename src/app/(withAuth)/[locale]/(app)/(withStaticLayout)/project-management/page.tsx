@@ -8,6 +8,7 @@ import ProjectCUDialog, {
 } from "@/components/projectManagement/ProjectCUDialog";
 import { withPermissions } from "@/permissions/withPermissions";
 import { getApis } from "@/server/gatewayApi/client";
+import { ResponseError } from "@/server/gatewayApi/generated";
 import { Link as NextLink } from "@/server/i18n/routing";
 import { trpc } from "@/server/trpc/client";
 import { Add, PlayCircle } from "@mui/icons-material";
@@ -15,6 +16,7 @@ import { Button, ListItemText, Tab, Tabs } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { keepPreviousData, useMutation } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
+import { useSnackbar } from "notistack";
 import { parseAsInteger, useQueryState } from "nuqs";
 
 function ProjectManagementPage() {
@@ -75,6 +77,8 @@ function ProjectManagementPage() {
     }
   );
 
+  const { enqueueSnackbar } = useSnackbar();
+
   const {
     mutate: deleteProjectMutation,
     isPending: isDeleteProjectMutationPending,
@@ -86,9 +90,34 @@ function ProjectManagementPage() {
         id: args.id,
       });
 
-      utils.projectManagementRouter.invalidate();
-
       return true;
+    },
+    onSuccess: () => {
+      utils.projectManagementRouter.invalidate();
+      enqueueSnackbar({
+        variant: "success",
+        message: t("generic.crud-notifications.delete-success", {
+          entity: t("entities.project"),
+        }),
+      });
+      close();
+    },
+    onError: async (error) => {
+      if (error instanceof ResponseError) {
+        console.error(error.stack, error.response, error.cause, error.message, error.name)
+        console.error(await error.response.text())
+      } else {
+        // @ts-expect-error wrong type
+        console.error(error?.response, error)
+        // @ts-expect-error wrong type
+        console.error(await error?.response?.text())
+      }
+      enqueueSnackbar({
+        variant: "error",
+        message: t("generic.crud-notifications.delete-failed", {
+          entity: t("entities.project"),
+        }),
+      });
     },
   });
 

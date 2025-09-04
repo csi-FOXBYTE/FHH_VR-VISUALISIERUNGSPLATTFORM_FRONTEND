@@ -13,6 +13,8 @@ import {
 import { createContext, ReactNode, useContext, useState } from "react";
 import { ResiumContext } from "resium";
 import { create, StoreApi, UseBoundStore } from "zustand";
+import { EnqueueSnackbar, SnackbarKey, useSnackbar } from "notistack";
+import { useTranslations, useFormatter } from "next-intl";
 
 export type ClippingPolygon = {
   type: "CLIPPING_POLYGON";
@@ -141,6 +143,14 @@ export type ViewerStoreType = {
   };
 
   tools: {
+    snackbar: {
+      enqueue: EnqueueSnackbar;
+      close: (key: SnackbarKey) => void;
+    };
+    translator: {
+      t: ReturnType<typeof useTranslations>;
+      f: ReturnType<typeof useFormatter>;
+    }
     screenshotDialogOpen: boolean;
     screenshotButtonPressedResolve: () => void;
     screenshotButtonPressedReject: () => void;
@@ -288,6 +298,10 @@ export const ViewerProvider = ({
   children: ReactNode;
   project: Project;
 }) => {
+  const { closeSnackbar, enqueueSnackbar } = useSnackbar();
+  const t = useTranslations();
+  const f = useFormatter();
+
   const [viewerContext] = useState(() => {
     const store = create<ViewerStoreType>((set, get) => ({
       region: null,
@@ -537,7 +551,15 @@ export const ViewerProvider = ({
               index: 0,
             },
           }));
+          enqueueSnackbar({
+            variant: "success",
+            message: t("generic.crud-notifications.save-success", { entity: t("entities.project")}),
+          });
         } catch (e) {
+          enqueueSnackbar({
+            variant: "error",
+            message: t("generic.crud-notifications.save-failed", { entity: t("entities.project")}),
+          });
           console.error(e);
         }
 
@@ -1183,6 +1205,14 @@ export const ViewerProvider = ({
           })) ?? [],
       },
       tools: {
+        translator: {
+          t, 
+          f,
+        },
+        snackbar: {
+          close: closeSnackbar,
+          enqueue: enqueueSnackbar,
+        },
         screenshotButtonPressedResolve() {},
         screenshotButtonPressedReject() {},
         screenshotDialogOpen: false,

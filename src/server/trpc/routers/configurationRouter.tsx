@@ -14,6 +14,14 @@ const configurationRouter = router({
         localProcessorFolder: z.string().optional(),
         maxParallelBaseLayerConversions: z.number().optional(),
         maxParallelFileConversions: z.number().optional(),
+        invitationCancelledEmailDE: z.string().optional(),
+        invitationCancelledEmailEN: z.string().optional(),
+        invitationEmailDE: z.string().optional(),
+        invitationEmailEN: z.string().optional(),
+        invitationUpdatedEmailDE: z.string().optional(),
+        invitationUpdatedEmailEN: z.string().optional(),
+        predeletionEmailDE: z.string().optional(),
+        predeletionEmailEN: z.string().optional(),
       })
     )
     .mutation(async (opts) => {
@@ -22,11 +30,12 @@ const configurationRouter = router({
         where: {
           id,
         },
-        data,
+        data
       });
     }),
   getFull: protectedProcedure.query(async (opts) => {
-    return await opts.ctx.db.configuration.findFirstOrThrow({});
+    return await opts.ctx.db.configuration.findFirstOrThrow({
+    });
   }),
 });
 

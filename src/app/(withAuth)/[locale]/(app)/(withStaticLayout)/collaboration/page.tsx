@@ -6,6 +6,7 @@ import EventCUDialog, {
 } from "@/components/events/EventCUDialog";
 import { useEventSubscriber } from "@/hooks";
 import usePermissions from "@/permissions/usePermissions";
+import { getApis } from "@/server/gatewayApi/client";
 import { Link } from "@/server/i18n/routing";
 import { trpc } from "@/server/trpc/client";
 import {
@@ -32,6 +33,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import { useMutation } from "@tanstack/react-query";
 import PopupState, { bindMenu, bindTrigger } from "material-ui-popup-state";
 import { useFormatter, useNow, useTranslations } from "next-intl";
 import { useSnackbar } from "notistack";
@@ -87,7 +89,12 @@ export default function CollaborationPage() {
   const {
     mutate: cancelEventMutation,
     isPending: isCancelEventMutationPending,
-  } = trpc.eventsRouter.cancel.useMutation({
+  } = useMutation({
+    mutationFn: async ({ id }: { id: string }) => {
+      const apis = await getApis();
+
+      await apis.eventsApi.eventsIdDelete({ id });
+    },
     onSuccess() {
       utils.eventsRouter.list.invalidate();
       enqueueSnackbar({
@@ -181,7 +188,13 @@ export default function CollaborationPage() {
                             {t("collaboration.to-project")}
                           </MenuItem>
                         </Menu>
-                        <IconButton {...bindTrigger(popupState)}>
+                        <IconButton
+                          disabled={
+                            event.status === "CANCELED" ||
+                            event.status === "END"
+                          }
+                          {...bindTrigger(popupState)}
+                        >
                           <MoreVert />
                         </IconButton>
                       </>
@@ -191,7 +204,9 @@ export default function CollaborationPage() {
                 divider
                 key={event.id}
               >
-                <ListItemText primary={event.status} />
+                <ListItemText
+                  primary={t(`enums.event-status.${event.status}`)}
+                />
                 <ListItemText
                   primary={event.title}
                   secondary={formatter.dateTimeRange(
@@ -243,7 +258,7 @@ export default function CollaborationPage() {
                   sx={{
                     display: { xs: "none", s: "none", md: "none", lg: "block" },
                   }}
-                  primary={event.role}
+                  primary={t(`enums.event-attendee-roles.${event.role}`)}
                 />
                 <ListItemText>
                   <TextField

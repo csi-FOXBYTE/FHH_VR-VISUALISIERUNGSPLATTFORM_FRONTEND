@@ -67,7 +67,7 @@ export default function Roles() {
 
   const { mutate: createMutation, isPending: isCreateMutationPending } =
     trpc.userManagementRouter.roles.create.useMutation({
-      onSuccess: () => {
+      onSuccess: (data) => {
         utils.userManagementRouter.invalidate();
         enqueueSnackbar({
           variant: "success",
@@ -75,6 +75,7 @@ export default function Roles() {
             entity: t("entities.role"),
           }),
         });
+        setSelectedRoleId(data.id);
         close();
       },
       onError: () => {
