@@ -5,6 +5,7 @@ import {
   DialogContent,
   DialogTitle,
 } from "@mui/material";
+import { useTranslations } from "next-intl";
 import { ReactNode, useEffect } from "react";
 import {
   DefaultValues,
@@ -42,6 +43,8 @@ export default function CUDialog<Data extends FieldValues>({
     defaultValues: defaultData as DefaultValues<Data>,
   });
 
+  const t = useTranslations();
+
   useEffect(() => {
     if (fetchedData !== null) {
       form.reset(fetchedData);
@@ -72,7 +75,7 @@ export default function CUDialog<Data extends FieldValues>({
         <DialogContent>{children(form)}</DialogContent>
         <DialogActions>
           <Button onClick={close} variant="outlined">
-            Cancel
+            {t("actions.cancel")}
           </Button>
           <Button variant="contained" loading={isLoading} type="submit">
             {mode}

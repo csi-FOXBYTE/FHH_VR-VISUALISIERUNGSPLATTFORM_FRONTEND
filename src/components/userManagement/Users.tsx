@@ -4,14 +4,14 @@ import { trpc } from "@/server/trpc/client";
 import { Add } from "@mui/icons-material";
 import { Chip, Grid, Typography } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
-import { keepPreviousData } from "@tanstack/react-query";
+import { keepPreviousData, useMutation } from "@tanstack/react-query";
 import UserAvatar from "../common/UserAvatar";
-import createEditDeleteActions from "../dataGridServerSide/useCreateEditDeleteActions";
 import useDataGridServerSideHelper from "../dataGridServerSide/useDataGridServerSideOptions";
 import UserCUDialog, { useUserCUDialogState } from "./UserCUDialog";
 import { useSnackbar } from "notistack";
 import { useTranslations } from "next-intl";
 import useCreateEditDeleteActions from "../dataGridServerSide/useCreateEditDeleteActions";
+import { getApis } from "@/server/gatewayApi/client";
 
 export default function Users() {
   const [, { openCreate, openUpdate }] = useUserCUDialogState();
@@ -46,7 +46,14 @@ export default function Users() {
   const utils = trpc.useUtils();
 
   const { mutate: deleteMutation, isPending: isDeleteMutationPending } =
-    trpc.userManagementRouter.users.delete.useMutation({
+    useMutation({
+      mutationFn: async (variables: { id: string }) => {
+        const apis = await getApis();
+
+        return await apis.userApi.userIdDelete({
+          id: variables.id,
+        });
+      },
       onSuccess: () => {
         utils.userManagementRouter.invalidate();
         enqueueSnackbar({

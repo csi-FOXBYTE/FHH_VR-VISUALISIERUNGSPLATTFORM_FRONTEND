@@ -99,13 +99,13 @@ export default function CollaborationPage() {
       utils.eventsRouter.list.invalidate();
       enqueueSnackbar({
         variant: "success",
-        message: "Event successfully canceled.",
+        message: t("generic.crud-notifications.update-success", { entity: t("entities.event")}),
       });
     },
     onError() {
       enqueueSnackbar({
         variant: "error",
-        message: "Event cancellation failed.",
+        message: t("generic.crud-notifications.update-failed", { entity: t("entities.event")}),
       });
     },
   });

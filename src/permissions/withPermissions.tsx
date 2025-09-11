@@ -3,6 +3,7 @@
 import { Permissions } from "@/constants/permissions";
 import { ComponentType } from "react";
 import { useIsPermitted } from "./useIsPermitted";
+import { useTranslations } from "next-intl";
 
 export function withPermissions<T extends object>(
   WrappedComponent: ComponentType<T>,
@@ -14,8 +15,10 @@ export function withPermissions<T extends object>(
   const ComponentWithPermissions = (props: T) => {
     const permitted = useIsPermitted(neededPermissions);
 
+    const t = useTranslations()
+
     if (!permitted) {
-      return <>Access denied!</>;
+      return <>{t("generic.notifications.access-denied")}</>;
     }
     return <WrappedComponent {...(props as T)} />;
   };

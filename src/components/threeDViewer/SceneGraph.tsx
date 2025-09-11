@@ -27,7 +27,6 @@ import {
   InputLabel,
   List,
   ListItem,
-  ListItemButton,
   ListItemText,
   MenuItem,
   Select,
@@ -47,7 +46,6 @@ import {
   useViewerStore,
 } from "./ViewerProvider";
 import useIsReadOnly from "./useIsReadOnly";
-import { useCesium } from "resium";
 
 const StyledCount = styled("div")`
   display: inline-block;

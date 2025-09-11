@@ -22,6 +22,13 @@ const configurationRouter = router({
         invitationUpdatedEmailEN: z.string().optional(),
         predeletionEmailDE: z.string().optional(),
         predeletionEmailEN: z.string().optional(),
+        emailUser: z.string().optional(),
+        emailPassword: z.string().optional(),
+        emailHost: z.string().optional(),
+        emailPort: z.number().optional(),
+        emailSecure: z.boolean().optional(),
+        emailPlatformAddress: z.string().optional(),
+        maximumFlyingHeight: z.number().optional(),
       })
     )
     .mutation(async (opts) => {
@@ -30,12 +37,11 @@ const configurationRouter = router({
         where: {
           id,
         },
-        data
+        data,
       });
     }),
   getFull: protectedProcedure.query(async (opts) => {
-    return await opts.ctx.db.configuration.findFirstOrThrow({
-    });
+    return await opts.ctx.db.configuration.findFirstOrThrow({});
   }),
 });
 

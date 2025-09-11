@@ -3,6 +3,7 @@ import { useSnackbar } from "notistack";
 import { useCallback, useEffect } from "react";
 import { useCesium } from "resium";
 import { useViewerStore } from "./ViewerProvider";
+import { useTranslations } from "next-intl";
 
 export default function ToolsProvider() {
   const { viewer } = useCesium();
@@ -56,6 +57,8 @@ export default function ToolsProvider() {
 
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
+  const t = useTranslations();
+
   const pickPolygon = useCallback(async () => {
     if (!viewer) throw new Error("Viewer not initialized!");
 
@@ -69,7 +72,7 @@ export default function ToolsProvider() {
       variant: "info",
       persist: true,
       message:
-        "To close the picked polygon press right click. To abort either click outside the viewer or press escape.",
+        t("editor.close-picked-polygon-info"),
     });
 
     const abortController = new AbortController();
@@ -182,7 +185,7 @@ export default function ToolsProvider() {
         variant: "info",
         persist: true,
         message:
-          "To abort either picking a point click outside the viewer or press escape.",
+          t("editor.pick-point-info"),
       });
 
       try {

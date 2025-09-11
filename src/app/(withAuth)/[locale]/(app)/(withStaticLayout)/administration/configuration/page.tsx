@@ -13,10 +13,12 @@ import {
   AccordionSummary,
   Button,
   Divider,
+  FormControlLabel,
   FormLabel,
   Grid,
   MenuItem,
   Select,
+  Switch,
   TextField,
   Typography,
 } from "@mui/material";
@@ -43,7 +45,6 @@ const eventContext = {
     endTime: dayjs().minute(0).add(1.5, "hour").format("HH:mm"),
     title: "Musterevent",
   },
-  
 };
 
 const oldEventContext = {
@@ -71,7 +72,7 @@ const oldEventContext = {
       .add(2, "hour")
       .format("HH:mm"),
   },
-}
+};
 
 export default function ConfigurationPage() {
   const [
@@ -137,24 +138,11 @@ export default function ConfigurationPage() {
       <form
         onSubmit={handleSubmit(async (values) => {
           updateConfigurationMutation({
-            id: data.id,
+            ...values,
             defaultEPSG: values.defaultEPSG.label,
             globalStartPointX: values.globalStartPoint.x,
             globalStartPointY: values.globalStartPoint.y,
             globalStartPointZ: values.globalStartPoint.z,
-            invitationEmailText: values.invitationEmailText,
-            localProcessorFolder: values.localProcessorFolder,
-            maxParallelBaseLayerConversions:
-              values.maxParallelBaseLayerConversions,
-            maxParallelFileConversions: values.maxParallelFileConversions,
-            invitationCancelledEmailDE: values.invitationCancelledEmailDE,
-            invitationCancelledEmailEN: values.invitationCancelledEmailEN,
-            invitationEmailDE: values.invitationEmailDE,
-            invitationEmailEN: values.invitationEmailEN,
-            invitationUpdatedEmailDE: values.invitationUpdatedEmailDE,
-            invitationUpdatedEmailEN: values.invitationUpdatedEmailEN,
-            predeletionEmailDE: values.predeletionEmailDE,
-            predeletionEmailEN: values.predeletionEmailEN,
           });
         })}
       >
@@ -233,6 +221,50 @@ export default function ConfigurationPage() {
                 {...register("maxParallelFileConversions")}
               />
             </Grid>
+          </AccordionDetails>
+        </Accordion>
+        <Accordion>
+          <AccordionSummary>
+            <Typography>{t("configuration.unity")}</Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <TextField
+              type="number"
+              label={t("configuration.maximum-flying-height")}
+              {...register("maximumFlyingHeight")}
+            />
+          </AccordionDetails>
+        </Accordion>
+        <Accordion>
+          <AccordionSummary>
+            <Typography>{t("configuration.email")}</Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <TextField
+              label={t("configuration.email-host")}
+              {...register("emailHost")}
+            />
+            <TextField
+              type="number"
+              label={t("configuration.email-port")}
+              {...register("emailPort")}
+            />
+            <FormControlLabel
+              control={<Switch {...register("emailSecure")} />}
+              label={t("configuration.email-secure")}
+            ></FormControlLabel>
+            <TextField
+              label={t("configuration.email-user")}
+              {...register("emailUser")}
+            />
+            <TextField
+              label={t("configuration.email-password")}
+              {...register("emailPassword")}
+            />
+            <TextField
+              label={t("configuration.email-platform-address")}
+              {...register("emailPlatformAddress")}
+            />
           </AccordionDetails>
         </Accordion>
         <Accordion>

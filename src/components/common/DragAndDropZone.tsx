@@ -2,6 +2,7 @@ import { DropzoneOptions, useDropzone } from "react-dropzone";
 import { Grid, List, ListItem, ListItemText, Typography } from "@mui/material";
 import { UploadFile } from "@mui/icons-material";
 import { useRef } from "react";
+import { useTranslations } from "next-intl";
 
 export default function DragAndDropzone(
   props: Partial<Omit<DropzoneOptions, "onDrop">> & {
@@ -12,6 +13,8 @@ export default function DragAndDropzone(
   }
 ) {
   const hiddenInputRef = useRef<HTMLInputElement>(null);
+
+  const t = useTranslations();
 
   const { getRootProps, getInputProps, acceptedFiles, isDragActive } =
     useDropzone({
@@ -55,10 +58,7 @@ export default function DragAndDropzone(
       />
       <input {...getInputProps()} />
       <UploadFile sx={{ fontSize: 48 }} />
-      {isDragActive && <Typography component="p">Drop here...</Typography>}
-      {!isDragActive && (
-        <Typography component="p">Drop some files here...</Typography>
-      )}
+      <Typography component="p">{t("drag-and-dropzone.drop-here")}</Typography>
       <List>
         {(props.value ?? acceptedFiles).map((acceptedFile) => (
           <ListItem key={acceptedFile.webkitRelativePath}>

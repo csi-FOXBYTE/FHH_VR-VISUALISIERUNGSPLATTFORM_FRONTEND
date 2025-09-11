@@ -87,7 +87,7 @@ export default function ProfilePage() {
           variant="outlined"
           href={`https://myprofile.microsoft.com/?login_hint=${encodeURIComponent(
             session.data?.user.email ?? ""
-          )}`}
+          )}`} // TODO: make this configurable
           target="_blank"
           color="secondary"
         >

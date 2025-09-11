@@ -167,7 +167,7 @@ function ProjectManagementPage() {
 
               return (
                 <img
-                  alt="Preview image"
+                  alt={t("project-management.preview-image")}
                   src={row.img}
                   style={{ height: "100%", width: "auto" }}
                 />
@@ -228,7 +228,7 @@ function ProjectManagementPage() {
                 },
               ]),
           {
-            field: "to editr",
+            field: "toEditor",
             headerName: " ",
             flex: 1,
             sortable: false,

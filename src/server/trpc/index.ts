@@ -4,7 +4,6 @@ import { cache } from "react";
 import SuperJSON from "superjson";
 import prisma from "@/server/prisma";
 import { createOTelPlugin } from "./otelMiddleware";
-import eventBus from "@/server/events";
 import { enhance } from "@zenstackhq/runtime";
 import realtimeExtension from "../prisma/extensions/realtimeExtension";
 
@@ -46,8 +45,6 @@ export const protectedProcedure = procedure
         session: session,
       ***REMOVED***enhance(prisma, session).$extends(realtimeExtension()),
         subscriberDb: prisma,
-        storage: null,
-        eventBus,
       },
     });
   })

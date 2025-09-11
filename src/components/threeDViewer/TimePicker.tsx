@@ -4,7 +4,6 @@ import dayjs, { Dayjs } from "dayjs";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { useCesium } from "resium";
-import useIsReadOnly from "./useIsReadOnly";
 
 export default function TimePicker() {
   const { viewer } = useCesium();

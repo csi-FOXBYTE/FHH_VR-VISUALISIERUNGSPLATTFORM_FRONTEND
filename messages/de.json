@@ -96,7 +96,16 @@
     "mail-invitation-template": "Event Einladungsmail",
     "mail-invitation-canceled-template": "Event abgesagt Mail",
     "mail-invitation-updated-template": "Event geändert Mail",
-    "mail-predeletion-template": "30 Tage Löschwarnungsmail"
+    "mail-predeletion-template": "30 Tage Löschwarnungsmail",
+    "email": "E-Mail",
+    "email-host": "Host",
+    "email-port": "Port",
+    "email-secure": "Sicher",
+    "email-user": "Benutzername",
+    "email-password": "Passwort",
+    "email-platform-address": "Plattform Addresse (diese Seite)",
+    "maximum-flying-height": "Maximale Flughöhe",
+    "unity": "Unity"
   },
   "user-management": {
     "title": "Nutzer- und Gruppenverwaltung",
@@ -124,7 +133,12 @@
     "only-visible-for-groups": "Nur sichtbar für folgende Gruppen",
     "type": "Typ",
     "progress": "Fortschritt",
-    "href": "Link"
+    "href": "Link",
+    "layers": "Ebenen",
+    "visual-axes": "Sichtachsen",
+    "3d-tiles": "3D Tiles",
+    "terrain": "Gelände",
+    "imagery": "Karten"
   },
   "project-management": {
     "title": "Projektverwaltung",
@@ -160,7 +174,8 @@
     "DATA_MANAGEMENT_ADMINISTRATOR": "Datenmanagement-Administrator",
     "DATA_MANAGEMENT_ADMINISTRATOR-description": "Kann Basisdaten, sowie Sichtachsen erstellen, bearbeiten und löschen.",
     "USER_ADMINISTRATOR": "Nutzer-Administrator",
-    "USER_ADMINISTRATOR-description": "Kann Nutzer einladen, bearbeiten und löschen."
+    "USER_ADMINISTRATOR-description": "Kann Nutzer einladen, bearbeiten und löschen.",
+    "permission": "Berechtigung"
   },
   "entities": {
     "user": "Benutzer",
@@ -185,6 +200,9 @@
       "delete-failed": "Löschen von {entity} fehlgeschlagen!",
       "update-failed": "Ändern von {entity} fehlgeschlagen!",
       "save-failed": "Speichern von {entity} fehlgeschlagen!"
+    },
+    "notifications": {
+      "access-denied": "Zugriff verweigert!"
     }
   },
   "enums": {
@@ -289,7 +307,11 @@
     "pick-a-point-message": "Punkt durch klicken auswählen. Zum abbrechen ESC drücken, oder aus der 3D Ansicht klicken.",
     "take-screenshot": "Screenshot aufnehmen",
     "origin": "Ursprung",
-    "target": "Ziel"
+    "target": "Ziel",
+    "hide-drawer": "Schließen",
+    "show-drawer": "Öffnen",
+    "close-picked-polygon-info": "Um das ausgewählte Polygon zu schließen, klicken Sie mit der rechten Maustaste. Zum Abbrechen klicken Sie entweder außerhalb des Viewers oder drücken Sie Escape.",
+    "pick-point-info": "Um das Auswählen eines Punktes abzubrechen, klicken Sie entweder außerhalb des Viewers oder drücken Sie Escape."
   },
   "error": {
     "go-home": "Zur Startseite",
@@ -322,5 +344,8 @@
   },
   "layers": {
     "type": "Typ"
+  },
+  "drag-and-dropzone": {
+    "drop-here": "Dateien hier ablegen..."
   }
 }

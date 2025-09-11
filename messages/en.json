@@ -10,10 +10,10 @@
     "show-collaboration": "Open Collaboration",
     "show-administration": "Open Administration Area",
     "last-logged-in-message": "Last logged in on {date}.",
-    "events-text": "The following events are scheduled today on {date}:",
-    "no-events-pending": "No upcoming events",
+    "events-text": "The following appointments are scheduled today on {date}:",
+    "no-events-pending": "No upcoming appointments",
     "administration-description": "This area provides access to the system’s central administration functions. Here you can upload and organize base data, configure system settings such as APIs and applications, review system activities and security logs, and manage users and groups.",
-    "project-management-description": "In this area you can centrally and efficiently manage your projects. You can create new projects, edit or delete existing ones. In addition, you can upload project-specific data and make them available as layers within the system."
+    "project-management-description": "In this area you centrally and efficiently manage your projects. You can create new projects and delete or edit existing ones. In addition, you can upload project-specific data and make it available as layers within the system."
   },
   "navbar": {
     "profile": "Profile",
@@ -66,7 +66,7 @@
   "collaboration": {
     "collaboration": "Collaboration",
     "to-project": "To Project",
-    "copied-to-clipboard-success": "Code successfully copied to clipboard!",
+    "copied-to-clipboard-success": "Code was successfully copied to the clipboard!",
     "code": "Code"
   },
   "administration": {
@@ -78,9 +78,9 @@
     "go-to-data-management": "Go to Data Management",
     "go-to-system-activities": "Go to System Activities",
     "go-to-user-management": "Go to User and Group Management",
-    "system-activities-and-logs-description": "All log entries related to system, database, users, and security.",
+    "system-activities-and-logs-description": "All log entries related to the system, database, users, and security.",
     "configuration-description": "Manage system settings for data, APIs, and applications.",
-    "data-management-description": "Upload, manage base data, and define visual axes.",
+    "data-management-description": "Upload and manage base data, and define visual axes.",
     "user-management-description": "Add users, manage permissions, and organize groups.",
     "title": "Administration"
   },
@@ -92,11 +92,20 @@
     "local-processor-folder": "Local Storage Folder",
     "max-parallel-base-layer-conversions": "Maximum Parallel Base Data Conversions",
     "max-parallel-file-conversions": "Maximum Parallel File Conversions",
-    "mail-templates": "Mail Templates",
-    "mail-invitation-template": "Event Invitation Mail",
-    "mail-invitation-canceled-template": "Event Canceled Mail",
-    "mail-invitation-updated-template": "Event Updated Mail",
-    "mail-predeletion-template": "30-Day Deletion Warning Mail"
+    "mail-templates": "Email Templates",
+    "mail-invitation-template": "Event Invitation Email",
+    "mail-invitation-canceled-template": "Event Cancellation Email",
+    "mail-invitation-updated-template": "Event Update Email",
+    "mail-predeletion-template": "30-Day Deletion Warning Email",
+    "email": "Email",
+    "email-host": "Host",
+    "email-port": "Port",
+    "email-secure": "Secure",
+    "email-user": "Username",
+    "email-password": "Password",
+    "email-platform-address": "Platform Address (this site)",
+    "maximum-flying-height": "Maximum Flying Height",
+    "unity": "Unity"
   },
   "user-management": {
     "title": "User and Group Management",
@@ -124,7 +133,12 @@
     "only-visible-for-groups": "Only visible for the following Groups",
     "type": "Type",
     "progress": "Progress",
-    "href": "Link"
+    "href": "Link",
+    "layers": "Layers",
+    "visual-axes": "Visual Axes",
+    "3d-tiles": "3D Tiles",
+    "terrain": "Terrain",
+    "imagery": "Imagery"
   },
   "project-management": {
     "title": "Project Management",
@@ -160,7 +174,8 @@
     "DATA_MANAGEMENT_ADMINISTRATOR": "Data Management Administrator",
     "DATA_MANAGEMENT_ADMINISTRATOR-description": "Can create, edit, and delete base data as well as visual axes.",
     "USER_ADMINISTRATOR": "User Administrator",
-    "USER_ADMINISTRATOR-description": "Can invite, edit, and delete users."
+    "USER_ADMINISTRATOR-description": "Can invite, edit, and delete users.",
+    "permission": "Permission"
   },
   "entities": {
     "user": "User",
@@ -185,6 +200,9 @@
       "delete-failed": "Failed to delete {entity}!",
       "update-failed": "Failed to update {entity}!",
       "save-failed": "Failed to save {entity}!"
+    },
+    "notifications": {
+      "access-denied": "Access denied!"
     }
   },
   "enums": {
@@ -216,7 +234,7 @@
     "delayed": "Delayed",
     "completed": "Completed",
     "failed": "Failed",
-    "fly-to": "Fly To",
+    "fly-to": "Fly to",
     "place": "Place",
     "toggle-visibility": "Toggle Visibility",
     "are-you-sure-that-you-want-to-delete": "Are you sure you really want to delete this?",
@@ -286,14 +304,18 @@
     "base-layers": "Base Data",
     "name-of-the-variant": "Variant Name",
     "variants": "Variants",
-    "pick-a-point-message": "Select a point by clicking. Press ESC to cancel, or click outside the 3D view.",
+    "pick-a-point-message": "Select a point by clicking. To cancel, press ESC or click outside the 3D view.",
     "take-screenshot": "Take Screenshot",
     "origin": "Origin",
-    "target": "Target"
+    "target": "Target",
+    "hide-drawer": "Close",
+    "show-drawer": "Open",
+    "close-picked-polygon-info": "To close the selected polygon, right-click. To cancel, either click outside the viewer or press Escape.",
+    "pick-point-info": "To cancel point selection, either click outside the viewer or press Escape."
   },
   "error": {
     "go-home": "Go to Home",
-    "500-oooops-something-went-wrong-on-our-side": "500: Oooops, something went wrong!"
+    "500-oooops-something-went-wrong-on-our-side": "500: Oops, something went wrong!"
   },
   "cookie-consent": {
     "banner": {
@@ -322,5 +344,8 @@
   },
   "layers": {
     "type": "Type"
+  },
+  "drag-and-dropzone": {
+    "drop-here": "Drop files here..."
   }
 }

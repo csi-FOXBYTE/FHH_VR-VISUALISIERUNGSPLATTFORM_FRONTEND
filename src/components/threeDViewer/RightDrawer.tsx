@@ -6,11 +6,14 @@ import { useState } from "react";
 import ObjectProperties from "./ObjectProperties";
 import SceneGraph from "./SceneGraph";
 import SplitPane from "./SplitPane";
+import { useTranslations } from "next-intl";
 
 export default function RightDrawer() {
   const theme = useTheme();
 
   const [rightDrawerVisibility, setRightDrawerVisibility] = useState(true);
+
+  const t = useTranslations();
 
   return (
     <>
@@ -40,7 +43,7 @@ export default function RightDrawer() {
       >
         <div style={{ height: "100%", width: "100%", position: "relative" }}>
           <Tooltip
-            title={rightDrawerVisibility ? "Hide drawer" : "Show drawer"}
+            title={rightDrawerVisibility ? t("editor.hide-drawer") : t("editor.show-drawer")}
             arrow
           >
             <IconButton

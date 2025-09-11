@@ -2,6 +2,7 @@ import { Cartesian3, Cartographic, Color, EllipsoidGeodesic } from "cesium";
 import { BoxGraphics, Entity } from "resium";
 import { useViewerStore } from "./ViewerProvider";
 
+// TODO: Implement this?!
 export default function PlayRegion() {
   const region = useViewerStore((state) => state.region);
 

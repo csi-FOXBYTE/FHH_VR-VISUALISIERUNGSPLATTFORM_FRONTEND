@@ -27,7 +27,7 @@ export default function PermissionsMatrix({
       {
         field: "name",
         flex: 1,
-        headerName: "Berechtigung",
+        headerName: t("permissions.permission"),
         renderCell({ row }) {
           return (
             <ListItemText

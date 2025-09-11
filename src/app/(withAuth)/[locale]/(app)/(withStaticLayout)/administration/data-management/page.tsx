@@ -8,6 +8,7 @@ import {
   Tab,
   Tabs
 } from "@mui/material";
+import { useTranslations } from "next-intl";
 import { parseAsInteger, useQueryState } from "nuqs";
 
 export default function DataManagementPage() {
@@ -16,11 +17,13 @@ export default function DataManagementPage() {
     parseAsInteger.withDefault(0)
   );
 
+  const t = useTranslations();
+
   return (
     <PageContainer>      
       <Tabs value={selectedTab}>
-        <Tab value={0} onClick={() => setSelectedTab(0)} label="Ebenen" />
-        <Tab value={1} onClick={() => setSelectedTab(1)} label="Sichtachsen" />
+        <Tab value={0} onClick={() => setSelectedTab(0)} label={t("data-management.layers")} />
+        <Tab value={1} onClick={() => setSelectedTab(1)} label={t("data-management.visual-axes")} />
       </Tabs>
       <TabPanel
         flex="1"

@@ -78,7 +78,7 @@ export default function VisualAxisCUDialog() {
       }}
       isLoading={isUpdateMutationPending || isCreateMutationPending}
       onUpdate={(data) => {
-        if (!state.id) throw new Error("Id no supplied!");
+        if (!state.id) throw new Error("No id supplied!");
         updateMutation({
           endPointX: data.endPoint.x,
           endPointY: data.endPoint.y,

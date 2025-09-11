@@ -146,7 +146,7 @@ export default function ConvertingDialog({
       <form onSubmit={handleSubmit((values) => mutate(values))}>
         <DialogContent>
           <Grid container pt={1} flexDirection="column" spacing={2}>
-            <TextField fullWidth {...register("name")} label="Name" />
+            <TextField fullWidth {...register("name")} label={t("data-management.name")} />
             <Controller
               control={control}
               name="type"
@@ -157,8 +157,12 @@ export default function ConvertingDialog({
                   value={field.value}
                   onChange={field.onChange}
                 >
-                  <MenuItem value={"TILES3D"}>CityGML (3D Tiles)</MenuItem>
-                  <MenuItem value={"TERRAIN"}>DGM (Terrain)</MenuItem>
+                  <MenuItem value={"TILES3D"}>
+                    CityGML ({t("data-management.3d-tiles")})
+                  </MenuItem>
+                  <MenuItem value={"TERRAIN"}>
+                    DGM ({t("data-management.terrain")})
+                  </MenuItem>
                 </Select>
               )}
             />
