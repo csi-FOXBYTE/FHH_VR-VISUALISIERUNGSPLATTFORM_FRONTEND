@@ -111,6 +111,7 @@ export default function GroupCUDialog() {
           name: "name",
           props: {
             label: t("user-management.name"),
+            required: true,
           },
         },
         {

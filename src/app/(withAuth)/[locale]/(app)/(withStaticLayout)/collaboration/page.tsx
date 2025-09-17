@@ -63,7 +63,7 @@ function stringAvatar(name: string) {
     sx: {
       bgcolor: stringToColor(name),
     },
-    children: `${name.split(" ")[0][0]}${name.split(" ")[1][0]}`,
+    children: `${name.split(" ")?.[0]?.[0]}${name.split(" ")?.[1]?.[0]}`,
   };
 }
 
@@ -99,13 +99,17 @@ export default function CollaborationPage() {
       utils.eventsRouter.list.invalidate();
       enqueueSnackbar({
         variant: "success",
-        message: t("generic.crud-notifications.update-success", { entity: t("entities.event")}),
+        message: t("generic.crud-notifications.update-success", {
+          entity: t("entities.event"),
+        }),
       });
     },
     onError() {
       enqueueSnackbar({
         variant: "error",
-        message: t("generic.crud-notifications.update-failed", { entity: t("entities.event")}),
+        message: t("generic.crud-notifications.update-failed", {
+          entity: t("entities.event"),
+        }),
       });
     },
   });
@@ -232,26 +236,18 @@ export default function CollaborationPage() {
                     display: { xs: "none", s: "none", md: "none", lg: "block" },
                   }}
                 >
-                  <AvatarGroup
-                    renderSurplus={(surplus) => (
-                      <>
-                        +
-                        {formatter.number(surplus, {
-                          compactDisplay: "short",
-                          maximumSignificantDigits: 1,
-                        })}
-                      </>
-                    )}
-                    total={event.attendees.length}
-                  >
-                    {[{ user: event.owner }, ...event.attendees].map(
-                      (attendee) => (
+                  <AvatarGroup max={1}>
+                    {[
+                      { user: event.owner },
+                      ...event.attendees,
+                    ].map((attendee) => {
+                      return (
                         <Avatar
                           key={attendee.user?.id ?? ""}
                           {...stringAvatar(attendee.user?.name ?? "-")}
                         />
-                      )
-                    )}
+                      );
+                    })}
                   </AvatarGroup>
                 </ListItemAvatar>
                 <ListItemText
@@ -260,7 +256,7 @@ export default function CollaborationPage() {
                   }}
                   primary={t(`enums.event-attendee-roles.${event.role}`)}
                 />
-                <ListItemText>
+                {/* <ListItemText>
                   <TextField
                     sx={{
                       display: {
@@ -300,7 +296,7 @@ export default function CollaborationPage() {
                     value={event.joinCode ?? "-"}
                     disabled
                   />
-                </ListItemText>
+                </ListItemText> */}
                 <ListItemText
                   sx={{
                     display: { xs: "none", s: "none", md: "none", lg: "block" },

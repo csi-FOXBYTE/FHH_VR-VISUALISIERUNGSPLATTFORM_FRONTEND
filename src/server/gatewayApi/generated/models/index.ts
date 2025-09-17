@@ -3,6 +3,7 @@
 export * from './BaseLayerPutRequest';
 export * from './BaseLayerPutRequestType';
 export * from './Converter3DCommitUploadPostRequest';
+export * from './Converter3DConvert3DTilePostRequest';
 export * from './Converter3DConvertProjectModelPost200Response';
 export * from './Converter3DConvertProjectModelPostRequest';
 export * from './Converter3DConvertTerrainPost200Response';

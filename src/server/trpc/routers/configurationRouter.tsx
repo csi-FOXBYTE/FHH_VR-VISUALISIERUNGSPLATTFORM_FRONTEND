@@ -29,6 +29,9 @@ const configurationRouter = router({
         emailSecure: z.boolean().optional(),
         emailPlatformAddress: z.string().optional(),
         maximumFlyingHeight: z.number().optional(),
+        userProfileLink: z.string().optional(),
+        systemActivityLink: z.string().optional(),
+        unityDownloadLink: z.string().optional(),
       })
     )
     .mutation(async (opts) => {

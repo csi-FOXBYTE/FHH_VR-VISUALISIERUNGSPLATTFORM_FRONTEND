@@ -3,10 +3,10 @@ import { JulianDate } from "cesium";
 import dayjs, { Dayjs } from "dayjs";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
-import { useCesium } from "resium";
+import { useViewerStore } from "./ViewerProvider";
 
 export default function TimePicker() {
-  const { viewer } = useCesium();
+  const viewer = useViewerStore(state => state.ctx?.viewer);
 
   const t = useTranslations();
 
@@ -24,7 +24,7 @@ export default function TimePicker() {
     if (dateTime === undefined || !viewer) return;
 
     viewer.clock.currentTime = JulianDate.fromDate(dateTime.toDate());
-  }, [dateTime, viewer]);
+  }, [dateTime, viewer?.clock]);
 
   return (
     <DateTimePicker

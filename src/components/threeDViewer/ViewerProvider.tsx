@@ -1074,12 +1074,16 @@ export const ViewerProvider = ({
       },
       projectObjects: {
         async add(projectObject) {
-          set((state) => ({
+          set((state) => {
+            state.history.takeSnapshot();
+            
+            return {
             projectObjects: {
               ...state.projectObjects,
               value: [...state.projectObjects.value, projectObject],
             },
-          }));
+          }
+          });
         },
         helpers: {
           flyTo(projectModel) {

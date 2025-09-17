@@ -198,7 +198,11 @@ export default function SceneGraph() {
             style={{ width: "100%" }}
             disableGutters
             expanded={selectedTab === "PROJECT_OBJECT"}
-            onChange={() => setSelectedTab("PROJECT_OBJECT")}
+            onChange={() => {
+              if (selectedTab === "PROJECT_OBJECT") return setSelectedTab(null);
+
+              setSelectedTab("PROJECT_OBJECT");
+            }}
             square
           >
             <AccordionSummary>
@@ -311,7 +315,12 @@ export default function SceneGraph() {
           </Accordion>
           <Accordion
             expanded={selectedTab === "CLIPPING_POLYGON"}
-            onChange={() => setSelectedTab("CLIPPING_POLYGON")}
+            onChange={() => {
+              if (selectedTab === "CLIPPING_POLYGON")
+                return setSelectedTab(null);
+
+              setSelectedTab("CLIPPING_POLYGON");
+            }}
             square
             style={{ width: "100%" }}
             disableGutters
@@ -398,7 +407,11 @@ export default function SceneGraph() {
           </Accordion>
           <Accordion
             expanded={selectedTab === "BASE_LAYER"}
-            onChange={() => setSelectedTab("BASE_LAYER")}
+            onChange={() => {
+              if (selectedTab === "BASE_LAYER") return setSelectedTab(null);
+
+              setSelectedTab("BASE_LAYER");
+            }}
             style={{ width: "100%" }}
             square
             disableGutters
@@ -472,7 +485,11 @@ export default function SceneGraph() {
       <Accordion
         style={{ width: "100%" }}
         expanded={selectedTab === "STARTING_POINT"}
-        onChange={() => setSelectedTab("STARTING_POINT")}
+        onChange={() => {
+          if (selectedTab === "STARTING_POINT") return setSelectedTab(null);
+
+          setSelectedTab("STARTING_POINT");
+        }}
         square
         disableGutters
       >

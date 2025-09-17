@@ -11,6 +11,7 @@ import { useConfirm } from "material-ui-confirm";
 import { useMutation } from "@tanstack/react-query";
 import { getApis } from "@/server/gatewayApi/client";
 import { useSnackbar } from "notistack";
+import { useConfigurationProviderContext } from "@/components/configuration/ConfigurationProvider";
 
 export default function ProfilePage() {
   const session = useSession();
@@ -47,6 +48,8 @@ export default function ProfilePage() {
   });
 
   const confirm = useConfirm();
+
+  const configuration = useConfigurationProviderContext();
 
   return (
     <PageContainer>
@@ -85,9 +88,7 @@ export default function ProfilePage() {
           LinkComponent={Link}
           size="large"
           variant="outlined"
-          href={`https://myprofile.microsoft.com/?login_hint=${encodeURIComponent(
-            session.data?.user.email ?? ""
-          )}`} // TODO: make this configurable
+          href={configuration.userProfileLink}
           target="_blank"
           color="secondary"
         >

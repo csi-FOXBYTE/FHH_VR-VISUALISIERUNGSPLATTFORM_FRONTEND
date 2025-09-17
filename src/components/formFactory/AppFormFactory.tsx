@@ -17,19 +17,44 @@ export type AppFormFactoryProps = ComponentProps<typeof AppFormFactory>;
 export const AppFormFactory = createFormFactory(
   {
     number: {
-      render(name, { label }: { label?: string }, { register }) {
-        return <TextField label={label} {...register(name)} />;
+      render(
+        name,
+        { label, required }: { label?: string; required?: boolean },
+        { register }
+      ) {
+        return (
+          <TextField label={label} required={required} {...register(name)} />
+        );
       },
       valueType: 0 as number,
     },
     text: {
-      render(name, { label, disabled }: { label?: string, disabled?: boolean }, { register }) {
-        return <TextField label={label} disabled={disabled} {...register(name)} />;
+      render(
+        name,
+        {
+          label,
+          disabled,
+          required,
+        }: { label?: string; disabled?: boolean; required?: boolean },
+        { register }
+      ) {
+        return (
+          <TextField
+            required={required}
+            label={label}
+            disabled={disabled}
+            {...register(name)}
+          />
+        );
       },
       valueType: "" as string,
     },
     switch: {
-      render(name, { label }: { label?: string }, { control }) {
+      render(
+        name,
+        { label, required }: { label?: string; required?: boolean },
+        { control }
+      ) {
         return (
           <Controller
             name={name}
@@ -37,6 +62,7 @@ export const AppFormFactory = createFormFactory(
             render={({ field }) => (
               <FormControlLabel
                 label={label}
+                required={required}
                 checked={field.value}
                 onChange={(_, checked) => field.onChange(checked)}
                 control={<Switch />}
@@ -48,7 +74,11 @@ export const AppFormFactory = createFormFactory(
       valueType: true as boolean,
     },
     georeferencedTranslation: {
-      render(name, { label }: { label?: string }, { control }) {
+      render(
+        name,
+        { label, required }: { label?: string; required?: boolean },
+        { control }
+      ) {
         return (
           <Controller
             name={name}
@@ -56,6 +86,7 @@ export const AppFormFactory = createFormFactory(
             render={({ field }) => (
               <TranslationInput
                 label={label}
+                required={required}
                 value={field.value}
                 onImmediateChange={field.onChange}
               />
@@ -74,10 +105,12 @@ export const AppFormFactory = createFormFactory(
           onSearchChange,
           options,
           multiple,
+          required,
         }: {
           multiple?: boolean;
           label?: string;
           search: string;
+          required?: boolean;
           onSearchChange: (value: string) => void;
           options: { value: string; label: string }[];
         },
@@ -98,7 +131,7 @@ export const AppFormFactory = createFormFactory(
                 onInputChange={(_, value) => onSearchChange(value)}
                 inputValue={search}
                 onChange={(_, value) => {
-                  if (!Array.isArray(value)) return value;
+                  if (!Array.isArray(value)) return field.onChange(value);
 
                   const set = new Set<string>();
 
@@ -114,6 +147,7 @@ export const AppFormFactory = createFormFactory(
                 }}
                 renderInput={(params) => (
                   <TextField
+                    required={required}
                     {...params}
                     ref={field.ref}
                     label={label}

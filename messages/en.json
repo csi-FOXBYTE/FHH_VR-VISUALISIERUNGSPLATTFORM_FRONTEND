@@ -10,10 +10,10 @@
     "show-collaboration": "Open Collaboration",
     "show-administration": "Open Administration Area",
     "last-logged-in-message": "Last logged in on {date}.",
-    "events-text": "The following appointments are scheduled today on {date}:",
-    "no-events-pending": "No upcoming appointments",
-    "administration-description": "This area provides access to the system’s central administration functions. Here you can upload and organize base data, configure system settings such as APIs and applications, review system activities and security logs, and manage users and groups.",
-    "project-management-description": "In this area you centrally and efficiently manage your projects. You can create new projects and delete or edit existing ones. In addition, you can upload project-specific data and make it available as layers within the system."
+    "events-text": "The following events are scheduled today on {date}:",
+    "no-events-pending": "No upcoming events",
+    "administration-description": "This area gives you access to the system's central administration functions. Here you can upload and organize base data, configure system settings such as APIs and applications, view system activities and security logs, and manage users and groups.",
+    "project-management-description": "In this area you can manage your projects centrally and efficiently. You can create new projects, delete or edit existing ones. Additionally, you have the option to upload project-specific data and make them available as layers within the system."
   },
   "navbar": {
     "profile": "Profile",
@@ -66,7 +66,7 @@
   "collaboration": {
     "collaboration": "Collaboration",
     "to-project": "To Project",
-    "copied-to-clipboard-success": "Code was successfully copied to the clipboard!",
+    "copied-to-clipboard-success": "Code successfully copied to clipboard!",
     "code": "Code"
   },
   "administration": {
@@ -78,24 +78,24 @@
     "go-to-data-management": "Go to Data Management",
     "go-to-system-activities": "Go to System Activities",
     "go-to-user-management": "Go to User and Group Management",
-    "system-activities-and-logs-description": "All log entries related to the system, database, users, and security.",
-    "configuration-description": "Manage system settings for data, APIs, and applications.",
-    "data-management-description": "Upload and manage base data, and define visual axes.",
-    "user-management-description": "Add users, manage permissions, and organize groups.",
+    "system-activities-and-logs-description": "All log entries on system, database, users and security.",
+    "configuration-description": "Manage system settings for data, APIs and applications.",
+    "data-management-description": "Upload and manage base data, define view axes.",
+    "user-management-description": "Add users, manage permissions and organize groups.",
     "title": "Administration"
   },
   "configuration": {
     "title": "Configuration",
     "common": "General",
-    "global-start-point": "Global Starting Point",
+    "global-start-point": "Global Start Point",
     "conversions": "Conversion",
     "local-processor-folder": "Local Storage Folder",
-    "max-parallel-base-layer-conversions": "Maximum Parallel Base Data Conversions",
-    "max-parallel-file-conversions": "Maximum Parallel File Conversions",
-    "mail-templates": "Email Templates",
+    "max-parallel-base-layer-conversions": "Max Parallel Base Data Conversions",
+    "max-parallel-file-conversions": "Max Parallel File Conversions",
+    "mail-templates": "Mail Templates",
     "mail-invitation-template": "Event Invitation Email",
-    "mail-invitation-canceled-template": "Event Cancellation Email",
-    "mail-invitation-updated-template": "Event Update Email",
+    "mail-invitation-canceled-template": "Event Canceled Email",
+    "mail-invitation-updated-template": "Event Updated Email",
     "mail-predeletion-template": "30-Day Deletion Warning Email",
     "email": "Email",
     "email-host": "Host",
@@ -103,9 +103,13 @@
     "email-secure": "Secure",
     "email-user": "Username",
     "email-password": "Password",
-    "email-platform-address": "Platform Address (this site)",
+    "email-platform-address": "Platform Address (this page)",
     "maximum-flying-height": "Maximum Flying Height",
-    "unity": "Unity"
+    "unity": "Unity",
+    "links": "Links",
+    "system-logs-link": "System Logs and Activities Link",
+    "user-profile-link": "User Profile Link",
+    "unity-download-link": "Unity Download Link"
   },
   "user-management": {
     "title": "User and Group Management",
@@ -122,23 +126,25 @@
   "data-management": {
     "title": "Data Management",
     "starting-point": "Starting Point",
-    "start-point": "Starting Point",
+    "start-point": "Start Point",
     "end-point": "End Point",
     "description": "Description",
     "name": "Name",
     "owner": "Owner",
     "size-in-gb": "Size in GB",
-    "create-at": "Created At",
-    "visible-for-groups": "Visible for the following Groups",
-    "only-visible-for-groups": "Only visible for the following Groups",
+    "create-at": "Created On",
+    "visible-for-groups": "Visible to Groups",
+    "only-visible-for-groups": "Only Visible to Groups",
     "type": "Type",
     "progress": "Progress",
     "href": "Link",
     "layers": "Layers",
-    "visual-axes": "Visual Axes",
+    "visual-axes": "View Axes",
     "3d-tiles": "3D Tiles",
     "terrain": "Terrain",
-    "imagery": "Imagery"
+    "imagery": "Maps",
+    "appearance": "Appearance",
+    "has-alpha-enabled": "Has Alpha Channel"
   },
   "project-management": {
     "title": "Project Management",
@@ -150,8 +156,8 @@
     "table-title": "Title",
     "preview": "Preview",
     "preview-image": "Preview Image",
-    "visible-for-users": "Visible for the following Users",
-    "visible-for-groups": "Visible for the following Groups",
+    "visible-for-users": "Visible to Users",
+    "visible-for-groups": "Visible to Groups",
     "description": "Description",
     "owner": "Owner"
   },
@@ -164,17 +170,17 @@
   "permissions": {
     "selected": "Selected",
     "PROJECT_OWNER": "Project Administrator",
-    "PROJECT_OWNER-description": "Can create, edit, and delete projects.",
+    "PROJECT_OWNER-description": "Can create, edit and delete projects.",
     "EVENT_OWNER": "Event Administrator",
-    "EVENT_OWNER-description": "Can create, edit, and delete events.",
+    "EVENT_OWNER-description": "Can create, edit and delete events.",
     "BASE_LAYER_OWNER": "Base Data Administrator",
-    "BASE_LAYER_OWNER-description": "Can create, edit, and delete base data.",
+    "BASE_LAYER_OWNER-description": "Can create, edit and delete base data.",
     "CONFIGURATION_ADMINISTRATOR": "Configuration Administrator",
-    "CONFIGURATION_ADMINISTRATOR-description": "Can create, edit, and delete configurations.",
+    "CONFIGURATION_ADMINISTRATOR-description": "Can create, edit and delete configurations.",
     "DATA_MANAGEMENT_ADMINISTRATOR": "Data Management Administrator",
-    "DATA_MANAGEMENT_ADMINISTRATOR-description": "Can create, edit, and delete base data as well as visual axes.",
+    "DATA_MANAGEMENT_ADMINISTRATOR-description": "Can create, edit and delete base data and view axes.",
     "USER_ADMINISTRATOR": "User Administrator",
-    "USER_ADMINISTRATOR-description": "Can invite, edit, and delete users.",
+    "USER_ADMINISTRATOR-description": "Can invite, edit and delete users.",
     "permission": "Permission"
   },
   "entities": {
@@ -184,7 +190,7 @@
     "base-layer": "Base Layer",
     "project-layer": "Project Layer",
     "starting-point": "Starting Point",
-    "visual-axis": "Visual Axis",
+    "visual-axis": "View Axis",
     "project-file": "Project File",
     "event": "Event",
     "configuration": "Configuration",
@@ -192,10 +198,10 @@
   },
   "generic": {
     "crud-notifications": {
-      "create-success": "{entity} successfully created!",
-      "delete-success": "{entity} successfully deleted!",
-      "update-success": "{entity} successfully updated!",
-      "save-success": "{entity} successfully saved!",
+      "create-success": "{entity} created successfully!",
+      "delete-success": "{entity} deleted successfully!",
+      "update-success": "{entity} updated successfully!",
+      "save-success": "{entity} saved successfully!",
       "create-failed": "Failed to create {entity}!",
       "delete-failed": "Failed to delete {entity}!",
       "update-failed": "Failed to update {entity}!",
@@ -207,7 +213,7 @@
   },
   "enums": {
     "event-status": {
-      "MISSING_HOST": "Missing Host",
+      "MISSING_HOST": "Host Missing",
       "ACTIVE": "Active",
       "PLANNED": "Planned",
       "CANCELED": "Canceled",
@@ -234,7 +240,7 @@
     "delayed": "Delayed",
     "completed": "Completed",
     "failed": "Failed",
-    "fly-to": "Fly to",
+    "fly-to": "Fly To",
     "place": "Place",
     "toggle-visibility": "Toggle Visibility",
     "are-you-sure-that-you-want-to-delete": "Are you sure you really want to delete this?",
@@ -304,18 +310,18 @@
     "base-layers": "Base Data",
     "name-of-the-variant": "Variant Name",
     "variants": "Variants",
-    "pick-a-point-message": "Select a point by clicking. To cancel, press ESC or click outside the 3D view.",
+    "pick-a-point-message": "Select a point by clicking. Press ESC to cancel or click outside the 3D view.",
     "take-screenshot": "Take Screenshot",
     "origin": "Origin",
     "target": "Target",
     "hide-drawer": "Close",
     "show-drawer": "Open",
-    "close-picked-polygon-info": "To close the selected polygon, right-click. To cancel, either click outside the viewer or press Escape.",
-    "pick-point-info": "To cancel point selection, either click outside the viewer or press Escape."
+    "close-picked-polygon-info": "To close the selected polygon, right-click. To cancel, click outside the viewer or press Escape.",
+    "pick-point-info": "To cancel selecting a point, click outside the viewer or press Escape."
   },
   "error": {
-    "go-home": "Go to Home",
-    "500-oooops-something-went-wrong-on-our-side": "500: Oops, something went wrong!"
+    "go-home": "Go to Homepage",
+    "500-oooops-something-went-wrong-on-our-side": "500: Oooops, something went wrong on our side!"
   },
   "cookie-consent": {
     "banner": {
@@ -324,12 +330,12 @@
       "acceptAllButtonAccessibleLabel": "Accept all cookies",
       "rejectNonEssentialButtonText": "Reject Non-Essential",
       "rejectNonEssentialButtonAccessibleLabel": "Reject non-essential cookies",
-      "preferencesButtonText": "Preferences",
-      "preferencesButtonAccessibleLabel": "Show / Hide Preferences"
+      "preferencesButtonText": "Settings",
+      "preferencesButtonAccessibleLabel": "Show / Hide settings"
     },
     "preferences": {
-      "title": "Adjust Your Cookie Settings",
-      "description": "<p>We respect your right to privacy. You can choose not to allow certain types of cookies. Your cookie settings apply across our entire website.</p>",
+      "title": "Customize Your Cookie Settings",
+      "description": "<p>We respect your right to privacy. You can choose to disallow certain types of cookies. Your cookie settings apply to our entire website.</p>",
       "creditLinkText": "Get this banner for free",
       "creditLinkAccessibleLabel": "Get this banner for free"
     },
@@ -339,8 +345,8 @@
     }
   },
   "not-found": {
-    "404-we-did-not-find-this-page": "404: Unfortunately, we couldn’t find this page.",
-    "go-home": "Go to Home"
+    "404-we-did-not-find-this-page": "404: Unfortunately, we did not find this page.",
+    "go-home": "Go to Homepage"
   },
   "layers": {
     "type": "Type"

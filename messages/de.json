@@ -105,7 +105,11 @@
     "email-password": "Passwort",
     "email-platform-address": "Plattform Addresse (diese Seite)",
     "maximum-flying-height": "Maximale Flughöhe",
-    "unity": "Unity"
+    "unity": "Unity",
+    "links": "Links",
+    "system-logs-link": "System Logs und Aktivitäten Link",
+    "user-profile-link": "Bernutzerprofil Link",
+    "unity-download-link": "Unity download Link"
   },
   "user-management": {
     "title": "Nutzer- und Gruppenverwaltung",
@@ -138,7 +142,9 @@
     "visual-axes": "Sichtachsen",
     "3d-tiles": "3D Tiles",
     "terrain": "Gelände",
-    "imagery": "Karten"
+    "imagery": "Karten",
+    "appearance": "Appearance",
+    "has-alpha-enabled": "Hat Alpha Kanal"
   },
   "project-management": {
     "title": "Projektverwaltung",

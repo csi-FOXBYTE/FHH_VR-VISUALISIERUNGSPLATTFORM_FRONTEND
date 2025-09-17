@@ -4,14 +4,7 @@ import proj4list from "proj4-list";
 import { ConfigurationProviderContextType } from "./ConfigurationProvider";
 
 export async function createConfiguration(): Promise<ConfigurationProviderContextType> {
-  const configuration = await prisma.configuration.findFirstOrThrow({
-    select: {
-      defaultEPSG: true,
-      globalStartPointX: true,
-      globalStartPointY: true,
-      globalStartPointZ: true,
-    },
-  });
+  const configuration = await prisma.configuration.findFirstOrThrow();
 
   const foundProj4Entry = Object.entries(proj4list).find(
     ([key]) => key === configuration.defaultEPSG
@@ -25,7 +18,7 @@ export async function createConfiguration(): Promise<ConfigurationProviderContex
   };
 
   return {
-    defaultEPSG: configuration.defaultEPSG,
+    ...configuration,
     defaultEPSGLabelValue,
     globalStartPoint: {
       x: configuration.globalStartPointX,

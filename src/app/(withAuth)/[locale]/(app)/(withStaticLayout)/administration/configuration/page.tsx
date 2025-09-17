@@ -228,11 +228,35 @@ export default function ConfigurationPage() {
             <Typography>{t("configuration.unity")}</Typography>
           </AccordionSummary>
           <AccordionDetails>
+            <Grid container flexDirection="column" spacing={2}>
             <TextField
               type="number"
               label={t("configuration.maximum-flying-height")}
               {...register("maximumFlyingHeight")}
             />
+            </Grid>
+          </AccordionDetails>
+          
+        </Accordion>
+        <Accordion>
+          <AccordionSummary>
+            <Typography>{t("configuration.links")}</Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <Grid container flexDirection="column" spacing={2}>
+            <TextField
+              label={t("configuration.system-logs-link")}
+              {...register("systemActivityLink")}
+            />
+            <TextField
+              label={t("configuration.user-profile-link")}
+              {...register("userProfileLink")}
+            />
+            <TextField
+              label={t("configuration.unity-download-link")}
+              {...register("unityDownloadLink")}
+            />
+            </Grid>
           </AccordionDetails>
         </Accordion>
         <Accordion>
@@ -240,6 +264,7 @@ export default function ConfigurationPage() {
             <Typography>{t("configuration.email")}</Typography>
           </AccordionSummary>
           <AccordionDetails>
+            <Grid container flexDirection="column" spacing={2}>
             <TextField
               label={t("configuration.email-host")}
               {...register("emailHost")}
@@ -265,6 +290,7 @@ export default function ConfigurationPage() {
               label={t("configuration.email-platform-address")}
               {...register("emailPlatformAddress")}
             />
+            </Grid>
           </AccordionDetails>
         </Accordion>
         <Accordion>

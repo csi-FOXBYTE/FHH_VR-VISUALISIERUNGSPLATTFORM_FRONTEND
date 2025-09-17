@@ -67,6 +67,12 @@ export interface ProjectIdUnityGet200Response {
     description: string;
     /**
      * 
+     * @type {number}
+     * @memberof ProjectIdUnityGet200Response
+     */
+    maximumFlyingHeight: number;
+    /**
+     * 
      * @type {Array<ProjectIdUnityGet200ResponseStartingPointsInner>}
      * @memberof ProjectIdUnityGet200Response
      */
@@ -87,6 +93,7 @@ export function instanceOfProjectIdUnityGet200Response(value: object): value is 
     if (!('id' in value) || value['id'] === undefined) return false;
     if (!('myRole' in value) || value['myRole'] === undefined) return false;
     if (!('description' in value) || value['description'] === undefined) return false;
+    if (!('maximumFlyingHeight' in value) || value['maximumFlyingHeight'] === undefined) return false;
     if (!('startingPoints' in value) || value['startingPoints'] === undefined) return false;
     if (!('variants' in value) || value['variants'] === undefined) return false;
     return true;
@@ -106,6 +113,7 @@ export function ProjectIdUnityGet200ResponseFromJSONTyped(json: any, ignoreDiscr
         'id': json['id'],
         'myRole': ProjectIdUnityGet200ResponseMyRoleFromJSON(json['myRole']),
         'description': json['description'],
+        'maximumFlyingHeight': json['maximumFlyingHeight'],
         'startingPoints': ((json['startingPoints'] as Array<any>).map(ProjectIdUnityGet200ResponseStartingPointsInnerFromJSON)),
         'variants': ((json['variants'] as Array<any>).map(ProjectIdUnityGet200ResponseVariantsInnerFromJSON)),
     };
@@ -126,6 +134,7 @@ export function ProjectIdUnityGet200ResponseToJSONTyped(value?: ProjectIdUnityGe
         'id': value['id'],
         'myRole': ProjectIdUnityGet200ResponseMyRoleToJSON(value['myRole']),
         'description': value['description'],
+        'maximumFlyingHeight': value['maximumFlyingHeight'],
         'startingPoints': ((value['startingPoints'] as Array<any>).map(ProjectIdUnityGet200ResponseStartingPointsInnerToJSON)),
         'variants': ((value['variants'] as Array<any>).map(ProjectIdUnityGet200ResponseVariantsInnerToJSON)),
     };

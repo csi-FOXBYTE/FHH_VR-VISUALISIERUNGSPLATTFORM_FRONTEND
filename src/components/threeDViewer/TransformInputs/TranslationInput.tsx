@@ -25,11 +25,13 @@ export default function TranslationInput({
   onImmediateChange,
   label,
   disabled,
+  required,
 }: {
   value?: { x: number; y: number; z: number };
   onImmediateChange?: (value: { x: number; y: number; z: number }) => void;
   label?: string;
   readOnly?: boolean;
+  required?: boolean;
   disabled?: boolean;
 }) {
   const { defaultEPSG } = useConfigurationProviderContext();
@@ -120,6 +122,7 @@ export default function TranslationInput({
       />
       <TextField
         type="number"
+        required={required}
         slotProps={{
           input: {
             startAdornment: <InputAdornment position="start">X</InputAdornment>,
@@ -139,6 +142,7 @@ export default function TranslationInput({
       />
       <TextField
         type="number"
+        required={required}
         slotProps={{
           input: {
             startAdornment: <InputAdornment position="start">Y</InputAdornment>,
@@ -158,6 +162,7 @@ export default function TranslationInput({
       />
       <TextField
         type="number"
+        required={required}
         slotProps={{
           input: {
             startAdornment: <InputAdornment position="start">Z</InputAdornment>,

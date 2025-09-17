@@ -6,12 +6,18 @@ export type ConfigurationProviderContextType = {
   globalStartPoint: { x: number; y: number; z: number };
   defaultEPSGLabelValue: { label: string; value: string };
   defaultEPSG: string;
+  userProfileLink: string;
+  systemActivityLink: string;
+  unityDownloadLink: string;
 };
 
 const initial: ConfigurationProviderContextType = {
   defaultEPSG: "",
   defaultEPSGLabelValue: { label: "", value: "" },
   globalStartPoint: { x: 0, y: 0, z: 0 },
+  systemActivityLink: "",
+  userProfileLink: "",
+  unityDownloadLink: "",
 };
 
 const ConfigurationProviderContext =

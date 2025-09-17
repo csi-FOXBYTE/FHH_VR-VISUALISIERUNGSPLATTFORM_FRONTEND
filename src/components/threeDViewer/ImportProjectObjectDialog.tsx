@@ -141,7 +141,10 @@ export default function ImportProjectObjectDialog() {
       },
       onError: (error) => {
         console.error(error);
-        enqueueSnackbar({ variant: "error", message: t("import-model-dialog.import-failed") });
+        enqueueSnackbar({
+          variant: "error",
+          message: t("import-model-dialog.import-failed"),
+        });
       },
       mutationFn: async () => {
         if (!file) return;
@@ -279,7 +282,9 @@ export default function ImportProjectObjectDialog() {
           <Autocomplete
             disablePortal
             style={{ marginTop: 16 }}
-            renderInput={(params) => <TextField {...params} label="EPSG" />}
+            renderInput={(params) => (
+              <TextField required {...params} label="EPSG" />
+            )}
             value={selectedEpsg}
             disableClearable
             size="small"
@@ -288,6 +293,7 @@ export default function ImportProjectObjectDialog() {
           />
           <DragAndDropzone
             name="file"
+            required
             value={file ? [file] : []}
             onChange={(files) => setFile(files[0])}
             accept={{

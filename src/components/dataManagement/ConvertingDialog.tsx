@@ -42,7 +42,9 @@ export default function ConvertingDialog({
       files: [] as File[],
       srcSRS: defaultEPSGLabelValue,
       type: "TILES3D" as "TILES3D" | "TERRAIN",
+      appearance: "rgbTexture",
       name: "",
+      hasAlphaEnabled: false,
     },
   });
 
@@ -53,7 +55,9 @@ export default function ConvertingDialog({
       files: File[];
       srcSRS: { label: string; value: string };
       type: "TILES3D" | "TERRAIN";
+      appearance: string;
       name: string;
+      hasAlphaEnabled: boolean;
     }) => {
       setUploadProgress(null);
       const { converter3DApi } = await getApis();
@@ -97,10 +101,12 @@ export default function ConvertingDialog({
       switch (values.type) {
         case "TILES3D":
           await converter3DApi.converter3DConvert3DTilePost({
-            converter3DConvertTerrainPostRequest: {
+            converter3DConvert3DTilePostRequest: {
               srcSRS: values.srcSRS.value,
               token: token,
+              appearance: values.appearance,
               name: values.name,
+              hasAlphaEnabled: values.hasAlphaEnabled,
             },
           });
           break;
@@ -146,7 +152,12 @@ export default function ConvertingDialog({
       <form onSubmit={handleSubmit((values) => mutate(values))}>
         <DialogContent>
           <Grid container pt={1} flexDirection="column" spacing={2}>
-            <TextField fullWidth {...register("name")} label={t("data-management.name")} />
+            <TextField
+              required
+              fullWidth
+              {...register("name")}
+              label={t("data-management.name")}
+            />
             <Controller
               control={control}
               name="type"
@@ -154,6 +165,7 @@ export default function ConvertingDialog({
                 <Select
                   label={t("data-management.type")}
                   fullWidth
+                  required
                   value={field.value}
                   onChange={field.onChange}
                 >
@@ -173,12 +185,25 @@ export default function ConvertingDialog({
                 <EPSGInput value={field.value} onChange={field.onChange} />
               )}
             />
+            <TextField
+              required
+              fullWidth
+              {...register("appearance")}
+              label={t("data-management.appearance")}
+            />
+            <TextField
+              required
+              fullWidth
+              {...register("hasAlphaEnabled")}
+              label={t("data-management.has-alpha-enabled")}
+            />
             <Controller
               control={control}
               name="files"
               render={({ field }) => (
                 <DragAndDropzone
                   name="file"
+                  required
                   value={field.value}
                   onChange={field.onChange}
                   accept={{ "application/zip": [".zip"] }}

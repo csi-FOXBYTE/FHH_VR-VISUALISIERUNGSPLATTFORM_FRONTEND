@@ -1,6 +1,7 @@
 "use client";
 
 import CookieConsent from "@/components/common/CookieConsent";
+import { useConfigurationProviderContext } from "@/components/configuration/ConfigurationProvider";
 import Footer from "@/components/navbar/Footer";
 import Navbar from "@/components/navbar/Navbar";
 import { Button, Grid, Typography } from "@mui/material";
@@ -29,6 +30,8 @@ export default function LandingPage() {
   });
 
   const t = useTranslations();
+
+  const configuration = useConfigurationProviderContext();
 
   return (
     <Grid
@@ -85,7 +88,11 @@ export default function LandingPage() {
               {t("landingpage.in-3d-and-virtual-reality")}
             </Typography>
           </Grid>
-          <Button color="primary" variant="contained">
+          <Button
+            color="primary"
+            href={configuration.unityDownloadLink}
+            variant="contained"
+          >
             {t("landingpage.download")}
           </Button>
         </Grid>

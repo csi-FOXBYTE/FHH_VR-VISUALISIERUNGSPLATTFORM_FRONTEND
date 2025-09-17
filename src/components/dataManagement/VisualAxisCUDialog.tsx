@@ -107,6 +107,7 @@ export default function VisualAxisCUDialog() {
           name: "name",
           props: {
             label: t("data-mangement.title"),
+            required: true,
           },
           type: "text",
         },
@@ -114,6 +115,7 @@ export default function VisualAxisCUDialog() {
           name: "description",
           props: {
             label: t("data-management.description"),
+            required: true,
           },
           type: "text",
         },
@@ -121,6 +123,7 @@ export default function VisualAxisCUDialog() {
           name: "startPoint",
           props: {
             label: t("data-management.start-point"),
+            required: true,
           },
           type: "georeferencedTranslation",
         },
@@ -128,6 +131,7 @@ export default function VisualAxisCUDialog() {
           name: "endPoint",
           props: {
             label: t("data-management.end-point"),
+            required: true,
           },
           type: "georeferencedTranslation",
         },

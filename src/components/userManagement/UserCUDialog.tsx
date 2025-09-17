@@ -100,7 +100,7 @@ export default function UserCUDialog() {
       isLoading={
         isUpdateMutationPending ||
         isCreateMutationPending ||
-        isInitialDataPending
+        (isInitialDataPending && state.mode !== "CREATE")
       }
       state={state}
       fetchedData={initialUser}
@@ -112,6 +112,7 @@ export default function UserCUDialog() {
                 name: "email",
                 props: {
                   label: t("user-management.email"),
+                  required: true,
                 },
               },
               {

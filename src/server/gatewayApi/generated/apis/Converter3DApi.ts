@@ -16,6 +16,7 @@
 import * as runtime from '../runtime';
 import type {
   Converter3DCommitUploadPostRequest,
+  Converter3DConvert3DTilePostRequest,
   Converter3DConvertProjectModelPost200Response,
   Converter3DConvertProjectModelPostRequest,
   Converter3DConvertTerrainPost200Response,
@@ -32,6 +33,8 @@ import type {
 import {
     Converter3DCommitUploadPostRequestFromJSON,
     Converter3DCommitUploadPostRequestToJSON,
+    Converter3DConvert3DTilePostRequestFromJSON,
+    Converter3DConvert3DTilePostRequestToJSON,
     Converter3DConvertProjectModelPost200ResponseFromJSON,
     Converter3DConvertProjectModelPost200ResponseToJSON,
     Converter3DConvertProjectModelPostRequestFromJSON,
@@ -62,8 +65,8 @@ export interface Converter3DCommitUploadPostOperationRequest {
     converter3DCommitUploadPostRequest: Converter3DCommitUploadPostRequest;
 }
 
-export interface Converter3DConvert3DTilePostRequest {
-    converter3DConvertTerrainPostRequest: Converter3DConvertTerrainPostRequest;
+export interface Converter3DConvert3DTilePostOperationRequest {
+    converter3DConvert3DTilePostRequest: Converter3DConvert3DTilePostRequest;
 }
 
 export interface Converter3DConvertProjectModelPostOperationRequest {
@@ -137,11 +140,11 @@ export class Converter3DApi extends runtime.BaseAPI {
 
     /**
      */
-    async converter3DConvert3DTilePostRaw(requestParameters: Converter3DConvert3DTilePostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Converter3DConvertTerrainPost200Response>> {
-        if (requestParameters['converter3DConvertTerrainPostRequest'] == null) {
+    async converter3DConvert3DTilePostRaw(requestParameters: Converter3DConvert3DTilePostOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Converter3DConvertTerrainPost200Response>> {
+        if (requestParameters['converter3DConvert3DTilePostRequest'] == null) {
             throw new runtime.RequiredError(
-                'converter3DConvertTerrainPostRequest',
-                'Required parameter "converter3DConvertTerrainPostRequest" was null or undefined when calling converter3DConvert3DTilePost().'
+                'converter3DConvert3DTilePostRequest',
+                'Required parameter "converter3DConvert3DTilePostRequest" was null or undefined when calling converter3DConvert3DTilePost().'
             );
         }
 
@@ -159,7 +162,7 @@ export class Converter3DApi extends runtime.BaseAPI {
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
-            body: Converter3DConvertTerrainPostRequestToJSON(requestParameters['converter3DConvertTerrainPostRequest']),
+            body: Converter3DConvert3DTilePostRequestToJSON(requestParameters['converter3DConvert3DTilePostRequest']),
         }, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => Converter3DConvertTerrainPost200ResponseFromJSON(jsonValue));
@@ -167,7 +170,7 @@ export class Converter3DApi extends runtime.BaseAPI {
 
     /**
      */
-    async converter3DConvert3DTilePost(requestParameters: Converter3DConvert3DTilePostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Converter3DConvertTerrainPost200Response> {
+    async converter3DConvert3DTilePost(requestParameters: Converter3DConvert3DTilePostOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Converter3DConvertTerrainPost200Response> {
         const response = await this.converter3DConvert3DTilePostRaw(requestParameters, initOverrides);
         return await response.value();
     }

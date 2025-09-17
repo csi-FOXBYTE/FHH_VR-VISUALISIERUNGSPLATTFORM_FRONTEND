@@ -2,11 +2,14 @@
 
 import Cards from "@/components/common/Cards";
 import PageContainer from "@/components/common/PageContainer";
+import { useConfigurationProviderContext } from "@/components/configuration/ConfigurationProvider";
 import { Typography } from "@mui/material";
 import { useTranslations } from "next-intl";
 
 export default function AdministrationPage() {
   const t = useTranslations();
+
+  const configuration = useConfigurationProviderContext();
 
   return (
     <PageContainer>
@@ -46,7 +49,7 @@ export default function AdministrationPage() {
             ),
             key: "system-activities-and-logs",
             link: {
-              href: "/administration/system-activities-and-logs",
+              href: configuration.systemActivityLink,
               label: t("administration.go-to-system-activities"),
             },
             title: t("administration.system-activities-and-logs"),

@@ -22,6 +22,9 @@ const userInfoRouter = router({
           gt: dayjs().hour(0).minute(0).millisecond(0).second(0).toDate(),
           lt: dayjs().hour(23).minute(59).millisecond(999).second(59).toDate(),
         },
+        status: {
+          not: "CANCELED",
+        },
       },
       select: {
         id: true,

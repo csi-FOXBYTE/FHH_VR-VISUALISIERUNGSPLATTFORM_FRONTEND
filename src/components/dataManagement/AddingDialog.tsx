@@ -77,24 +77,41 @@ export default function AddingDialog({
       <form onSubmit={handleSubmit((values) => mutate(values))}>
         <DialogContent>
           <Grid container pt={1} flexDirection="column" spacing={2}>
-            <TextField fullWidth {...register("name")} label={t("data-management.name")} />
+            <TextField
+              required
+              fullWidth
+              {...register("name")}
+              label={t("data-management.name")}
+            />
             <Controller
               control={control}
               name="type"
               render={({ field }) => (
                 <Select
+                  required
                   label={t("data-management.type")}
                   fullWidth
                   value={field.value}
                   onChange={field.onChange}
                 >
-                  <MenuItem value={"TILES3D"}>{t("data-management.3d-tiles")}</MenuItem>
-                  <MenuItem value={"TERRAIN"}>{t("data-management.terrain")}</MenuItem>
-                  <MenuItem value={"IMAGERY"}>{t("data-management.imagery")}</MenuItem>
+                  <MenuItem value={"TILES3D"}>
+                    {t("data-management.3d-tiles")}
+                  </MenuItem>
+                  <MenuItem value={"TERRAIN"}>
+                    {t("data-management.terrain")}
+                  </MenuItem>
+                  <MenuItem value={"IMAGERY"}>
+                    {t("data-management.imagery")}
+                  </MenuItem>
                 </Select>
               )}
             />
-            <TextField fullWidth {...register("href")} label={t("data-management.href")} />
+            <TextField
+              required
+              fullWidth
+              {...register("href")}
+              label={t("data-management.href")}
+            />
           </Grid>
         </DialogContent>
         <DialogActions>

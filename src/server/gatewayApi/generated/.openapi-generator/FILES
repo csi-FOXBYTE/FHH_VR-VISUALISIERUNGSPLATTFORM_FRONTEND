@@ -10,6 +10,7 @@ index.ts
 models/BaseLayerPutRequest.ts
 models/BaseLayerPutRequestType.ts
 models/Converter3DCommitUploadPostRequest.ts
+models/Converter3DConvert3DTilePostRequest.ts
 models/Converter3DConvertProjectModelPost200Response.ts
 models/Converter3DConvertProjectModelPostRequest.ts
 models/Converter3DConvertTerrainPost200Response.ts
