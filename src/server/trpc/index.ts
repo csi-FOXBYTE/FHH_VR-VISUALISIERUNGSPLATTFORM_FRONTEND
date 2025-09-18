@@ -1,11 +1,11 @@
 import { auth } from "@/server/auth/auth";
 import { TRPCError, initTRPC } from "@trpc/server";
 import { cache } from "react";
-import SuperJSON from "superjson";
 import prisma from "@/server/prisma";
 import { createOTelPlugin } from "./otelMiddleware";
 import { enhance } from "@zenstackhq/runtime";
 import realtimeExtension from "../prisma/extensions/realtimeExtension";
+import SuperJSON from "./superJSON";
 
 export const { createCallerFactory, router, procedure } = initTRPC
   .context<typeof createTRPCContext>()

@@ -12,7 +12,7 @@ import { useEffect, useRef, useState } from "react";
 import { makeQueryClient } from "./queryClient";
 import type { AppRouter } from "./routers";
 import { useSession } from "next-auth/react";
-import SuperJSON from "superjson";
+import SuperJSON from "./superJSON";
 
 export const trpc = createTRPCReact<AppRouter>();
 
