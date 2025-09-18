@@ -3,7 +3,7 @@ import SuperJSON from "superjson";
 SuperJSON.registerCustom<Date, string>(
   {
     isApplicable: (v): v is Date => {
-      const isApplicable = typeof v["toISOString"] === "function";
+      const isApplicable = typeof v?.["toISOString"] === "function";
       return isApplicable;
     },
     serialize: (v) => {
