@@ -144,7 +144,8 @@
     "terrain": "Gelände",
     "imagery": "Karten",
     "appearance": "Appearance",
-    "has-alpha-enabled": "Hat Alpha Kanal"
+    "has-alpha-enabled": "Hat Alpha Kanal",
+    "public": "Öffentlich"
   },
   "project-management": {
     "title": "Projektverwaltung",
@@ -352,6 +353,7 @@
     "type": "Typ"
   },
   "drag-and-dropzone": {
-    "drop-here": "Dateien hier ablegen..."
+    "drop-here": "Dateien hier ablegen, oder",
+    "browse-files": "Dateien durchsuchen"
   }
 }

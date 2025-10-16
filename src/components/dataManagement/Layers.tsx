@@ -57,6 +57,7 @@ export default function Layers() {
   const [updatingDialogRow, setUpdatingDialogRow] = useState<null | {
     id: string;
     href: string | null;
+    isPublic: boolean;
     visibleForGroups: { id: string; name: string }[];
   }>(null);
 
@@ -119,6 +120,7 @@ export default function Layers() {
       setUpdatingDialogRow({
         href: foundEntry.href,
         id: foundEntry.id,
+        isPublic: foundEntry.isPublic,
         visibleForGroups: foundEntry.visibleForGroups,
       });
     },
@@ -176,6 +178,11 @@ export default function Layers() {
                 value: "IMAGERY",
               },
             ],
+          },
+          {
+            field: "isPublic",
+            type: "boolean",
+            headerName: t("data-management.public"),
           },
           {
             field: "name",

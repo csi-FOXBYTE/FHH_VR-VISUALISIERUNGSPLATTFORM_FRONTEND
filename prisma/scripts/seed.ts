@@ -127,6 +127,7 @@ const prisma = new PrismaClient();
       sizeGB: 2.78,
       type: "TILES3D",
       name: "Area 1",
+      isPublic: true,
       visibleForGroups: {
         connect: [{ id: adminGroupId }, { id: guestGroupId }],
       },
@@ -140,6 +141,7 @@ const prisma = new PrismaClient();
       sizeGB: 4.59,
       type: "TILES3D",
       name: "Area 2",
+      isPublic: true,
       visibleForGroups: {
         connect: [{ id: adminGroupId }, { id: guestGroupId }],
       },
@@ -153,6 +155,7 @@ const prisma = new PrismaClient();
       sizeGB: 1.99,
       type: "TILES3D",
       name: "Area 3",
+      isPublic: true,
       visibleForGroups: {
         connect: [{ id: adminGroupId }, { id: guestGroupId }],
       },
@@ -166,6 +169,7 @@ const prisma = new PrismaClient();
       sizeGB: 8.13,
       type: "TILES3D",
       name: "Area 4",
+      isPublic: true,
       visibleForGroups: {
         connect: [{ id: adminGroupId }, { id: guestGroupId }],
       },
@@ -179,6 +183,7 @@ const prisma = new PrismaClient();
       sizeGB: 2.45,
       type: "TILES3D",
       name: "Area 5",
+      isPublic: true,
       visibleForGroups: {
         connect: [{ id: adminGroupId }, { id: guestGroupId }],
       },
@@ -192,6 +197,7 @@ const prisma = new PrismaClient();
       sizeGB: 2.45,
       type: "TILES3D",
       name: "Trees",
+      isPublic: true,
       visibleForGroups: {
         connect: [{ id: adminGroupId }, { id: guestGroupId }],
       },
@@ -205,6 +211,7 @@ const prisma = new PrismaClient();
       sizeGB: 3,
       type: "TERRAIN",
       name: "Terrain",
+      isPublic: true,
       visibleForGroups: {
         connect: [{ id: adminGroupId }, { id: guestGroupId }],
       },
@@ -218,6 +225,7 @@ const prisma = new PrismaClient();
       sizeGB: 13,
       type: "IMAGERY",
       name: "Imagery",
+      isPublic: true,
       visibleForGroups: {
         connect: [{ id: adminGroupId }, { id: guestGroupId }],
       },

@@ -1,5 +1,5 @@
 import { DropzoneOptions, useDropzone } from "react-dropzone";
-import { Grid, List, ListItem, ListItemText, Typography } from "@mui/material";
+import { Button, Grid, List, ListItem, ListItemText, Typography } from "@mui/material";
 import { UploadFile } from "@mui/icons-material";
 import { useRef } from "react";
 import { useTranslations } from "next-intl";
@@ -34,38 +34,50 @@ export default function DragAndDropzone(
     });
 
   return (
-    <Grid
-      {...getRootProps()}
-      container
-      flexDirection="column"
-      alignItems="center"
-      justifyContent="center"
-      sx={(theme) => ({
-        padding: "16px 32px 0px 32px",
-        border: isDragActive
-          ? `2px dotted ${theme.palette.secondary.main}`
-          : `2px dotted ${theme.palette.divider}`,
-        background: isDragActive ? theme.palette.secondary.light : undefined,
-        color: isDragActive ? theme.palette.secondary.contrastText : undefined,
-      })}
-    >
-      <input
-        type="file"
-        name={props.name}
-        ref={hiddenInputRef}
-        style={{ display: "none" }}
-        required={props.required}
-      />
-      <input {...getInputProps()} />
-      <UploadFile sx={{ fontSize: 48 }} />
-      <Typography component="p">{t("drag-and-dropzone.drop-here")}</Typography>
-      <List>
-        {(props.value ?? acceptedFiles).map((acceptedFile) => (
-          <ListItem key={acceptedFile.webkitRelativePath}>
-            <ListItemText primary={acceptedFile.name} />
-          </ListItem>
-        ))}
-      </List>
-    </Grid>
+    <>
+      <Grid
+        {...getRootProps()}
+        container
+        flexDirection="column"
+        alignItems="center"
+        justifyContent="center"
+        sx={(theme) => ({
+          padding: "16px 32px 0px 32px",
+          border: isDragActive
+            ? `2px dotted ${theme.palette.secondary.main}`
+            : `2px dotted ${theme.palette.divider}`,
+          background: isDragActive ? theme.palette.secondary.light : undefined,
+          color: isDragActive
+            ? theme.palette.secondary.contrastText
+            : undefined,
+        })}
+      >
+        <input
+          type="file"
+          name={props.name}
+          ref={hiddenInputRef}
+          style={{ display: "none" }}
+          required={props.required}
+        />
+        <input {...getInputProps()} />
+        <UploadFile sx={{ fontSize: 48 }} />
+        <Typography component="p">
+          {t("drag-and-dropzone.drop-here")}
+        </Typography>
+        <Button>
+          {t("drag-and-dropzone.browse-files")}
+        </Button>
+        <Typography sx={{ marginTop: 2 }} variant="caption">
+          {getInputProps().accept?.split(",").join(", ")}
+        </Typography>
+        <List>
+          {(props.value ?? acceptedFiles).map((acceptedFile) => (
+            <ListItem key={acceptedFile.webkitRelativePath}>
+              <ListItemText primary={acceptedFile.name} />
+            </ListItem>
+          ))}
+        </List>
+      </Grid>
+    </>
   );
 }

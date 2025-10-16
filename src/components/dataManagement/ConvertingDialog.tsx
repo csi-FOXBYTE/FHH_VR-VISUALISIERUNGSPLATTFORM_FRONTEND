@@ -194,7 +194,6 @@ export default function ConvertingDialog({
               label={t("data-management.appearance")}
             />
             <FormControlLabel
-              required
               {...register("hasAlphaEnabled")}
               control={<Switch />}
               label={t("data-management.has-alpha-enabled")}

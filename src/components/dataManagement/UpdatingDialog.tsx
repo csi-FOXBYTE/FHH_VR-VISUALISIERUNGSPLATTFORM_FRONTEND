@@ -25,6 +25,7 @@ export default function UpdatingDialog({
   row: null | {
     id: string;
     href: string | null;
+    isPublic: boolean;
     visibleForGroups: { id: string; name: string }[];
   };
 }) {
@@ -36,6 +37,7 @@ export default function UpdatingDialog({
       visibleForGroups:
         row?.visibleForGroups.map((v) => ({ label: v.name, value: v.id })) ??
         [],
+      isPublic: false,
       id: row?.id,
     },
   });
@@ -43,16 +45,19 @@ export default function UpdatingDialog({
   const { handleSubmit, reset } = form;
 
   useEffect(() => {
+    console.log({row});
     if (!row) return;
+    
     reset({
       href: row.href ?? undefined,
       id: row.id,
+      isPublic: row.isPublic,
       visibleForGroups: row.visibleForGroups.map((v) => ({
         label: v.name,
         value: v.id,
       })),
     });
-  }, [row?.href, row?.id, row?.visibleForGroups]);
+  }, [row?.href, row?.id, row?.visibleForGroups, row?.isPublic]);
 
   const utils = trpc.useUtils();
 
@@ -62,9 +67,12 @@ export default function UpdatingDialog({
     mutationFn: async (values: {
       id?: string;
       href: string;
+      isPublic: boolean;
       visibleForGroups: { label: string; value: string }[];
     }) => {
       if (!values.id) throw new Error("No id supplied!");
+
+      console.log(values);
 
       const apis = await getApis();
 
@@ -73,6 +81,7 @@ export default function UpdatingDialog({
           href: row?.href === null ? null : values.href,
           id: values.id,
           visibleForGroups: values.visibleForGroups.map((v) => v.value) ?? [],
+          isPublic: values.isPublic,
         },
       });
 
@@ -131,6 +140,13 @@ export default function UpdatingDialog({
                     multiple: true,
                     options: possibleVisibleForGroups,
                     label: t("data-management.visible-for-groups"),
+                  },
+                },
+                {
+                  type: "switch",
+                  name: "isPublic",
+                  props: {
+                    label: t("data-management.public"),
                   },
                 },
               ]}

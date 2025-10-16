@@ -46,6 +46,7 @@ import {
   useViewerStore,
 } from "./ViewerProvider";
 import useIsReadOnly from "./useIsReadOnly";
+import { LAYER_TYPE } from "@prisma/client";
 
 const StyledCount = styled("div")`
   display: inline-block;
@@ -116,6 +117,13 @@ export default function SceneGraph() {
   const viewer = useViewerStore((state) => state.ctx?.viewer);
 
   const isReadOnly = useIsReadOnly();
+
+  const baseLayerTypeIcons: Record<LAYER_TYPE, string> = {
+    IMAGERY: "🖼️",
+    TERRAIN: "⛰️",
+    TILES3D: "🏢",
+    WMS: "🖼️",
+  };
 
   useEffect(() => {}, []);
 
@@ -450,7 +458,7 @@ export default function SceneGraph() {
                       disabled={isReadOnly}
                       checked={baseLayers.selected.includes(baseLayer.id)}
                     />
-                    <ListItemText sx={{ flex: 1 }} primary={baseLayer.name} />
+                    <ListItemText sx={{ flex: 1 }} primary={baseLayerTypeIcons[baseLayer.type as LAYER_TYPE] + " - " + baseLayer.name} />
                     <Tooltip arrow title={t("actions.fly-to")}>
                       <IconButton
                         disabled={!baseLayers.selected.includes(baseLayer.id)}

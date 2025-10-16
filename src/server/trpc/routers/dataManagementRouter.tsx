@@ -31,6 +31,7 @@ const dataManagementRouter = router({
             progress: true,
             status: true,
             href: true,
+            isPublic: true,
             visibleForGroups: {
               select: {
                 name: true,
