@@ -9,12 +9,7 @@ import usePermissions from "@/permissions/usePermissions";
 import { getApis } from "@/server/gatewayApi/client";
 import { Link } from "@/server/i18n/routing";
 import { trpc } from "@/server/trpc/client";
-import {
-  Add,
-  ArrowRightOutlined,
-  CopyAll,
-  MoreVert,
-} from "@mui/icons-material";
+import { Add, ArrowRightOutlined, MoreVert } from "@mui/icons-material";
 import {
   Avatar,
   AvatarGroup,
@@ -23,19 +18,17 @@ import {
   ButtonGroup,
   Grid,
   IconButton,
-  InputAdornment,
   List,
   ListItem,
   ListItemAvatar,
   ListItemText,
   Menu,
   MenuItem,
-  TextField,
   Typography,
 } from "@mui/material";
 import { useMutation } from "@tanstack/react-query";
 import PopupState, { bindMenu, bindTrigger } from "material-ui-popup-state";
-import { useFormatter, useNow, useTranslations } from "next-intl";
+import { useFormatter, useNow, useTimeZone, useTranslations } from "next-intl";
 import { useSnackbar } from "notistack";
 
 function stringToColor(string: string) {
@@ -115,6 +108,8 @@ export default function CollaborationPage() {
   });
 
   const permissions = usePermissions();
+
+  const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
   return (
     <PageContainer>
@@ -221,6 +216,7 @@ export default function CollaborationPage() {
                       month: "2-digit",
                       day: "2-digit",
                       hour: "2-digit",
+                      timeZone,
                       minute: "2-digit",
                     }
                   )}
@@ -237,17 +233,16 @@ export default function CollaborationPage() {
                   }}
                 >
                   <AvatarGroup max={1}>
-                    {[
-                      { user: event.owner },
-                      ...event.attendees,
-                    ].map((attendee) => {
-                      return (
-                        <Avatar
-                          key={attendee.user?.id ?? ""}
-                          {...stringAvatar(attendee.user?.name ?? "-")}
-                        />
-                      );
-                    })}
+                    {[{ user: event.owner }, ...event.attendees].map(
+                      (attendee) => {
+                        return (
+                          <Avatar
+                            key={attendee.user?.id ?? ""}
+                            {...stringAvatar(attendee.user?.name ?? "-")}
+                          />
+                        );
+                      }
+                    )}
                   </AvatarGroup>
                 </ListItemAvatar>
                 <ListItemText
@@ -256,47 +251,6 @@ export default function CollaborationPage() {
                   }}
                   primary={t(`enums.event-attendee-roles.${event.role}`)}
                 />
-                {/* <ListItemText>
-                  <TextField
-                    sx={{
-                      display: {
-                        xs: "none",
-                        s: "none",
-                        md: "none",
-                        lg: "block",
-                      },
-                    }}
-                    label={t("collaboration.code")}
-                    slotProps={{
-                      input: {
-                        endAdornment: (
-                          <InputAdornment position="end">
-                            <IconButton
-                              disabled={!event.joinCode}
-                              onClick={() => {
-                                if (!event.joinCode) return;
-
-                                window.navigator.clipboard.writeText(
-                                  event.joinCode
-                                );
-                                enqueueSnackbar({
-                                  variant: "success",
-                                  message: t(
-                                    "collaboration.copied-to-clipboard-success"
-                                  ),
-                                });
-                              }}
-                            >
-                              <CopyAll />
-                            </IconButton>
-                          </InputAdornment>
-                        ),
-                      },
-                    }}
-                    value={event.joinCode ?? "-"}
-                    disabled
-                  />
-                </ListItemText> */}
                 <ListItemText
                   sx={{
                     display: { xs: "none", s: "none", md: "none", lg: "block" },

@@ -3,6 +3,9 @@ import {
   createRefreshToken,
   getRefreshToken,
 } from "@/server/auth/unityHelpers";
+import prisma from "@/server/prisma";
+import { PrismaAdapter } from "@auth/prisma-adapter";
+import dayjs from "dayjs";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
@@ -26,8 +29,6 @@ export async function POST(request: NextRequest) {
   // 2. Decrypt & verify the refresh token
   const payload = await getRefreshToken(refresh_token);
 
-  console.log({ payload, grant_type, refresh_token, client_id });
-
   if (!payload)
     return NextResponse.json(
       {
@@ -48,9 +49,32 @@ export async function POST(request: NextRequest) {
       }
     );
 
+  const adapter = PrismaAdapter(prisma);
+
+  let sessionToken = payload.sessionToken;
+
+  if ((await adapter.getSessionAndUser!(sessionToken)) === null) {
+    if ((await adapter.getUser!(payload.userId)) === null)
+      throw new Error("User does not exist!");
+
+    for (let i = 0; i < 64; i++) {
+      try {
+        const tempSessionToken = crypto.randomUUID();
+
+        await adapter.createSession!({
+          sessionToken: tempSessionToken,
+          expires: dayjs().add(7, "day").toDate(),
+          userId: payload.userId,
+        });
+
+        sessionToken = tempSessionToken;
+      } catch {}
+    }
+  }
+
   // 4. Issue a new access token
   const access_token = await createAccessToken({
-    sessionToken: payload.sessionToken,
+    sessionToken,
     userId: payload.userId,
   });
 
@@ -58,7 +82,7 @@ export async function POST(request: NextRequest) {
   const new_refresh_token = await createRefreshToken({
     client_id: payload.client_id,
     scope: payload.scope,
-    sessionToken: payload.sessionToken,
+    sessionToken,
     userId: payload.userId,
   });
 

@@ -4,6 +4,9 @@ import { protectedProcedure, router } from "..";
 const userInfoRouter = router({
   getLastLogin: protectedProcedure.query(async (opts) => {
     return await opts.ctx.db.session.findFirstOrThrow({
+      orderBy: {
+        updatedAt: "desc",
+      },
       select: {
         updatedAt: true,
       },

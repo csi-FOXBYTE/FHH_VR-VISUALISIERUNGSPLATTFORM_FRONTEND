@@ -23,6 +23,8 @@ export default function MyAreaPage() {
 
   const t = useTranslations();
 
+  const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
   const formatter = useFormatter();
 
   const { data: { updatedAt } = { updatedAt: new Date() } } =
@@ -43,6 +45,7 @@ export default function MyAreaPage() {
             content: t("index.last-logged-in-message", {
               date: formatter.dateTime(new Date(updatedAt), {
                 dateStyle: "long",
+                timeZone,
                 timeStyle: "medium",
               }),
             }),
@@ -77,6 +80,7 @@ export default function MyAreaPage() {
                   {t("index.events-text", {
                     date: formatter.dateTime(dayjs().toDate(), {
                       dateStyle: "medium",
+                      timeZone
                     }),
                   })}
                 </span>
@@ -91,6 +95,7 @@ export default function MyAreaPage() {
                               new Date(event.endTime),
                               {
                                 timeStyle: "short",
+                                timeZone
                               }
                             )}
                           </span>
