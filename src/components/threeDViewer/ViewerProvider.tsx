@@ -1581,6 +1581,7 @@ export const ViewerProvider = ({
                 objectRefs: {
                   ...state.objectRefs,
                   clippingPolygons: {
+                    ...state.objectRefs.clippingPolygons,
                     [args.id]: args.objectRef,
                   },
                 },
@@ -1590,6 +1591,7 @@ export const ViewerProvider = ({
                 objectRefs: {
                   ...state.objectRefs,
                   projectObject: {
+                    ...state.objectRefs.projectObject,
                     [args.id]: args.objectRef,
                   },
                 },
@@ -1599,6 +1601,7 @@ export const ViewerProvider = ({
                 objectRefs: {
                   ...state.objectRefs,
                   startingPoints: {
+                    ...state.objectRefs.startingPoints,
                     [args.id]: args.objectRef,
                   },
                 },

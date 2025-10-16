@@ -129,7 +129,9 @@ export default function ImportProjectObjectDialog() {
       name: foundProjectObject.name + "-copy",
       id: crypto.randomUUID(),
     });
-  }, [models, selectedModelRows, addProjectObject]);
+
+    toggleImport();
+  }, [models, selectedModelRows, addProjectObject, toggleImport]);
 
   const { mutate: importFileMutation, isPending: isImportFileMutationPending } =
     useMutation({

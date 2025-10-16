@@ -32,8 +32,6 @@ export default function Tileset({
     useState<CesiumComponentRef<Cesium.Cesium3DTileset> | null>(null);
 
   useLayoutEffect(() => {
-    console.log({ isDestroyed: tilesetRef?.cesiumElement?.isDestroyed() });
-
     if (!tilesetRef?.cesiumElement || tilesetRef.cesiumElement.isDestroyed()) {
       return;
     }

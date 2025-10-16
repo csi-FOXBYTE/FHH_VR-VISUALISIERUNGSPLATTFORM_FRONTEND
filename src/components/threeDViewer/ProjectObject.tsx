@@ -21,18 +21,19 @@ export default function ProjectObject({
     (state) => state.unregisterObjectRef
   );
 
-  const project = useViewerStore(state => state.project);
+  const project = useViewerStore((state) => state.project);
 
   useEffect(() => {
-    if (modelRef !== null)
+    if (modelRef !== null) {
       registerObjectRef({
         type: "PROJECT_OBJECT",
         id: projectObject.id,
         objectRef: modelRef,
       });
-    return () => {
-      unregisterObjectRef({ type: "PROJECT_OBJECT", id: projectObject.id });
-    };
+      return () => {
+        unregisterObjectRef({ type: "PROJECT_OBJECT", id: projectObject.id });
+      };
+    }
   }, [unregisterObjectRef, modelRef, projectObject.id, registerObjectRef]);
 
   const modelMatrix = useMemo(() => {

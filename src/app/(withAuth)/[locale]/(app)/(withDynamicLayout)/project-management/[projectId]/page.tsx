@@ -7,8 +7,6 @@ import { getApis } from "@/server/gatewayApi/client";
 // import "./page.css";
 
 export default async function ThreeDViewerPage(props: { params: Promise<{ projectId: string }>}) {
-  console.log(props)
-
   const apis = await getApis();
 
   const params =  await props.params;
@@ -21,8 +19,6 @@ export default async function ThreeDViewerPage(props: { params: Promise<{ projec
       cache: "no-store",
     }
   );
-
-  console.log("GOT NEW PROJECT");
 
   return (
     <ViewerProvider project={project}>
