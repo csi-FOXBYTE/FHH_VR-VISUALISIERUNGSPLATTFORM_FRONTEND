@@ -26,6 +26,7 @@ import { ReactNode, useCallback, useMemo, useState } from "react";
 import DragAndDropzone from "../common/DragAndDropZone";
 import { useViewerStore } from "./ViewerProvider";
 import pLimit from "p-limit";
+import { useConfigurationProviderContext } from "../configuration/ConfigurationProvider";
 
 const epsgValues = Object.values(proj4List)
   .map(([epsg, proj4]) => ({
@@ -44,6 +45,8 @@ export default function ImportProjectObjectDialog() {
   );
 
   const params = useParams<{ projectId: string }>();
+
+  const configuration = useConfigurationProviderContext();
 
   const [selectedEpsg, setSelectedEpsg] = useState<{
     value: string;
@@ -252,16 +255,32 @@ export default function ImportProjectObjectDialog() {
           id: crypto.randomUUID(),
           attributes: {},
           scale: { x: scale.x, y: scale.y, z: scale.z },
+          uiScale: {
+            x: "1",
+            y: "1",
+            z: "1",
+          },
+          uiEpsg: configuration.defaultEPSG,
           rotation: {
             x: rotation.x,
             y: rotation.y,
             z: rotation.z,
             w: rotation.w,
           },
+          uiRotation: {
+            x: "0",
+            y: "0",
+            z: "0",
+          },
           translation: {
             x: translation.x,
             y: translation.y,
             z: translation.z,
+          },
+          uiTranslation: {
+            x: "0",
+            y: "0",
+            z: "0",
           },
           name: file.name,
           visible: true,

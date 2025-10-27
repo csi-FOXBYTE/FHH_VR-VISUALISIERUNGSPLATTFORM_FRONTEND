@@ -1,7 +1,7 @@
 import { DropzoneOptions, useDropzone } from "react-dropzone";
 import { Button, Grid, List, ListItem, ListItemText, Typography } from "@mui/material";
 import { UploadFile } from "@mui/icons-material";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
 
 export default function DragAndDropzone(
@@ -13,6 +13,10 @@ export default function DragAndDropzone(
   }
 ) {
   const hiddenInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    props.onChange?.([]);
+  }, []);
 
   const t = useTranslations();
 

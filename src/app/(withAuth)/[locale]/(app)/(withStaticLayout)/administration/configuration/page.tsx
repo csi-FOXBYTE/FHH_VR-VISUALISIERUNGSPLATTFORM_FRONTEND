@@ -80,6 +80,10 @@ export default function ConfigurationPage() {
       globalStartPointX,
       globalStartPointY,
       globalStartPointZ,
+      uiGlobalStartPointX,
+      uiGlobalStartPointY,
+      uiGlobalStartPointZ,
+      uiGlobalStartPointEpsg,
       defaultEPSG,
       ...data
     },
@@ -95,9 +99,17 @@ export default function ConfigurationPage() {
         value: proj4list[defaultEPSG][1],
       },
       globalStartPoint: {
-        x: globalStartPointX,
-        y: globalStartPointY,
-        z: globalStartPointZ,
+        value: {
+          x: globalStartPointX,
+          y: globalStartPointY,
+          z: globalStartPointZ,
+        },
+        uiValue: {
+          x: uiGlobalStartPointX,
+          y: uiGlobalStartPointY,
+          z: uiGlobalStartPointZ,
+        },
+        uiEpsg: uiGlobalStartPointEpsg,
       },
     },
   });
@@ -140,9 +152,13 @@ export default function ConfigurationPage() {
           updateConfigurationMutation({
             ...values,
             defaultEPSG: values.defaultEPSG.label,
-            globalStartPointX: values.globalStartPoint.x,
-            globalStartPointY: values.globalStartPoint.y,
-            globalStartPointZ: values.globalStartPoint.z,
+            globalStartPointX: values.globalStartPoint.value.x,
+            globalStartPointY: values.globalStartPoint.value.y,
+            globalStartPointZ: values.globalStartPoint.value.z,
+            uiGlobalStartPointEpsg: values.globalStartPoint.uiEpsg,
+            uiGlobalStartPointX: values.globalStartPoint.uiValue.x,
+            uiGlobalStartPointY: values.globalStartPoint.uiValue.y,
+            uiGlobalStartPointZ: values.globalStartPoint.uiValue.z,
           });
         })}
       >
@@ -176,12 +192,20 @@ export default function ConfigurationPage() {
               <Controller
                 control={control}
                 name="globalStartPoint"
-                render={({ field }) => (
+                render={({ field }) => {
+                  console.log(field.value)
+                  return (
                   <TranslationInput
-                    value={field.value}
-                    onImmediateChange={field.onChange}
+                    uiValue={field.value.uiValue}
+                    uiEpsg={field.value.uiEpsg}
+                    onChange={(value) => {
+                      if (value.value === undefined) return;
+
+                      field.onChange(value);
+                    }}
                   />
-                )}
+                )
+                }}
               />
             </Grid>
           </AccordionDetails>
@@ -229,14 +253,13 @@ export default function ConfigurationPage() {
           </AccordionSummary>
           <AccordionDetails>
             <Grid container flexDirection="column" spacing={2}>
-            <TextField
-              type="number"
-              label={t("configuration.maximum-flying-height")}
-              {...register("maximumFlyingHeight")}
-            />
+              <TextField
+                type="number"
+                label={t("configuration.maximum-flying-height")}
+                {...register("maximumFlyingHeight")}
+              />
             </Grid>
           </AccordionDetails>
-          
         </Accordion>
         <Accordion>
           <AccordionSummary>
@@ -244,18 +267,18 @@ export default function ConfigurationPage() {
           </AccordionSummary>
           <AccordionDetails>
             <Grid container flexDirection="column" spacing={2}>
-            <TextField
-              label={t("configuration.system-logs-link")}
-              {...register("systemActivityLink")}
-            />
-            <TextField
-              label={t("configuration.user-profile-link")}
-              {...register("userProfileLink")}
-            />
-            <TextField
-              label={t("configuration.unity-download-link")}
-              {...register("unityDownloadLink")}
-            />
+              <TextField
+                label={t("configuration.system-logs-link")}
+                {...register("systemActivityLink")}
+              />
+              <TextField
+                label={t("configuration.user-profile-link")}
+                {...register("userProfileLink")}
+              />
+              <TextField
+                label={t("configuration.unity-download-link")}
+                {...register("unityDownloadLink")}
+              />
             </Grid>
           </AccordionDetails>
         </Accordion>
@@ -265,31 +288,31 @@ export default function ConfigurationPage() {
           </AccordionSummary>
           <AccordionDetails>
             <Grid container flexDirection="column" spacing={2}>
-            <TextField
-              label={t("configuration.email-host")}
-              {...register("emailHost")}
-            />
-            <TextField
-              type="number"
-              label={t("configuration.email-port")}
-              {...register("emailPort")}
-            />
-            <FormControlLabel
-              control={<Switch {...register("emailSecure")} />}
-              label={t("configuration.email-secure")}
-            ></FormControlLabel>
-            <TextField
-              label={t("configuration.email-user")}
-              {...register("emailUser")}
-            />
-            <TextField
-              label={t("configuration.email-password")}
-              {...register("emailPassword")}
-            />
-            <TextField
-              label={t("configuration.email-platform-address")}
-              {...register("emailPlatformAddress")}
-            />
+              <TextField
+                label={t("configuration.email-host")}
+                {...register("emailHost")}
+              />
+              <TextField
+                type="number"
+                label={t("configuration.email-port")}
+                {...register("emailPort")}
+              />
+              <FormControlLabel
+                control={<Switch {...register("emailSecure")} />}
+                label={t("configuration.email-secure")}
+              ></FormControlLabel>
+              <TextField
+                label={t("configuration.email-user")}
+                {...register("emailUser")}
+              />
+              <TextField
+                label={t("configuration.email-password")}
+                {...register("emailPassword")}
+              />
+              <TextField
+                label={t("configuration.email-platform-address")}
+                {...register("emailPlatformAddress")}
+              />
             </Grid>
           </AccordionDetails>
         </Accordion>

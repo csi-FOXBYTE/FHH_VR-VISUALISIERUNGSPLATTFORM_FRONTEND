@@ -11,6 +11,10 @@ const prisma = new PrismaClient();
       globalStartPointX: 3764595.8724393756,
       globalStartPointY: 664200.4499076013,
       globalStartPointZ: 5144292.106228131,
+      uiGlobalStartPointEpsg: "EPSG:25832",
+      uiGlobalStartPointX: "566619.1165765251",
+      uiGlobalStartPointY: "5935775.563757711",
+      uiGlobalStartPointZ: "44805.220297358",
       invitationEmailText: "",
       maxParallelBaseLayerConversions: 1,
       maxParallelFileConversions: 1,
@@ -103,21 +107,6 @@ const prisma = new PrismaClient();
     select: {
       id: true,
     },
-  });
-
-  await prisma.visualAxis.createMany({
-    data: [
-      {
-        ownerId: id,
-        endPointX: 0,
-        endPointY: 0,
-        endPointZ: 0,
-        name: "Test",
-        startPointX: 0,
-        startPointY: 0,
-        startPointZ: 0,
-      },
-    ],
   });
 
   await prisma.baseLayer.create({

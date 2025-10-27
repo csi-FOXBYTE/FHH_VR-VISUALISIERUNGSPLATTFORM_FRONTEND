@@ -10,34 +10,27 @@ import {
 import { useEffect, useMemo, useState } from "react";
 
 export default function RotationInput({
-  value,
   origin,
-  onImmediateChange,
-  disabled
+  onChange,
+  uiValue,
+  disabled,
 }: {
-  value?: { x: number; y: number; z: number; w: number };
+  uiValue: { x: string; y: string; z: string };
   origin: { x: number; y: number; z: number };
-  onImmediateChange?: (value: {
-    x: number;
-    y: number;
-    z: number;
-    w: number;
+  onChange: (v: {
+    value?: { x: number; y: number; z: number; w: number };
+    uiValue: { x: string; y: string; z: string };
   }) => void;
   disabled?: boolean;
 }) {
-  const [prevHprText, setPrevHprText] = useState({
-    heading: "0",
-    pitch: "0",
-    roll: "0",
-  });
-  const [hprText, setHprText] = useState({
-    heading: "0",
-    pitch: "0",
-    roll: "0",
-  });
+  const [internalUiValue, setInternalUiValue] = useState(uiValue);
+
+  useEffect(() => {
+    setInternalUiValue(uiValue);
+  }, [uiValue.x, uiValue.y, uiValue.z])
 
   // 1. Precompute the local<->ECEF frame quaternions
-  const { earthToLocal, localToEarth } = useMemo(() => {
+  const { localToEarth } = useMemo(() => {
     const m = Transforms.eastNorthUpToFixedFrame(
       new Cartesian3(origin.x, origin.y, origin.z)
     );
@@ -47,49 +40,14 @@ export default function RotationInput({
     return { earthToLocal, localToEarth };
   }, [origin.x, origin.y, origin.z]);
 
-  // 2. Whenever the prop "value" (an ECEF quaternion) changes, convert it into local HPR
-  useEffect(() => {
-    if (!value) return;
+  const handleChange = (uiValue: { x: string; y: string; z: string }) => {
+    setInternalUiValue(uiValue);
 
-    const qE = new Quaternion(value.x, value.y, value.z, value.w);
-    // Correct: Q_local = Q_E→L * Q_ECEF
-    const qLocal = Quaternion.multiply(earthToLocal, qE, new Quaternion());
-    const hpr = HeadingPitchRoll.fromQuaternion(qLocal);
+    const h = parseFloat(uiValue.x);
+    const p = parseFloat(uiValue.y);
+    const r = parseFloat(uiValue.z);
 
-    let heading = ((hpr.heading * 180) / Math.PI).toFixed(5);
-    let pitch = ((hpr.pitch * 180) / Math.PI).toFixed(5);
-    let roll = ((hpr.roll * 180) / Math.PI).toFixed(5);
-
-    if (heading === "-0.00000") heading = "0.00000";
-    if (pitch === "-0.00000") pitch = "0.00000";
-    if (roll === "-0.00000") roll = "0.00000";
-
-    setHprText({
-      heading,
-      pitch,
-      roll,
-    });
-    setPrevHprText({
-      heading,
-      pitch,
-      roll,
-    });
-  }, [value, earthToLocal]);
-
-  // 3. When the user edits H/P/R, convert back to an ECEF quaternion
-  useEffect(() => {
-    if (
-      hprText.heading === prevHprText.heading &&
-      hprText.pitch === prevHprText.pitch &&
-      hprText.roll === prevHprText.roll
-    )
-      return;
-
-    const h = parseFloat(hprText.heading);
-    const p = parseFloat(hprText.pitch);
-    const r = parseFloat(hprText.roll);
-
-    if ([h, p, r].some(Number.isNaN)) return;
+    if ([h, p, r].some(Number.isNaN)) return { uiValue: { ...uiValue } };
 
     // Local quaternion from HPR
     const hpr = new HeadingPitchRoll(
@@ -102,33 +60,29 @@ export default function RotationInput({
     // Correct: Q_ECEF = Q_L→E * Q_local
     const qE = Quaternion.multiply(localToEarth, qLocal, new Quaternion());
 
-    onImmediateChange?.({
-      x: qE.x,
-      y: qE.y,
-      z: qE.z,
-      w: qE.w,
+    onChange({
+      uiValue: { ...uiValue },
+      value: {
+        x: qE.x,
+        y: qE.y,
+        z: qE.z,
+        w: qE.w,
+      },
     });
-  }, [
-    hprText.heading,
-    hprText.pitch,
-    hprText.roll,
-    localToEarth,
-    onImmediateChange,
-    prevHprText.heading,
-    prevHprText.roll,
-    prevHprText.pitch
-  ]);
+  };
 
   return (
     <Grid container flexDirection="column" spacing={2}>
-      {(["heading", "pitch", "roll"] as const).map((field) => (
+      {(["x", "y", "z"] as const).map((field) => (
         <TextField
           disabled={disabled}
           key={field}
           variant="standard"
           type="number"
-          value={hprText[field]}
-          onChange={(e) => setHprText({ ...hprText, [field]: e.target.value })}
+          value={internalUiValue[field]}
+          onChange={(e) =>
+            handleChange({ ...internalUiValue, [field]: e.target.value })
+          }
           slotProps={{
             input: {
               startAdornment: (

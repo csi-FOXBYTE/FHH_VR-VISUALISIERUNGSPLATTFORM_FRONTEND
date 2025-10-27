@@ -4,6 +4,7 @@ apis/BaseLayerApi.ts
 apis/Converter3DApi.ts
 apis/EventsApi.ts
 apis/ProjectApi.ts
+apis/PublicApi.ts
 apis/StatsApi.ts
 apis/UserApi.ts
 apis/index.ts
@@ -40,10 +41,10 @@ models/ProjectIdGet200ResponseLayersInnerClippingPolygonsInner.ts
 models/ProjectIdGet200ResponseLayersInnerProjectModelsInner.ts
 models/ProjectIdGet200ResponseLayersInnerProjectModelsInnerRotation.ts
 models/ProjectIdGet200ResponseStartingPointsInner.ts
+models/ProjectIdGet200ResponseStartingPointsInnerUiStartPoint.ts
 models/ProjectIdGet200ResponseVisualAxesInner.ts
 models/ProjectIdGet200ResponseVisualAxesInnerStartPoint.ts
 models/ProjectIdUnityGet200Response.ts
-models/ProjectIdUnityGet200ResponseMyRole.ts
 models/ProjectIdUnityGet200ResponseStartingPointsInner.ts
 models/ProjectIdUnityGet200ResponseVariantsInner.ts
 models/ProjectIdUnityGet200ResponseVariantsInnerBaseLayersInner.ts

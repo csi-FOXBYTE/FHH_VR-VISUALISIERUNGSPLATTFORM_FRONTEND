@@ -87,14 +87,23 @@ export const AppFormFactory = createFormFactory(
               <TranslationInput
                 label={label}
                 required={required}
-                value={field.value}
-                onImmediateChange={field.onChange}
+                uiEpsg={field.value.uiEpsg}
+                uiValue={field.value.uiValue}
+                onChange={(value) => {
+                  if (value.value === undefined) return;
+
+                  field.onChange(value);
+                }}
               />
             )}
           />
         );
       },
-      valueType: { x: 0, y: 0, z: 0 } as { x: number; y: number; z: number },
+      valueType: {
+        value: { x: 0, y: 0, z: 0 } as { x: number; y: number; z: number },
+        uiValue: { x: "0", y: "0", z: "0" },
+        uiEpsg: "EPSG:25832",
+      },
     },
     search: {
       render(

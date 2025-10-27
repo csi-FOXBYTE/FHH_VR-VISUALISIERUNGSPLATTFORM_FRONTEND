@@ -15,6 +15,8 @@ import { ResiumContext } from "resium";
 import { create, StoreApi, UseBoundStore } from "zustand";
 import { EnqueueSnackbar, SnackbarKey, useSnackbar } from "notistack";
 import { useTranslations, useFormatter } from "next-intl";
+import { useConfigurationProviderContext } from "../configuration/ConfigurationProvider";
+import { convertTranslationFromCesiumToUserEpsg } from "./TransformInputs/helpers";
 
 export type ClippingPolygon = {
   type: "CLIPPING_POLYGON";
@@ -30,8 +32,12 @@ export type ProjectModel = {
   href: string;
   name: string;
   translation: { x: number; y: number; z: number };
+  uiTranslation: { x: string; y: string; z: string };
   rotation: { x: number; y: number; z: number; w: number };
+  uiRotation: { x: string; y: string; z: string };
   scale: { x: number; y: number; z: number };
+  uiScale: { x: string; y: string; z: string };
+  uiEpsg: string;
   attributes: Record<string, string>;
   id: string;
   visible: boolean;
@@ -44,7 +50,11 @@ export type StartingPoint = {
   description: string;
   img: string;
   position: { x: number; y: number; z: number };
+  uiPosition: { x: string; y: string; z: string };
+  uiPositionEpsg: string;
   target: { x: number; y: number; z: number };
+  uiTarget: { x: string; y: string; z: string };
+  uiTargetEpsg: string;
   visible: boolean;
 };
 
@@ -150,7 +160,7 @@ export type ViewerStoreType = {
     translator: {
       t: ReturnType<typeof useTranslations>;
       f: ReturnType<typeof useFormatter>;
-    }
+    };
     screenshotDialogOpen: boolean;
     screenshotButtonPressedResolve: () => void;
     screenshotButtonPressedReject: () => void;
@@ -301,6 +311,7 @@ export const ViewerProvider = ({
   const { closeSnackbar, enqueueSnackbar } = useSnackbar();
   const t = useTranslations();
   const f = useFormatter();
+  const configuration = useConfigurationProviderContext();
 
   const [viewerContext] = useState(() => {
     const store = create<ViewerStoreType>((set, get) => ({
@@ -498,6 +509,10 @@ export const ViewerProvider = ({
                   rotation: p.rotation,
                   scale: p.scale,
                   translation: p.translation,
+                  uiEpsg: p.uiEpsg,
+                  uiRotation: p.uiRotation,
+                  uiScale: p.uiScale,
+                  uiTranslation: p.uiTranslation,
                 })),
                 clippingPolygons: l.clippingPolygons.map<
                   Project["layers"][number]["clippingPolygons"][number]
@@ -514,7 +529,11 @@ export const ViewerProvider = ({
               startingPoints: get().startingPoints.value.map((s) => ({
                 description: s.description,
                 endPoint: s.target,
+                uiEndPoint: s.uiTarget,
+                uiEndPointEpsg: s.uiTargetEpsg,
                 startPoint: s.position,
+                uiStartPoint: s.uiPosition,
+                uiStartPointEpsg: s.uiPositionEpsg,
                 id: s.id,
                 img: s.img,
                 name: s.name,
@@ -553,12 +572,16 @@ export const ViewerProvider = ({
           }));
           enqueueSnackbar({
             variant: "success",
-            message: t("generic.crud-notifications.save-success", { entity: t("entities.project")}),
+            message: t("generic.crud-notifications.save-success", {
+              entity: t("entities.project"),
+            }),
           });
         } catch (e) {
           enqueueSnackbar({
             variant: "error",
-            message: t("generic.crud-notifications.save-failed", { entity: t("entities.project")}),
+            message: t("generic.crud-notifications.save-failed", {
+              entity: t("entities.project"),
+            }),
           });
           console.error(e);
         }
@@ -621,8 +644,12 @@ export const ViewerProvider = ({
             name: p.name,
             type: "PROJECT_OBJECT",
             rotation: p.rotation,
+            uiRotation: p.uiRotation,
             scale: p.scale,
+            uiScale: p.uiScale,
             translation: p.translation,
+            uiTranslation: p.uiTranslation,
+            uiEpsg: p.uiEpsg,
             visible: true,
           })),
           type: "LAYER",
@@ -969,7 +996,11 @@ export const ViewerProvider = ({
           img: s.img,
           name: s.name,
           position: s.startPoint,
+          uiPosition: s.uiStartPoint,
+          uiPositionEpsg: s.uiStartPointEpsg,
           target: s.endPoint,
+          uiTarget: s.uiEndPoint,
+          uiTargetEpsg: s.uiEndPointEpsg,
           description: s.description,
           type: "STARTING_POINT",
           visible: true,
@@ -978,6 +1009,22 @@ export const ViewerProvider = ({
           const origin = await get().tools.pickPoint();
           const target = await get().tools.pickPoint();
 
+          const uiPosition = convertTranslationFromCesiumToUserEpsg(
+            {
+              ...origin,
+              z: origin.z + 1.7,
+            },
+            configuration.defaultEPSG
+          );
+
+          const uiTarget = convertTranslationFromCesiumToUserEpsg(
+            {
+              ...origin,
+              z: origin.z + 1.7,
+            },
+            configuration.defaultEPSG
+          );
+
           const newStartingPoint: StartingPoint = {
             id: crypto.randomUUID(),
             name: "Starting Point " + get().startingPoints.value.length,
@@ -985,6 +1032,8 @@ export const ViewerProvider = ({
               ...origin,
               z: origin.z + 1.7,
             },
+            uiPosition,
+            uiPositionEpsg: configuration.defaultEPSG,
             img: "",
             description: "",
             type: "STARTING_POINT",
@@ -992,6 +1041,8 @@ export const ViewerProvider = ({
               ...target,
               z: target.z + 1.7,
             },
+            uiTarget,
+            uiTargetEpsg: configuration.defaultEPSG,
             visible: true,
           };
 
@@ -1076,13 +1127,13 @@ export const ViewerProvider = ({
         async add(projectObject) {
           set((state) => {
             state.history.takeSnapshot();
-            
+
             return {
-            projectObjects: {
-              ...state.projectObjects,
-              value: [...state.projectObjects.value, projectObject],
-            },
-          }
+              projectObjects: {
+                ...state.projectObjects,
+                value: [...state.projectObjects.value, projectObject],
+              },
+            };
           });
         },
         helpers: {
@@ -1202,15 +1253,19 @@ export const ViewerProvider = ({
             name: p.name,
             href: p.href,
             rotation: p.rotation,
+            uiRotation: p.uiRotation,
             scale: p.scale,
+            uiScale: p.uiScale,
             translation: p.translation,
+            uiTranslation: p.uiTranslation,
+            uiEpsg: p.uiEpsg,
             type: "PROJECT_OBJECT",
             visible: true,
           })) ?? [],
       },
       tools: {
         translator: {
-          t, 
+          t,
           f,
         },
         snackbar: {

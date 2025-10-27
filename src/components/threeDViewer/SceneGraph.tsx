@@ -47,6 +47,11 @@ import {
 } from "./ViewerProvider";
 import useIsReadOnly from "./useIsReadOnly";
 import { LAYER_TYPE } from "@prisma/client";
+import {
+  convertRotationFromCesiumToUser,
+  convertTranslationFromCesiumToUserEpsg,
+} from "./TransformInputs/helpers";
+import { useConfigurationProviderContext } from "../configuration/ConfigurationProvider";
 
 const StyledCount = styled("div")`
   display: inline-block;
@@ -110,6 +115,8 @@ export default function SceneGraph() {
     (state) => state.projectObjects.toggleImport
   );
 
+  const configuration = useConfigurationProviderContext();
+
   const [selectedTab, setSelectedTab] = useState<
     "" | SelectedObject["type"] | "BASE_LAYER"
   >("");
@@ -124,8 +131,6 @@ export default function SceneGraph() {
     TILES3D: "🏢",
     WMS: "🖼️",
   };
-
-  useEffect(() => {}, []);
 
   useEffect(() => {
     setSelectedTab(selectedObject?.type ?? "");
@@ -303,8 +308,18 @@ export default function SceneGraph() {
 
                         updateProjectObject({
                           translation,
+                          uiTranslation: convertTranslationFromCesiumToUserEpsg(
+                            translation,
+                            configuration.defaultEPSG
+                          ),
                           scale,
+                          uiScale: { x: "1", y: "1", z: "1" },
                           rotation,
+                          uiRotation: convertRotationFromCesiumToUser(
+                            rotation,
+                            translation
+                          ),
+                          uiEpsg: configuration.defaultEPSG,
                           id: projectObject.id,
                         });
                       } catch (e) {
@@ -458,7 +473,14 @@ export default function SceneGraph() {
                       disabled={isReadOnly}
                       checked={baseLayers.selected.includes(baseLayer.id)}
                     />
-                    <ListItemText sx={{ flex: 1 }} primary={baseLayerTypeIcons[baseLayer.type as LAYER_TYPE] + " - " + baseLayer.name} />
+                    <ListItemText
+                      sx={{ flex: 1 }}
+                      primary={
+                        baseLayerTypeIcons[baseLayer.type as LAYER_TYPE] +
+                        " - " +
+                        baseLayer.name
+                      }
+                    />
                     <Tooltip arrow title={t("actions.fly-to")}>
                       <IconButton
                         disabled={!baseLayers.selected.includes(baseLayer.id)}

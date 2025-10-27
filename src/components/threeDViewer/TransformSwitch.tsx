@@ -1,22 +1,44 @@
 import { Divider, Grid, Typography } from "@mui/material";
-import {
-  Cartesian3,
-  ConstantPositionProperty,
-  Matrix4,
-  Quaternion,
-} from "cesium";
-import { useCallback, useEffect, useRef } from "react";
+import { Cartesian3, ConstantPositionProperty, Quaternion } from "cesium";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import { useCesium } from "resium";
-import {
-  createModelMatrixFromModelMatrixAndOptionalTranslationOrRotationOrScale,
-  createTranslationRotationScaleFromModelMatrixOptional,
-} from "./TransformInputs/helpers";
+import { createModelMatrixFromModelMatrixAndOptionalTranslationOrRotationOrScale } from "./TransformInputs/helpers";
 import RotationInput from "./TransformInputs/RotationInput";
 import ScaleInput from "./TransformInputs/ScaleInput";
 import TranslationInput from "./TransformInputs/TranslationInput";
-import { SelectedObjectResolved, useViewerStore } from "./ViewerProvider";
+import {
+  ProjectModel,
+  SelectedObjectResolved,
+  StartingPoint,
+  useViewerStore,
+} from "./ViewerProvider";
 import useIsReadOnly from "./useIsReadOnly";
 import { useTranslations } from "next-intl";
+
+type PartialProjectModel = Partial<
+  Pick<
+    ProjectModel,
+    | "translation"
+    | "rotation"
+    | "scale"
+    | "uiRotation"
+    | "uiScale"
+    | "uiTranslation"
+    | "uiEpsg"
+  >
+>;
+
+type PartialStartingPointTransform = Partial<
+  Pick<
+    StartingPoint,
+    | "position"
+    | "uiPosition"
+    | "uiPositionEpsg"
+    | "target"
+    | "uiTarget"
+    | "uiTargetEpsg"
+  >
+>;
 
 export default function TransformSwitch({
   selectedObject,
@@ -48,44 +70,65 @@ export default function TransformSwitch({
     };
   }, []);
 
-  const handleChangeMatrix = useCallback(
-    (matrix: Matrix4, id: string) => {
-      window.clearTimeout(timerRef.current.timer);
+  const transformsMap = useMemo(() => {
+    return new Map<string, PartialProjectModel>();
+  }, []);
 
-      const newTimer = window.setTimeout(() => {
-        updateProjectObject({
-          id,
-          ...createTranslationRotationScaleFromModelMatrixOptional(matrix),
-        });
-      }, 500);
+  const handleUpdateProjectObject = (
+    id: string,
+    newTransform: PartialProjectModel
+  ) => {
+    window.clearTimeout(timerRef.current.timer);
 
-      timerRef.current.timer = newTimer;
-    },
-    [updateProjectObject]
-  );
+    if (!transformsMap.has(id)) transformsMap.set(id, {});
+
+    const transform = transformsMap.get(id)!;
+
+    transformsMap.set(id, { ...transform, ...newTransform });
+
+    const newTimer = window.setTimeout(() => {
+      updateProjectObject({
+        id,
+        ...transformsMap.get(id),
+      });
+      console.log({ ...transformsMap.get(id) });
+      transformsMap.delete(id);
+    }, 500);
+
+    timerRef.current.timer = newTimer;
+  };
 
   const handleTranslationChange = useCallback(
-    (value: { x: number; y: number; z: number }) => {
+    ({
+      value,
+      uiValue,
+      uiEpsg,
+    }: {
+      value?: { x: number; y: number; z: number };
+      uiValue: { x: string; y: string; z: string };
+      uiEpsg: string;
+    }) => {
       if (selectedObject.type !== "PROJECT_OBJECT") return;
       if (!objectRefs.projectObject[selectedObject.id]) return;
 
-      objectRefs.projectObject[selectedObject.id].modelMatrix =
-        createModelMatrixFromModelMatrixAndOptionalTranslationOrRotationOrScale(
-          objectRefs.projectObject[selectedObject.id].modelMatrix,
-          new Cartesian3(value.x, value.y, value.z),
-          undefined,
-          undefined
-        );
+      if (value)
+        objectRefs.projectObject[selectedObject.id].modelMatrix =
+          createModelMatrixFromModelMatrixAndOptionalTranslationOrRotationOrScale(
+            objectRefs.projectObject[selectedObject.id].modelMatrix,
+            new Cartesian3(value.x, value.y, value.z),
+            undefined,
+            undefined
+          );
 
       viewer?.scene.requestRender();
 
-      handleChangeMatrix(
-        objectRefs.projectObject[selectedObject.id].modelMatrix,
-        selectedObject.id
-      );
+      handleUpdateProjectObject(selectedObject.id, {
+        translation: value,
+        uiTranslation: uiValue,
+        uiEpsg: uiEpsg,
+      });
     },
     [
-      handleChangeMatrix,
       objectRefs.projectObject,
       selectedObject.type,
       selectedObject.id,
@@ -94,27 +137,33 @@ export default function TransformSwitch({
   );
 
   const handleRotationChange = useCallback(
-    (value: { x: number; y: number; z: number; w: number }) => {
+    ({
+      value,
+      uiValue,
+    }: {
+      value?: { x: number; y: number; z: number; w: number };
+      uiValue: { x: string; y: string; z: string };
+    }) => {
       if (selectedObject.type !== "PROJECT_OBJECT") return;
       if (!objectRefs.projectObject[selectedObject.id]) return;
 
-      objectRefs.projectObject[selectedObject.id].modelMatrix =
-        createModelMatrixFromModelMatrixAndOptionalTranslationOrRotationOrScale(
-          objectRefs.projectObject[selectedObject.id].modelMatrix,
-          undefined,
-          new Quaternion(value.x, value.y, value.z, value.w),
-          undefined
-        );
+      if (value)
+        objectRefs.projectObject[selectedObject.id].modelMatrix =
+          createModelMatrixFromModelMatrixAndOptionalTranslationOrRotationOrScale(
+            objectRefs.projectObject[selectedObject.id].modelMatrix,
+            undefined,
+            new Quaternion(value.x, value.y, value.z, value.w),
+            undefined
+          );
 
       viewer?.scene.requestRender();
 
-      handleChangeMatrix(
-        objectRefs.projectObject[selectedObject.id].modelMatrix,
-        selectedObject.id
-      );
+      handleUpdateProjectObject(selectedObject.id, {
+        rotation: value,
+        uiRotation: uiValue,
+      });
     },
     [
-      handleChangeMatrix,
       objectRefs.projectObject,
       selectedObject.type,
       selectedObject.id,
@@ -123,27 +172,33 @@ export default function TransformSwitch({
   );
 
   const handleScaleChange = useCallback(
-    (value: { x: number; y: number; z: number }) => {
+    ({
+      value,
+      uiValue,
+    }: {
+      value?: { x: number; y: number; z: number };
+      uiValue: { x: string; y: string; z: string };
+    }) => {
       if (selectedObject.type !== "PROJECT_OBJECT") return;
       if (!objectRefs.projectObject[selectedObject.id]) return;
 
-      objectRefs.projectObject[selectedObject.id].modelMatrix =
-        createModelMatrixFromModelMatrixAndOptionalTranslationOrRotationOrScale(
-          objectRefs.projectObject[selectedObject.id].modelMatrix,
-          undefined,
-          undefined,
-          new Cartesian3(value.x, value.y, value.z)
-        );
+      if (value)
+        objectRefs.projectObject[selectedObject.id].modelMatrix =
+          createModelMatrixFromModelMatrixAndOptionalTranslationOrRotationOrScale(
+            objectRefs.projectObject[selectedObject.id].modelMatrix,
+            undefined,
+            undefined,
+            new Cartesian3(value.x, value.y, value.z)
+          );
 
       viewer?.scene.requestRender();
 
-      handleChangeMatrix(
-        objectRefs.projectObject[selectedObject.id].modelMatrix,
-        selectedObject.id
-      );
+      handleUpdateProjectObject(selectedObject.id, {
+        scale: value,
+        uiScale: uiValue,
+      });
     },
     [
-      handleChangeMatrix,
       objectRefs.projectObject,
       selectedObject.type,
       selectedObject.id,
@@ -151,54 +206,49 @@ export default function TransformSwitch({
     ]
   );
 
-  const lastPositionRef = useRef<{
-    position: { x: number; y: number; z: number } | null;
-    target: { x: number; y: number; z: number } | null;
-  }>({
-    position: null,
-    target: null,
-  });
+  const transformsMapStartingPoints = useMemo(
+    () => new Map<string, PartialStartingPointTransform>(),
+    []
+  );
 
   const handleTranslationChangeStartingPoint = useCallback(
-    (
-      position?: { x: number; y: number; z: number },
-      target?: { x: number; y: number; z: number }
-    ) => {
+    (transform: PartialStartingPointTransform) => {
       if (!objectRefs.startingPoints[selectedObject.id]) return;
 
-      if (position)
+      const transformMap =
+        transformsMapStartingPoints.get(selectedObject.id) ?? {};
+
+      if (transform.position)
         objectRefs.startingPoints[selectedObject.id].position =
           new ConstantPositionProperty(
-            new Cartesian3(position.x, position.y, position.z),
+            new Cartesian3(
+              transform.position.x,
+              transform.position.y,
+              transform.position.z
+            ),
             objectRefs.startingPoints[
               selectedObject.id
             ].position?.referenceFrame
           );
 
-      if (position) lastPositionRef.current.position = position;
-      if (target) lastPositionRef.current.target = target;
+      transformsMapStartingPoints.set(selectedObject.id, {
+        ...transformMap,
+        ...transform,
+      });
 
       viewer?.scene.requestRender();
 
       window.clearTimeout(timerRef.current.timer);
 
       timerRef.current.timer = window.setTimeout(() => {
-        const payload: {
-          id: string;
-          position?: { x: number; y: number; z: number };
-          target?: { x: number; y: number; z: number };
-        } = {
+        if (!transformsMapStartingPoints.has(selectedObject.id)) return;
+
+        updateStartingPoint({
           id: selectedObject.id,
-        };
+          ...transformsMapStartingPoints.get(selectedObject.id),
+        });
 
-        if (lastPositionRef.current.position)
-          payload.position = { ...lastPositionRef.current.position };
-        if (lastPositionRef.current.target)
-          payload.target = { ...lastPositionRef.current.target };
-
-        updateStartingPoint(payload);
-        lastPositionRef.current.position = null;
-        lastPositionRef.current.target = null;
+        transformsMapStartingPoints.delete(selectedObject.id);
       }, 250);
     },
     [
@@ -215,42 +265,53 @@ export default function TransformSwitch({
         <Grid container flexDirection="column" spacing={2}>
           <TranslationInput
             disabled={isReadOnly}
-            value={selectedObject.translation}
-            onImmediateChange={handleTranslationChange}
+            uiValue={selectedObject.uiTranslation}
+            uiEpsg={selectedObject.uiEpsg}
+            onChange={handleTranslationChange}
           />
           <Divider />
           <RotationInput
             disabled={isReadOnly}
-            value={selectedObject.rotation}
+            uiValue={selectedObject.uiRotation}
             origin={selectedObject.translation}
-            onImmediateChange={handleRotationChange}
+            onChange={handleRotationChange}
           />
           <Divider />
           <ScaleInput
             disabled={isReadOnly}
-            value={selectedObject.scale}
-            onImmediateChange={handleScaleChange}
+            uiValue={selectedObject.uiScale}
+            onChange={handleScaleChange}
           />
         </Grid>
       );
     case "STARTING_POINT":
       return (
         <Grid container spacing={2} flexDirection="column">
-          <Typography>{t('editor.origin')}</Typography>
+          <Typography>{t("editor.origin")}</Typography>
           <TranslationInput
             disabled={isReadOnly}
-            onImmediateChange={(position) =>
-              handleTranslationChangeStartingPoint(position, undefined)
+            onChange={({ uiEpsg, uiValue, value }) =>
+              handleTranslationChangeStartingPoint({
+                position: value,
+                uiPosition: uiValue,
+                uiPositionEpsg: uiEpsg,
+              })
             }
-            value={selectedObject.position}
+            uiEpsg={selectedObject.uiPositionEpsg}
+            uiValue={selectedObject.uiPosition}
           />
-          <Typography>{t('editor.target')}</Typography>
+          <Typography>{t("editor.target")}</Typography>
           <TranslationInput
             disabled={isReadOnly}
-            onImmediateChange={(target) =>
-              handleTranslationChangeStartingPoint(undefined, target)
+            onChange={({ uiEpsg, uiValue, value }) =>
+              handleTranslationChangeStartingPoint({
+                target: value,
+                uiTarget: uiValue,
+                uiTargetEpsg: uiEpsg,
+              })
             }
-            value={selectedObject.target}
+            uiEpsg={selectedObject.uiTargetEpsg}
+            uiValue={selectedObject.uiTarget}
           />
         </Grid>
       );

@@ -3,6 +3,7 @@ import { skipToken } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { useSnackbar } from "notistack";
 import { EasyCUDialog, useEasyCUDialogState } from "../common/EasyCUDialog";
+import { useConfigurationProviderContext } from "../configuration/ConfigurationProvider";
 
 export const useVisualAxisCUDialogState = () =>
   useEasyCUDialogState("visual-axis-cu-state");
@@ -66,13 +67,23 @@ export default function VisualAxisCUDialog() {
       },
     });
 
+  const configuration = useConfigurationProviderContext();
+
   return (
     <EasyCUDialog
       close={close}
       state={state}
       defaultData={{
-        startPoint: { x: 0, y: 0, z: 0 },
-        endPoint: { x: 0, y: 0, z: 0 },
+        startPoint: {
+          value: { x: 0, y: 0, z: 0 },
+          uiValue: { x: "0", y: "0", z: "0" },
+          uiEpsg: configuration.defaultEPSG,
+        },
+        endPoint: {
+          value: { x: 0, y: 0, z: 0 },
+          uiValue: { x: "0", y: "0", z: "0" },
+          uiEpsg: configuration.defaultEPSG,
+        },
         name: "",
         description: "",
       }}
@@ -80,25 +91,41 @@ export default function VisualAxisCUDialog() {
       onUpdate={(data) => {
         if (!state.id) throw new Error("No id supplied!");
         updateMutation({
-          endPointX: data.endPoint.x,
-          endPointY: data.endPoint.y,
-          endPointZ: data.endPoint.z,
+          endPointX: data.endPoint.value.x,
+          endPointY: data.endPoint.value.y,
+          endPointZ: data.endPoint.value.z,
+          uiEndPointX: data.endPoint.uiValue.x,
+          uiEndPointY: data.endPoint.uiValue.y,
+          uiEndPointZ: data.endPoint.uiValue.z,
+          uiEndPointEpsg: data.endPoint.uiEpsg,
           id: state.id,
           name: data.name,
-          startPointX: data.startPoint.x,
-          startPointY: data.startPoint.y,
-          startPointZ: data.startPoint.z,
+          startPointX: data.startPoint.value.x,
+          startPointY: data.startPoint.value.y,
+          startPointZ: data.startPoint.value.z,
+          uiStartPointX: data.startPoint.uiValue.x,
+          uiStartPointY: data.startPoint.uiValue.y,
+          uiStartPointZ: data.startPoint.uiValue.z,
+          uiStartPointEpsg: data.startPoint.uiEpsg,
         });
       }}
       onCreate={(data) => {
         createMutation({
-          endPointX: data.endPoint.x,
-          endPointY: data.endPoint.y,
-          endPointZ: data.endPoint.z,
+          endPointX: data.endPoint.value.x,
+          endPointY: data.endPoint.value.y,
+          endPointZ: data.endPoint.value.z,
+          uiEndPointX: data.endPoint.uiValue.x,
+          uiEndPointY: data.endPoint.uiValue.y,
+          uiEndPointZ: data.endPoint.uiValue.z,
+          uiEndPointEpsg: data.endPoint.uiEpsg,
           name: data.name,
-          startPointX: data.startPoint.x,
-          startPointY: data.startPoint.y,
-          startPointZ: data.startPoint.z,
+          startPointX: data.startPoint.value.x,
+          startPointY: data.startPoint.value.y,
+          startPointZ: data.startPoint.value.z,
+          uiStartPointX: data.startPoint.uiValue.x,
+          uiStartPointY: data.startPoint.uiValue.y,
+          uiStartPointZ: data.startPoint.uiValue.z,
+          uiStartPointEpsg: data.startPoint.uiEpsg,
         });
       }}
       fetchedData={initialVisualAxis}

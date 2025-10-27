@@ -2,80 +2,41 @@ import { Grid, InputAdornment, TextField } from "@mui/material";
 import { useEffect, useState } from "react";
 
 export default function ScaleInput({
-  value,
-  onImmediateChange,
+  onChange,
   disabled,
+  uiValue,
 }: {
-  value?: { x: number; y: number; z: number };
-  onImmediateChange?: (value: { x: number; y: number; z: number }) => void;
+  uiValue: { x: string; y: string; z: string };
+  onChange: (v: {
+    value?: { x: number; y: number; z: number };
+    uiValue: { x: string; y: string; z: string };
+  }) => void;
   disabled?: boolean;
 }) {
-  const [prevTransformedValue, setPrevTransformedValue] = useState<{
-    x: string;
-    y: string;
-    z: string;
-  }>({ x: "1", y: "1", z: "1" });
-  const [transformedValue, setTransformedValue] = useState<{
-    x: string;
-    y: string;
-    z: string;
-  }>({ x: "1", y: "1", z: "1" });
+  const [internalUiScale, setInternalUiScale] = useState(uiValue);
 
   useEffect(() => {
-    if (!value) return;
+    setInternalUiScale(uiValue);
+  }, [uiValue.x, uiValue.y, uiValue.z]);
 
-    const x = value.x.toFixed(5);
-    const y = value.y.toFixed(5);
-    const z = value.z.toFixed(5);
+  const handleChange = (uiValue: { x: string; y: string; z: string }) => {
+    let x = parseFloat(uiValue.x);
+    let y = parseFloat(uiValue.y);
+    let z = parseFloat(uiValue.z);
 
-    setPrevTransformedValue({
-      x,
-      y,
-      z,
-    });
-    setTransformedValue({
-      x,
-      y,
-      z,
-    });
-  }, [value]);
+    setInternalUiScale(uiValue);
 
-  useEffect(() => {
-    if (
-      prevTransformedValue.x === transformedValue.x &&
-      prevTransformedValue.y === transformedValue.y &&
-      prevTransformedValue.z === transformedValue.z
-    )
-      return;
-
-    const x = parseFloat(transformedValue.x);
-    const y = parseFloat(transformedValue.y);
-    const z = parseFloat(transformedValue.z);
-
-    if (Number.isNaN(x) || Number.isNaN(y) || Number.isNaN(z)) return;
+    if (Number.isNaN(x) || Number.isNaN(y) || Number.isNaN(z))
+      return onChange({ uiValue: { ...uiValue } });
 
     if (x === 0 || y === 0 || z === 0) return;
 
-    if (x < 0) {
-      return setTransformedValue((value) => ({ ...value, x: "0.00001" }));
-    }
-    if (y < 0) {
-      return setTransformedValue((value) => ({ ...value, y: "0.00001" }));
-    }
-    if (z < 0) {
-      return setTransformedValue((value) => ({ ...value, z: "0.00001" }));
-    }
+    x = x === 0 ? 0.00001 : x;
+    y = y === 0 ? 0.00001 : y;
+    z = z === 0 ? 0.00001 : z;
 
-    onImmediateChange?.({ x, y, z });
-  }, [
-    onImmediateChange,
-    prevTransformedValue.x,
-    prevTransformedValue.y,
-    prevTransformedValue.z,
-    transformedValue.x,
-    transformedValue.y,
-    transformedValue.z,
-  ]);
+    onChange({ value: { x, y, z }, uiValue: { ...uiValue } });
+  };
 
   return (
     <Grid container flexDirection="column" spacing={2}>
@@ -83,10 +44,10 @@ export default function ScaleInput({
         disabled={disabled}
         variant="standard"
         type="number"
-        value={transformedValue.x}
+        value={internalUiScale.x}
         onChange={(event) =>
-          setTransformedValue({
-            ...transformedValue,
+          handleChange({
+            ...internalUiScale,
             x: event.target.value,
           })
         }
@@ -100,10 +61,10 @@ export default function ScaleInput({
         disabled={disabled}
         variant="standard"
         type="number"
-        value={transformedValue.y}
+        value={internalUiScale.y}
         onChange={(event) =>
-          setTransformedValue({
-            ...transformedValue,
+          handleChange({
+            ...internalUiScale,
             y: event.target.value,
           })
         }
@@ -117,10 +78,10 @@ export default function ScaleInput({
         disabled={disabled}
         variant="standard"
         type="number"
-        value={transformedValue.z}
+        value={internalUiScale.z}
         onChange={(event) =>
-          setTransformedValue({
-            ...transformedValue,
+          handleChange({
+            ...internalUiScale,
             z: event.target.value,
           })
         }

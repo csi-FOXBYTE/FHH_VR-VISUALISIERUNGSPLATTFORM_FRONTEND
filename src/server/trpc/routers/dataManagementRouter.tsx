@@ -57,9 +57,17 @@ const dataManagementRouter = router({
           endPointX: z.number(),
           endPointY: z.number(),
           endPointZ: z.number(),
+          uiEndPointX: z.string(),
+          uiEndPointY: z.string(),
+          uiEndPointZ: z.string(),
+          uiEndPointEpsg: z.string(),
           startPointX: z.number(),
           startPointY: z.number(),
           startPointZ: z.number(),
+          uiStartPointX: z.string(),
+          uiStartPointY: z.string(),
+          uiStartPointZ: z.string(),
+          uiStartPointEpsg: z.string(),
           name: z.string(),
           description: z.string().optional(),
         })
@@ -68,7 +76,6 @@ const dataManagementRouter = router({
         return await opts.ctx.db.visualAxis.create({
           data: {
             ...opts.input,
-
             owner: {
               connect: {
                 id: opts.ctx.session.user.id,
@@ -83,9 +90,17 @@ const dataManagementRouter = router({
           endPointX: z.number(),
           endPointY: z.number(),
           endPointZ: z.number(),
+          uiEndPointX: z.string(),
+          uiEndPointY: z.string(),
+          uiEndPointZ: z.string(),
+          uiEndPointEpsg: z.string(),
           startPointX: z.number(),
           startPointY: z.number(),
           startPointZ: z.number(),
+          uiStartPointX: z.string(),
+          uiStartPointY: z.string(),
+          uiStartPointZ: z.string(),
+          uiStartPointEpsg: z.string(),
           name: z.string(),
           description: z.string().optional(),
           id: z.string(),
@@ -140,9 +155,17 @@ const dataManagementRouter = router({
             endPointX: true,
             endPointY: true,
             endPointZ: true,
+            uiEndPointEpsg: true,
+            uiEndPointX: true,
+            uiEndPointY: true,
+            uiEndPointZ: true,
             startPointX: true,
             startPointY: true,
             startPointZ: true,
+            uiStartPointEpsg: true,
+            uiStartPointX: true,
+            uiStartPointY: true,
+            uiStartPointZ: true,
             name: true,
             description: true,
           },
@@ -150,14 +173,30 @@ const dataManagementRouter = router({
 
         return {
           endPoint: {
-            x: visualAxis.endPointX,
-            y: visualAxis.endPointY,
-            z: visualAxis.endPointZ,
+            value: {
+              x: visualAxis.endPointX,
+              y: visualAxis.endPointY,
+              z: visualAxis.endPointZ,
+            },
+            uiValue: {
+              x: visualAxis.uiEndPointX,
+              y: visualAxis.uiEndPointY,
+              z: visualAxis.uiEndPointZ,
+            },
+            uiEpsg: visualAxis.uiEndPointEpsg,
           },
           startPoint: {
-            x: visualAxis.startPointX,
-            y: visualAxis.startPointY,
-            z: visualAxis.startPointZ,
+            value: {
+              x: visualAxis.startPointX,
+              y: visualAxis.startPointY,
+              z: visualAxis.startPointZ,
+            },
+            uiValue: {
+              x: visualAxis.uiStartPointX,
+              y: visualAxis.uiStartPointY,
+              z: visualAxis.uiStartPointZ,
+            },
+            uiEpsg: visualAxis.uiStartPointEpsg,
           },
           name: visualAxis.name,
           description: visualAxis.description,

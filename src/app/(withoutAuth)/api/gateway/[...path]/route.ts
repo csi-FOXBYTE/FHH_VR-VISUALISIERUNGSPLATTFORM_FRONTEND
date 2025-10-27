@@ -66,17 +66,17 @@ async function proxy(
   // Auth: mint if none present; otherwise pass-through
   if (!headers.has("authorization")) {
     const session = await auth();
-    if (!session) return new NextResponse("ACCESS_DENIED", { status: 401 });
+    if (session) {
+      const access_token = await createAccessToken({
+        sessionToken:
+          request.cookies.get("authjs.session-token")?.value ??
+          request.cookies.get("__Secure-authjs.session-token")?.value ??
+          "",
+        userId: session.user.id,
+      });
 
-    const access_token = await createAccessToken({
-      sessionToken:
-        request.cookies.get("authjs.session-token")?.value ??
-        request.cookies.get("__Secure-authjs.session-token")?.value ??
-        "",
-      userId: session.user.id,
-    });
-
-    headers.set("authorization", `Bearer ${access_token}`);
+      headers.set("authorization", `Bearer ${access_token}`);
+    }
   }
 
   // Forward proxy context

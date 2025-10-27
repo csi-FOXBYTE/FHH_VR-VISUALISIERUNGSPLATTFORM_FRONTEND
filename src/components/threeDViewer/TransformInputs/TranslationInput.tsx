@@ -1,4 +1,3 @@
-import { useConfigurationProviderContext } from "@/components/configuration/ConfigurationProvider";
 import {
   Autocomplete,
   Grid,
@@ -8,7 +7,7 @@ import {
 } from "@mui/material";
 import proj4 from "proj4";
 import proj4List from "proj4-list";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 const epsgValues = Object.values(proj4List)
   .map(([epsg, proj4]) => ({
@@ -17,95 +16,108 @@ const epsgValues = Object.values(proj4List)
   }))
   .sort((a, b) => a.label.localeCompare(b.label));
 
-const srcSRS = "+proj=geocent +datum=WGS84 +units=m +no_defs +type=crs";
+const targetSRS = "+proj=geocent +datum=WGS84 +units=m +no_defs +type=crs";
 
 export default function TranslationInput({
-  value,
+  uiValue,
+  uiEpsg,
   readOnly = false,
-  onImmediateChange,
   label,
+  onChange,
   disabled,
   required,
 }: {
-  value?: { x: number; y: number; z: number };
-  onImmediateChange?: (value: { x: number; y: number; z: number }) => void;
+  uiEpsg: string;
+  uiValue: { x: string; y: string; z: string };
+  onChange: (v: {
+    value?: { x: number; y: number; z: number };
+    uiValue: { x: string; y: string; z: string };
+    uiEpsg: string;
+  }) => void;
   label?: string;
   readOnly?: boolean;
   required?: boolean;
   disabled?: boolean;
 }) {
-  const { defaultEPSG } = useConfigurationProviderContext();
-
   const [selectedEpsg, setSelectedEpsg] = useState<{
     value: string;
     label: string;
-  }>(epsgValues.find((epsg) => epsg.label === defaultEPSG)!);
-
-  const targetSRS = selectedEpsg.value;
-
-  const transformer = useMemo(() => {
-    return proj4(srcSRS, targetSRS);
-  }, [targetSRS]);
-
-  const xRef = useRef<HTMLInputElement>(null);
-  const yRef = useRef<HTMLInputElement>(null);
-  const zRef = useRef<HTMLInputElement>(null);
-
-  const [prevTransformedValue, setPrevTransformedValue] = useState<{
-    x: string;
-    y: string;
-    z: string;
-  }>({ x: "1", y: "1", z: "1" });
-  const [transformedValue, setTransformedValue] = useState<{
-    x: string;
-    y: string;
-    z: string;
-  }>({
-    x: "",
-    y: "",
-    z: "",
-  });
+  }>(epsgValues.find((epsg) => epsg.label === uiEpsg)!);
 
   useEffect(() => {
-    if (!value) return;
+    setSelectedEpsg(epsgValues.find((epsg) => epsg.label === uiEpsg)!);
+  }, [uiEpsg]);
 
-    const [x, y, z] = transformer.forward([value.x, value.y, value.z]);
-
-    setPrevTransformedValue({
-      x: x.toString(),
-      y: y.toString(),
-      z: z.toString(),
-    });
-    setTransformedValue({ x: x.toString(), y: y.toString(), z: z.toString() });
-  }, [value, transformer]);
+  const [internalUiValue, setInternalUiValue] = useState(uiValue);
 
   useEffect(() => {
+    setInternalUiValue(uiValue);
+  }, [uiValue.x, uiValue.y, uiValue.z]);
+
+  const handleChange = (
+    epsg: {
+      value: string;
+      label: string;
+    },
+    uiValue: { x: string; y: string; z: string }
+  ) => {
+    setInternalUiValue(uiValue);
+
+    let transformedValue = { x: Number.NaN, y: Number.NaN, z: Number.NaN };
+
+    const transformer = proj4(epsg.value, targetSRS);
+
+    try {
+      const [x, y, z] = transformer.forward([
+        parseFloat(uiValue.x),
+        parseFloat(uiValue.y),
+        parseFloat(uiValue.z),
+      ]);
+
+      transformedValue.x = x;
+      transformedValue.y = y;
+      transformedValue.z = z;
+    } catch {}
+
     if (
-      prevTransformedValue.x === transformedValue.x &&
-      prevTransformedValue.y === transformedValue.y &&
-      prevTransformedValue.z === transformedValue.z
+      Number.isNaN(transformedValue.x) ||
+      Number.isNaN(transformedValue.y) ||
+      Number.isNaN(transformedValue.z)
     )
-      return;
+      return onChange({ uiValue, uiEpsg: epsg.label });
 
-    const x = parseFloat(transformedValue.x);
-    const y = parseFloat(transformedValue.y);
-    const z = parseFloat(transformedValue.z);
+    onChange({
+      value: transformedValue,
+      uiValue,
+      uiEpsg: epsg.label,
+    });
+  };
 
-    if (Number.isNaN(x) || Number.isNaN(y) || Number.isNaN(z)) return;
+  const handleEpsgChange = (epsg: { label: string; value: string }) => {
+    const transformer = proj4(selectedEpsg.value, epsg.value);
 
-    const [xNew, yNew, zNew] = transformer.inverse([x, y, z]);
+    setSelectedEpsg(epsg);
 
-    const newValue = { x: xNew, y: yNew, z: zNew };
+    let transformedValue = { x: Number.NaN, y: Number.NaN, z: Number.NaN };
 
-    onImmediateChange?.(newValue);
-  }, [
-    onImmediateChange,
-    prevTransformedValue.x,
-    prevTransformedValue.y,
-    prevTransformedValue.z,
-    transformedValue,
-    transformer,
-  ]);
+    try {
+      const [x, y, z] = transformer.forward([
+        parseFloat(uiValue.x),
+        parseFloat(uiValue.y),
+        parseFloat(uiValue.z),
+      ]);
+
+      transformedValue.x = x;
+      transformedValue.y = y;
+      transformedValue.z = z;
+    } catch {}
+
+    handleChange(epsg, {
+      x: transformedValue.x.toFixed(10),
+      y: transformedValue.y.toFixed(10),
+      z: transformedValue.z.toFixed(10),
+    });
+  };
 
   return (
     <Grid container flexDirection="column" spacing={2}>
@@ -117,7 +129,7 @@ export default function TranslationInput({
         disableClearable
         disabled={disabled}
         size="small"
-        onChange={(_, newValue) => setSelectedEpsg(newValue)}
+        onChange={(_, newValue) => handleEpsgChange(newValue)}
         options={epsgValues}
       />
       <TextField
@@ -129,15 +141,14 @@ export default function TranslationInput({
             endAdornment: <InputAdornment position="end"> m</InputAdornment>,
           },
         }}
-        inputRef={xRef}
         variant="outlined"
         onChange={(event) =>
-          setTransformedValue((value) => ({
-            ...value,
+          handleChange(selectedEpsg, {
+            ...internalUiValue,
             x: event.target?.value,
-          }))
+          })
         }
-        value={transformedValue?.x ?? ""}
+        value={internalUiValue.x ?? ""}
         disabled={readOnly || disabled}
       />
       <TextField
@@ -149,15 +160,14 @@ export default function TranslationInput({
             endAdornment: <InputAdornment position="end"> m</InputAdornment>,
           },
         }}
-        inputRef={yRef}
         variant="outlined"
         onChange={(event) =>
-          setTransformedValue((value) => ({
-            ...value,
+          handleChange(selectedEpsg, {
+            ...internalUiValue,
             y: event.target?.value,
-          }))
+          })
         }
-        value={transformedValue?.y ?? ""}
+        value={internalUiValue.y ?? ""}
         disabled={readOnly || disabled}
       />
       <TextField
@@ -169,15 +179,14 @@ export default function TranslationInput({
             endAdornment: <InputAdornment position="end"> m</InputAdornment>,
           },
         }}
-        inputRef={zRef}
         variant="outlined"
         onChange={(event) =>
-          setTransformedValue((value) => ({
-            ...value,
+          handleChange(selectedEpsg, {
+            ...internalUiValue,
             z: event.target?.value,
-          }))
+          })
         }
-        value={transformedValue?.z ?? ""}
+        value={internalUiValue.z ?? ""}
         disabled={readOnly || disabled}
       />
     </Grid>

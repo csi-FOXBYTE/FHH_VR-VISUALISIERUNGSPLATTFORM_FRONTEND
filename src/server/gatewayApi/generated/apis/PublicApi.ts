@@ -15,6 +15,7 @@
 
 import * as runtime from '../runtime';
 import type {
+  BaseLayerListChangesPost200ResponseInner,
   Def0,
   Def1,
   Def2,
@@ -22,6 +23,8 @@ import type {
   Def4,
 } from '../models/index';
 import {
+    BaseLayerListChangesPost200ResponseInnerFromJSON,
+    BaseLayerListChangesPost200ResponseInnerToJSON,
     Def0FromJSON,
     Def0ToJSON,
     Def1FromJSON,
@@ -37,17 +40,17 @@ import {
 /**
  * 
  */
-export class AppDownloadApi extends runtime.BaseAPI {
+export class PublicApi extends runtime.BaseAPI {
 
     /**
      */
-    async appDownloadLinkGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<string>> {
+    async publicBaseLayerListGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<BaseLayerListChangesPost200ResponseInner>>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
 
 
-        let urlPath = `/appDownload/link`;
+        let urlPath = `/public/baseLayer/list`;
 
         const response = await this.request({
             path: urlPath,
@@ -56,17 +59,13 @@ export class AppDownloadApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        if (this.isJsonMime(response.headers.get('content-type'))) {
-            return new runtime.JSONApiResponse<string>(response);
-        } else {
-            return new runtime.TextApiResponse(response) as any;
-        }
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(BaseLayerListChangesPost200ResponseInnerFromJSON));
     }
 
     /**
      */
-    async appDownloadLinkGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<string> {
-        const response = await this.appDownloadLinkGetRaw(initOverrides);
+    async publicBaseLayerListGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<BaseLayerListChangesPost200ResponseInner>> {
+        const response = await this.publicBaseLayerListGetRaw(initOverrides);
         return await response.value();
     }
 
