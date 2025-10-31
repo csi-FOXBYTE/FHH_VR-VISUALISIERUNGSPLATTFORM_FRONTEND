@@ -63,7 +63,7 @@ export default function TranslationInput({
   ) => {
     setInternalUiValue(uiValue);
 
-    let transformedValue = { x: Number.NaN, y: Number.NaN, z: Number.NaN };
+    const transformedValue = { x: Number.NaN, y: Number.NaN, z: Number.NaN };
 
     const transformer = proj4(epsg.value, targetSRS);
 
@@ -98,7 +98,7 @@ export default function TranslationInput({
 
     setSelectedEpsg(epsg);
 
-    let transformedValue = { x: Number.NaN, y: Number.NaN, z: Number.NaN };
+    const transformedValue = { x: Number.NaN, y: Number.NaN, z: Number.NaN };
 
     try {
       const [x, y, z] = transformer.forward([

@@ -13,7 +13,17 @@ import SavingBlocker from "./SavingBlocker";
 const ResiumViewer = dynamic(async () => (await import("./Viewer")).default, {
   ssr: false,
   loading: () => (
-    <div style={{ width: "100%", height: "100%", maxWidth: "100%", maxHeight: "100%", position: "absolute", top: 0, left: 0 }}>
+    <div
+      style={{
+        width: "100%",
+        height: "100%",
+        maxWidth: "100%",
+        maxHeight: "100%",
+        position: "absolute",
+        top: 0,
+        left: 0,
+      }}
+    >
       <CircularProgress
         size={64}
         sx={{
@@ -25,6 +35,9 @@ const ResiumViewer = dynamic(async () => (await import("./Viewer")).default, {
     </div>
   ),
 });
+
+// @ts-ignore
+if (typeof window !== "undefined") window.CESIUM_BASE_URL = "/cesium";
 
 export function ThreeDViewer() {
   return (

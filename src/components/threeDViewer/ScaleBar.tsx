@@ -27,7 +27,8 @@ export function ScaleBar() {
     if (!viewer || !labelRef.current || !scaleRef.current) return;
 
     const handler = () => {
-      if (!viewer || !labelRef.current || !scaleRef.current || !viewer.scene) return;
+      if (!viewer || !labelRef.current || !scaleRef.current || !viewer.scene)
+        return;
       const basePx = 50;
 
       const canvas = viewer.scene.canvas;
@@ -77,7 +78,11 @@ export function ScaleBar() {
     viewer.scene.postRender.addEventListener(handler);
 
     return () => {
-      viewer.scene.postRender.removeEventListener(handler);
+      try {
+        viewer?.scene?.postRender?.removeEventListener?.(handler);
+      } catch (e) {
+        console.error(e);
+      }
     };
   }, [viewer]);
 

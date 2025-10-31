@@ -15,6 +15,7 @@ import Tileset from "./Tileset";
 import ToolsProvider from "./Tools";
 import { useViewerStore } from "./ViewerProvider";
 import PlayRegion from "./PlayRegion";
+import { useEffect } from "react";
 
 const openStreetMapImagerProvider = new Cesium.OpenStreetMapImageryProvider({
   url: "https://tile.openstreetmap.org/",
@@ -29,6 +30,53 @@ export default function ResiumViewer() {
   );
 
   const setSelectedObject = useViewerStore((state) => state.setSelectedObject);
+
+  const saveProject = useViewerStore((state) => state.saveProject);
+  const toggleImport = useViewerStore(
+    (state) => state.projectObjects.toggleImport
+  );
+  const undo = useViewerStore((state) => state.history.undo);
+  const redo = useViewerStore((state) => state.history.redo);
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "s") {
+        event.preventDefault();
+
+        return saveProject();
+      }
+
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "i") {
+        event.preventDefault();
+
+        return toggleImport();
+      }
+
+      if (
+        (event.ctrlKey || event.metaKey) &&
+        event.key.toLowerCase() === "z" &&
+        event.target === document.body
+      ) {
+        event.preventDefault();
+
+        return undo();
+      }
+
+      if (
+        (event.ctrlKey || event.metaKey) &&
+        event.key.toLowerCase() === "y" &&
+        event.target === document.body
+      ) {
+        event.preventDefault();
+
+        return redo();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [saveProject]);
 
   return (
     <Viewer
@@ -64,7 +112,7 @@ export default function ResiumViewer() {
         if (target === undefined) setSelectedObject(null);
       }}
       fullscreenButton={false}
-      terrainProvider={layers.terrain?.resource}
+      terrainProvider={layers.terrain?.resource as undefined} // Types are not 100% correct here
       timeline={false}
       scene3DOnly
       targetFrameRate={30}
@@ -79,15 +127,10 @@ export default function ResiumViewer() {
       <SetCamera />
       <ToolsProvider />
       <ClippingPolygons />
-      <ImageryLayer
-        imageryProvider={openStreetMapImagerProvider}
-      />
+      <ImageryLayer imageryProvider={openStreetMapImagerProvider} />
       <PlayRegion />
       {layers.imageries.map((imagery) => (
-        <ImageryLayer
-          key={imagery.id}
-          imageryProvider={imagery.resource}
-        />
+        <ImageryLayer key={imagery.id} imageryProvider={imagery.resource} />
       ))}
       {layers.tileSets.map((tileSet) => (
         <Tileset id={tileSet.id} resource={tileSet.resource} key={tileSet.id} />

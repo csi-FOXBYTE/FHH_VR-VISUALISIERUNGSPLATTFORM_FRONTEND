@@ -69,10 +69,10 @@ export default function Compass() {
       cubeRef.current.style.transform = `rotateZ(${viewer.camera.heading}rad)`;
     };
 
-    viewer.clock.onTick.addEventListener(handler);
+    viewer?.clock?.onTick?.addEventListener?.(handler);
 
     return () => {
-      viewer.clock.onTick.removeEventListener(handler);
+      viewer?.clock?.onTick?.removeEventListener?.(handler);
     };
   }, [viewer]);
 

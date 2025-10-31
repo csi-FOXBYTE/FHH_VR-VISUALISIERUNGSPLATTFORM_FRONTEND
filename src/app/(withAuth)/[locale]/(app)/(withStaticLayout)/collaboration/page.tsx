@@ -28,7 +28,7 @@ import {
 } from "@mui/material";
 import { useMutation } from "@tanstack/react-query";
 import PopupState, { bindMenu, bindTrigger } from "material-ui-popup-state";
-import { useFormatter, useNow, useTimeZone, useTranslations } from "next-intl";
+import { useFormatter, useNow, useTranslations } from "next-intl";
 import { useSnackbar } from "notistack";
 
 function stringToColor(string: string) {

@@ -318,7 +318,8 @@
     "hide-drawer": "Schließen",
     "show-drawer": "Öffnen",
     "close-picked-polygon-info": "Um das ausgewählte Polygon zu schließen, klicken Sie mit der rechten Maustaste. Zum Abbrechen klicken Sie entweder außerhalb des Viewers oder drücken Sie Escape.",
-    "pick-point-info": "Um das Auswählen eines Punktes abzubrechen, klicken Sie entweder außerhalb des Viewers oder drücken Sie Escape."
+    "pick-point-info": "Um das Auswählen eines Punktes abzubrechen, klicken Sie entweder außerhalb des Viewers oder drücken Sie Escape.",
+    "selected-terrain-invalid": "Das ausgewählte Geländemodell ist ungültig!"
   },
   "error": {
     "go-home": "Zur Startseite",

@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { useViewerStore } from "./ViewerProvider";
 
 export default function TimePicker() {
-  const viewer = useViewerStore(state => state.ctx?.viewer);
+  const viewer = useViewerStore((state) => state.ctx?.viewer);
 
   const t = useTranslations();
 
@@ -15,7 +15,9 @@ export default function TimePicker() {
   useEffect(() => {
     if (!viewer || dateTime !== undefined) return;
 
-    const date = dayjs(JulianDate.toDate(viewer.clock.currentTime));
+    const date = dayjs(
+      JulianDate.toDate(viewer?.clock?.currentTime ?? new JulianDate())
+    );
 
     setDateTime(dayjs(date));
   }, [dateTime, viewer]);
@@ -23,8 +25,11 @@ export default function TimePicker() {
   useEffect(() => {
     if (dateTime === undefined || !viewer) return;
 
-    viewer.clock.currentTime = JulianDate.fromDate(dateTime.toDate());
-  }, [dateTime, viewer?.clock]);
+    try {
+      if (viewer?.clock?.currentTime)
+        viewer.clock.currentTime = JulianDate.fromDate(dateTime.toDate());
+    } catch {}
+  }, [dateTime, viewer]);
 
   return (
     <DateTimePicker

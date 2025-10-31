@@ -14,6 +14,8 @@ import {
   ListItemText,
   Menu,
   MenuItem,
+  Tooltip,
+  Typography,
 } from "@mui/material";
 import PopupState, { bindMenu, bindToggle } from "material-ui-popup-state";
 import { useTranslations } from "next-intl";
@@ -50,9 +52,17 @@ export default function SceneGraphListItem({
       sx={(theme) => ({
         background: selected ? theme.palette.secondary.main : undefined,
         color: selected ? theme.palette.secondary.contrastText : undefined,
+        overflow: "hidden",
+        width: "100%",
       })}
     >
-      <ListItemText>{name}</ListItemText>
+      <ListItemText sx={{ overflow: "hidden" }}>
+        <Tooltip title={name} arrow>
+          <Typography textOverflow="ellipsis" noWrap>
+            {name}
+          </Typography>
+        </Tooltip>
+      </ListItemText>
       {extras ?? null}
       <PopupState variant="popover">
         {(popupState) => (

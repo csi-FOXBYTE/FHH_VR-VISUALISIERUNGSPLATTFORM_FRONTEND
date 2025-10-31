@@ -57,7 +57,7 @@ export default function AppBar() {
       >
         <BreadCrumbs style={{ marginBottom: 0 }} />
         <Grid container spacing={1}>
-          <Tooltip arrow title={t("editor.import-model")}>
+          <Tooltip arrow title={t("editor.import-model") + " (CTRL/⌘ + I)"}>
             <IconButton
               disabled={isReadOnly}
               color="secondary"
@@ -66,7 +66,7 @@ export default function AppBar() {
               <Upload />
             </IconButton>
           </Tooltip>
-          <Tooltip arrow title={t("editor.save-project")}>
+          <Tooltip arrow title={t("editor.save-project") + " (CTRL/⌘ + S)"}>
             <IconButton
               color="primary"
               disabled={history.index === 0 || isReadOnly}

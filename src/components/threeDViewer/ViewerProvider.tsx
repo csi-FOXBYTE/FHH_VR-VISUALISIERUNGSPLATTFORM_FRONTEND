@@ -1344,7 +1344,33 @@ export const ViewerProvider = ({
 
           viewer.scene.render();
 
-          const image = viewer.canvas.toDataURL("image/jpeg", 0.9);
+          const rawImage = viewer.canvas.toDataURL("image/jpeg", 0.9);
+
+          const img = new Image();
+
+          const canvas = document.createElement("canvas");
+
+          document.body.appendChild(canvas);
+
+          const ctx = canvas.getContext("2d");
+
+          let resolve: (img: string) => void;
+          const p = new Promise<string>((r) => (resolve = r));
+
+          img.onload = () => {
+            canvas.width = 640;
+            canvas.height = 360;
+
+            ctx?.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+            resolve(canvas.toDataURL("image/jpeg", 0.8));
+          };
+
+          img.src = rawImage;
+
+          const image = await p;
+
+          console.log({ rawImage, image })
 
           set((state) => ({
             tools: {

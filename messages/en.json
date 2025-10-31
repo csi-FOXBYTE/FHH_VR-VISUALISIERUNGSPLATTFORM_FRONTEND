@@ -318,7 +318,8 @@
     "hide-drawer": "Close",
     "show-drawer": "Open",
     "close-picked-polygon-info": "To close the selected polygon, right-click. To cancel, click outside the viewer or press Escape.",
-    "pick-point-info": "To cancel point selection, click outside the viewer or press Escape."
+    "pick-point-info": "To cancel point selection, click outside the viewer or press Escape.",
+    "selected-terrain-invalid": "The selected terrain is invalid!"
   },
   "error": {
     "go-home": "Go to homepage",

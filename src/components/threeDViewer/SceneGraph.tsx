@@ -29,6 +29,7 @@ import {
   ListItem,
   ListItemText,
   MenuItem,
+  Radio,
   Select,
   styled,
   TextField,
@@ -137,8 +138,15 @@ export default function SceneGraph() {
   }, [selectedObject?.type]);
 
   return (
-    <Grid container spacing={2} flexDirection="column" padding={2}>
-      <Card variant="outlined">
+    <Grid
+      container
+      spacing={2}
+      overflow="hidden"
+      width="100%"
+      flexDirection="column"
+      padding={2}
+    >
+      <Card variant="outlined" sx={{ overflow: "hidden", width: "100%" }}>
         <CardContent sx={{ gap: 2, display: "flex", flexDirection: "column" }}>
           <Grid container flexDirection="row">
             <FormControl sx={{ flex: 1 }}>
@@ -208,7 +216,6 @@ export default function SceneGraph() {
           />
           <Divider />
           <Accordion
-            style={{ width: "100%" }}
             disableGutters
             expanded={selectedTab === "PROJECT_OBJECT"}
             onChange={() => {
@@ -257,12 +264,8 @@ export default function SceneGraph() {
                     name={projectObject.name}
                     onSelected={() => setSelectedObject(projectObject)}
                     key={projectObject.id}
-                    visible={projectObject.visible}
                     disabled={isReadOnly}
                     onFlyTo={() => projectObjects.helpers.flyTo(projectObject)}
-                    onToggleVisibility={() =>
-                      toggleVisibilityProjectObject(projectObject.id)
-                    }
                     onDelete={() => {
                       deleteProjectObject(projectObject.id);
                     }}
@@ -463,49 +466,83 @@ export default function SceneGraph() {
             </AccordionSummary>
             <AccordionDetails>
               <List>
-                {baseLayers.value.map((baseLayer) => (
-                  <ListItem key={baseLayer.id}>
-                    <Checkbox
-                      onChange={(_, checked) => {
-                        if (checked) return baseLayers.select(baseLayer.id);
-                        baseLayers.unselect(baseLayer.id);
-                      }}
-                      disabled={isReadOnly}
-                      checked={baseLayers.selected.includes(baseLayer.id)}
-                    />
-                    <ListItemText
-                      sx={{ flex: 1 }}
-                      primary={
-                        baseLayerTypeIcons[baseLayer.type as LAYER_TYPE] +
-                        " - " +
-                        baseLayer.name
-                      }
-                    />
-                    <Tooltip arrow title={t("actions.fly-to")}>
-                      <IconButton
-                        disabled={!baseLayers.selected.includes(baseLayer.id)}
-                        onClick={() => {
-                          for (
-                            let i = 0;
-                            i < (viewer?.scene.primitives.length ?? 0);
-                            i++
-                          ) {
-                            const primitive = viewer?.scene.primitives.get(i);
-
-                            if (
-                              primitive?._resource?.request?.url ===
-                              baseLayer.href
-                            ) {
-                              viewer?.zoomTo(primitive);
-                            }
+                {baseLayers.value
+                  .toSorted((a, b) => {
+                    return `${a.type}_${a.name}`.localeCompare(
+                      `${b.type}_${b.name}`
+                    );
+                  })
+                  .map((baseLayer, index, array) => (
+                    <>
+                      {baseLayer.type !==
+                      (array[index - 1]?.type ?? baseLayer.type) ? (
+                        <Divider />
+                      ) : null}
+                      <ListItem key={baseLayer.id}>
+                        {baseLayer.type === "TERRAIN" ? (
+                          <Radio
+                            onChange={(_, checked) => {
+                              if (checked) {
+                                array.forEach((aBaseLayer) => {
+                                  if (aBaseLayer.type === "TERRAIN")
+                                    baseLayers.unselect(aBaseLayer.id);
+                                });
+                                return baseLayers.select(baseLayer.id);
+                              }
+                              baseLayers.unselect(baseLayer.id);
+                            }}
+                            disabled={isReadOnly}
+                            checked={baseLayers.selected.includes(baseLayer.id)}
+                          />
+                        ) : (
+                          <Checkbox
+                            onChange={(_, checked) => {
+                              if (checked) {
+                                return baseLayers.select(baseLayer.id);
+                              }
+                              baseLayers.unselect(baseLayer.id);
+                            }}
+                            disabled={isReadOnly}
+                            checked={baseLayers.selected.includes(baseLayer.id)}
+                          />
+                        )}
+                        <ListItemText
+                          sx={{ flex: 1 }}
+                          primary={
+                            baseLayerTypeIcons[baseLayer.type as LAYER_TYPE] +
+                            " - " +
+                            baseLayer.name
                           }
-                        }}
-                      >
-                        <Adjust />
-                      </IconButton>
-                    </Tooltip>
-                  </ListItem>
-                ))}
+                        />
+                        <Tooltip arrow title={t("actions.fly-to")}>
+                          <IconButton
+                            disabled={
+                              !baseLayers.selected.includes(baseLayer.id)
+                            }
+                            onClick={() => {
+                              for (
+                                let i = 0;
+                                i < (viewer?.scene.primitives.length ?? 0);
+                                i++
+                              ) {
+                                const primitive =
+                                  viewer?.scene.primitives.get(i);
+
+                                if (
+                                  primitive?._resource?.request?.url ===
+                                  baseLayer.href
+                                ) {
+                                  viewer?.zoomTo(primitive);
+                                }
+                              }
+                            }}
+                          >
+                            <Adjust />
+                          </IconButton>
+                        </Tooltip>
+                      </ListItem>
+                    </>
+                  ))}
               </List>
             </AccordionDetails>
           </Accordion>

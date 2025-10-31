@@ -1,4 +1,4 @@
-import { Divider, Grid, Typography } from "@mui/material";
+import { Divider, Grid, keyframes, Typography } from "@mui/material";
 import { Cartesian3, ConstantPositionProperty, Quaternion } from "cesium";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { useCesium } from "resium";
@@ -39,6 +39,14 @@ type PartialStartingPointTransform = Partial<
     | "uiTargetEpsg"
   >
 >;
+
+function removeUndefinedValues<T extends Record<string, unknown | undefined>>(
+  record: T
+): T {
+  return Object.fromEntries(
+    Object.entries(record).filter(([_, value]) => value !== undefined)
+  ) as T;
+}
 
 export default function TransformSwitch({
   selectedObject,
@@ -122,11 +130,14 @@ export default function TransformSwitch({
 
       viewer?.scene.requestRender();
 
-      handleUpdateProjectObject(selectedObject.id, {
-        translation: value,
-        uiTranslation: uiValue,
-        uiEpsg: uiEpsg,
-      });
+      handleUpdateProjectObject(
+        selectedObject.id,
+        removeUndefinedValues({
+          translation: value,
+          uiTranslation: uiValue,
+          uiEpsg: uiEpsg,
+        })
+      );
     },
     [
       objectRefs.projectObject,
@@ -158,10 +169,13 @@ export default function TransformSwitch({
 
       viewer?.scene.requestRender();
 
-      handleUpdateProjectObject(selectedObject.id, {
-        rotation: value,
-        uiRotation: uiValue,
-      });
+      handleUpdateProjectObject(
+        selectedObject.id,
+        removeUndefinedValues({
+          rotation: value,
+          uiRotation: uiValue,
+        })
+      );
     },
     [
       objectRefs.projectObject,
@@ -193,10 +207,13 @@ export default function TransformSwitch({
 
       viewer?.scene.requestRender();
 
-      handleUpdateProjectObject(selectedObject.id, {
-        scale: value,
-        uiScale: uiValue,
-      });
+      handleUpdateProjectObject(
+        selectedObject.id,
+        removeUndefinedValues({
+          scale: value,
+          uiScale: uiValue,
+        })
+      );
     },
     [
       objectRefs.projectObject,
@@ -243,10 +260,12 @@ export default function TransformSwitch({
       timerRef.current.timer = window.setTimeout(() => {
         if (!transformsMapStartingPoints.has(selectedObject.id)) return;
 
-        updateStartingPoint({
-          id: selectedObject.id,
-          ...transformsMapStartingPoints.get(selectedObject.id),
-        });
+        updateStartingPoint(
+          removeUndefinedValues({
+            id: selectedObject.id,
+            ...transformsMapStartingPoints.get(selectedObject.id),
+          })
+        );
 
         transformsMapStartingPoints.delete(selectedObject.id);
       }, 250);

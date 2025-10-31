@@ -36,14 +36,6 @@ export default async function RootLayout({
     <html lang={locale}>
       <head>
         <link rel="icon" href="/favicon_32x32.png" sizes="any" />
-        <Script
-          id="set-cesium-base-url"
-          strategy="beforeInteractive"
-          dangerouslySetInnerHTML={{
-            __html: `
-          window.CESIUM_BASE_URL="/cesium";`,
-          }}
-        />
       </head>
       <body>
         <NextIntlClientProvider messages={messages}>

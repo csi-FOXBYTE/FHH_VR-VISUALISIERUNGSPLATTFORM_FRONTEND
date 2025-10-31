@@ -1,4 +1,6 @@
 import * as Cesium from "cesium";
+import { useTranslations } from "next-intl";
+import { useSnackbar } from "notistack";
 import { createContext, ReactNode, useContext, useMemo } from "react";
 
 type TileSetLayer = {
@@ -10,7 +12,7 @@ type TileSetLayer = {
 type TerrainLayer = {
   name: string;
   id: string;
-  resource: Promise<Cesium.TerrainProvider>;
+  resource: Promise<Cesium.TerrainProvider | undefined>;
 };
 
 type ImageryLayer = {
@@ -43,6 +45,10 @@ export default function BaseLayerProvider({
     type: "TERRAIN" | "TILES3D" | "IMAGERY";
   }[];
 }) {
+  const { enqueueSnackbar } = useSnackbar();
+
+  const t = useTranslations();
+
   const providers = useMemo(() => {
     const result: BaseLayerProviderContextType = {
       imageries: [],
@@ -68,7 +74,15 @@ export default function BaseLayerProvider({
               {
                 requestVertexNormals: true,
               }
-            ),
+            ).catch(() => {
+              enqueueSnackbar({
+                key: `terrain-error-${resource.id}`,
+                variant: "error",
+                preventDuplicate: true,
+                message: t("editor.selected-terrain-invalid"),
+              });
+              return undefined;
+            }),
           };
           break;
         case "IMAGERY":
