@@ -23,7 +23,7 @@
     "preinstall": "npx only-allow pnpm",
     "db:reset": "pnpm zenstack generate --schema zmodel/schema.zmodel && pnpm prisma db push --force-reset",
     "db:eject": "pnpm prisma migrate diff --from-empty --to-schema-datamodel ./prisma/schema.prisma --script > ./prisma/migration.sql",
-    "publish:docker": "docker build -t fhhvr-webfrontend:0.2.1 . --secret id=npmrc,src=%USERPROFILE%/.npmrc --secret id=env,src=.env && docker tag fhhvr-webfrontend:0.2.1 fhhvrdockerregistry.azurecr.io/fhhvr-webfrontend:0.2.1 && docker push fhhvrdockerregistry.azurecr.io/fhhvr-webfrontend:0.2.1"
+    "publish:docker": "docker build -t fhhvr-webfrontend:0.2.1 . --secret id=env,src=.env && docker tag fhhvr-webfrontend:0.2.1 fhhvrdockerregistry.azurecr.io/fhhvr-webfrontend:0.2.1 && docker push fhhvrdockerregistry.azurecr.io/fhhvr-webfrontend:0.2.1"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.7.4",

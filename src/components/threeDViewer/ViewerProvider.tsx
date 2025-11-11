@@ -1019,8 +1019,8 @@ export const ViewerProvider = ({
 
           const uiTarget = convertTranslationFromCesiumToUserEpsg(
             {
-              ...origin,
-              z: origin.z + 1.7,
+              ...target,
+              z: target.z + 1.7,
             },
             configuration.defaultEPSG
           );
@@ -1370,7 +1370,7 @@ export const ViewerProvider = ({
 
           const image = await p;
 
-          console.log({ rawImage, image })
+          document.body.removeChild(canvas);
 
           set((state) => ({
             tools: {

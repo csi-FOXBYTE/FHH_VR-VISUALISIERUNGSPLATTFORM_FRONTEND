@@ -36,7 +36,7 @@ const ResiumViewer = dynamic(async () => (await import("./Viewer")).default, {
   ),
 });
 
-// @ts-ignore
+// @ts-expect-error its okay that its untyped here
 if (typeof window !== "undefined") window.CESIUM_BASE_URL = "/cesium";
 
 export function ThreeDViewer() {
