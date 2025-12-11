@@ -1,10 +1,10 @@
 import Providers from "@/appProviders";
 import { createConfiguration } from "@/components/configuration/createConfiguration";
 import { auth } from "@/server/auth/auth";
-import { redirect, routing } from "@/server/i18n/routing";
+import { routing } from "@/server/i18n/routing";
 import { CssBaseline } from "@mui/material";
 import { NextIntlClientProvider } from "next-intl";
-import { getLocale, getMessages } from "next-intl/server";
+import { getMessages } from "next-intl/server";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { ReactNode } from "react";
 
@@ -22,12 +22,6 @@ export default async function LandingPageLayout({
   const session = await auth();
 
   const { locale } = await params;
-
-  if (session)
-    return redirect({
-      href: "/my-area",
-      locale: await getLocale(),
-    });
 
   const messages = await getMessages();
 
