@@ -27,6 +27,7 @@ import ProfileMenu from "./ProfileMenu";
 import { useSession } from "next-auth/react";
 import PageContainer from "../common/PageContainer";
 import Help from "../help/Help";
+import { useConfigurationProviderContext } from "../configuration/ConfigurationProvider";
 
 export type NavbarProps = {
   elevated?: boolean;
@@ -66,6 +67,8 @@ export default function Navbar({ elevated = true }: NavbarProps) {
     );
   };
 
+  const configuration = useConfigurationProviderContext();
+
   const [helpOpen, setHelpOpen] = useState(false);
 
   return (
@@ -96,6 +99,13 @@ export default function Navbar({ elevated = true }: NavbarProps) {
           </Link>
           <div style={{ flex: 1 }} />
           <ButtonGroup>
+            <Button
+              color="primary"
+              href={configuration.unityDownloadLink}
+              variant="contained"
+            >
+              {t("landingpage.download")}
+            </Button>
             <Select
               value={locale}
               onChange={handleChangeLocale}

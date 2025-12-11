@@ -36,7 +36,7 @@ export const { auth, handlers, signIn, signOut, unstable_update } = NextAuth({
       issuer: process.env.MICROSOFT_ENTRA_ISSUER,
       authorization: {
         params: {
-          scope: "openid profile email urn:fhhvr/vrvis-prod",
+          scope: "openid profile email",
         },
       },
     }),
