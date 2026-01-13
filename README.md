@@ -1,336 +1,300 @@
-[![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
+# FHH VR Visualisierungsplattform Frontend
 
-# About
+Next.js 15 App Router frontend for the FHH VR visualization platform. The UI is built with React 19 and MUI, uses next-intl for localization, NextAuth for authentication, tRPC for internal APIs, Prisma/ZenStack for data access, and Cesium/Resium for 3D views.
 
-This is a base template for NextJs.
+Key highlights:
+- App Router with authenticated and public areas
+- MUI-based UI with i18n and typed API clients
+- Prisma/ZenStack data layer and OpenAPI gateway
 
-[[_TOC_]]
+## Table of Contents
 
----
+- [Setup and Installation](#setup-and-installation)
+- [Scripts](#scripts)
+- [Architecture Overview](#architecture-overview)
+- [Project Structure](#project-structure)
+- [Routing Model](#routing-model)
+- [Authentication and Sessions](#authentication-and-sessions)
+- [Localization (i18n)](#localization-i18n)
+- [Data Layer (Prisma + ZenStack)](#data-layer-prisma--zenstack)
+- [tRPC](#trpc)
+- [OpenAPI Client](#openapi-client)
+- [Server-Side Modules](#server-side-modules)
+- [Gateway Proxy](#gateway-proxy)
+- [3D Viewer (Cesium/Resium)](#3d-viewer-cesiumresium)
+- [Configuration and Permissions](#configuration-and-permissions)
+- [Environment Variables](#environment-variables)
+- [Deployment Notes](#deployment-notes)
+- [Notable Assets and Content](#notable-assets-and-content)
 
-# Todo's
+## Setup and Installation
 
-- [x] Implement husky checks for clean code
-- [x] Dev environment setup
-- [x] Docker setup
-- [x] Keycloak setup
-- [ ] Prisma setup
-- [ ] Prisma migrations
-- [ ] Building
-- [x] Explanation internationalization / authentication / nuqs etc.
+### 1) Node.js via NVM
 
----
+Use an LTS Node version (the project uses Node 20.x).
+Docs: [nvm-windows](https://github.com/coreybutler/nvm-windows), [nvm](https://github.com/nvm-sh/nvm)
 
-# Setup dev environment
-
-Please follow the following chapters in order to setup your dev environment.
-
-## [PNPM](https://pnpm.io/motivation)
-
-1. Install nvm via the Symantec Management console. (If already installed skip to the next step)  
-   ![Install nvm symantec management console](./resources/install-nvm.png)
-
-2. Install/Switch Node version 20.x.x  
-   ![Install / switch node version symantec management console](./resources/switch-node-version.png)
-
-3. !!!VERY IMPORTANT!!! Restart Computer
-
-4. Check node install by entering node -v, it should return v20.x.x
-
-5. Install pnpm via
-   > npm i -g pnpm
-
-## [Docker](https://www.docker.com/)
-
-1. It's super simple just install docker.
-
-2. After installation run `pnpm dev` to spinup the required docker containers (this will also start the frontend).
-
-## [Keycloak](https://www.keycloak.org/)
-
-Since we cannot use the Mercedes Benz PingID locally we resort to using another OpenID Connect Identity provider which in its open source form is called keycloak.
-
-1. Navigate to http://localhost:8080/
-
-2. Click on administration console
-
-3. Sign in with username (admin) and password (password)
-
-4. Click on create realm
-
-![alt text](./resources/keycloak-create-realm-button.png)
-
-5. Fill in the following name: `MB - Infocus` (it's important that it uses this exact form).
-
-![alt text](./resources/keycloak-create-realm.png)
-
-6. On the left side click on clients
-
-7. Click on create client
-
-8. Fill in the following values
-
-![alt text](./resources/keycloak-create-client-general-settings.png)
-
-9. Click next and fill in the following values
-
-![alt text](./resources/keycloak-create-client-capability-config.png)
-
-10. Click next and fill in the last following values
-
-![alt text](./resources/keycloak-create-client-login-settings.png)
-
-11. Navigate to credentials
-
-![alt text](./resources/keycloak-infocus-credentials.png)
-
-12. Copy the secret and paste it into the environment file (.env)
-
-```
-KEYCLOAK_ID=infocus
-KEYCLOAK_SECRET=<your-pasted-secret-key>
-KEYCLOAK_ISSUER=http://localhost:8080/realms/MB%20-%20Infocus
+Windows (nvm-windows):
+```bash
+nvm install 20
+nvm use 20
+node -v
 ```
 
-13. The last important step is that you have to create a user in keycloak (don't forget to set a password as well).
-
-## Prisma
-
-TODO
-
----
-
-# Folder structure
-
-In the following you can see a small overview of the folder structure of the infocus base.
-
-```
-infocus
-├── prisma/
-│   └── schema.prisma -> modify this to change the datastructure
-├── messages -> inside here are all the translations
-├── resources -> this folder is only used for readme resources
-└── src/
-    ├── app/
-    │   ├── [locale]/ -> for creating new views put them in here / in subfolders etc.
-    │   │   └── <...here resides the standard NextJs App Router>
-    │   └── api/ -> dont touch anything in here!
-    │       ├── auth/
-    │       │   └── [...nextauth]/
-    │       │       └── route.ts
-    │       └── trpc/ -> dont touch anything in here!
-    │           └── [trpc]/
-    │               └── route.ts
-    ├── auth/ -> just don't touch anything in here!
-    │   ├── authOptions.ts
-    │   └── next-auth.d.ts
-    ├── trpc/  -> everything trpc related lives here
-    │   ├── server.tsx -> for usage with server components
-    │   ├── client.tsx -> for usage with client components
-    │   ├── routers/ -> add your new routers here
-    │   │   ├── index.ts -> connect your new router here
-    │   │   └── <...your other routers>
-    │   └── i18n/ -> just dont change anything in here!
-    │       └── <...don't change anything in here!>
-    └── components/ -> put your custom Components / Modules in here
-        └── <...if module create a separate folder else just create a file>
+macOS/Linux (nvm):
+```bash
+nvm install 20
+nvm use 20
+node -v
 ```
 
----
+### 2) Package Manager (pnpm)
 
-# Build process
+Docs: [pnpm.io](https://pnpm.io/)
+```bash
+npm i -g pnpm
+pnpm -v
+```
 
-TODO
+### 3) Docker
 
----
+Install Docker Desktop (Windows/macOS) or Docker Engine (Linux).
+Docs: [Docker Desktop](https://www.docker.com/products/docker-desktop/), [Docker Engine](https://docs.docker.com/engine/)
 
-# Release
+Ensure `docker` and `docker compose` are available:
+```bash
+docker -v
+docker compose version
+```
 
-## To trigger a new release do a pull request to the `release` branch. After completion merge the release branch into the master branch.
+### 4) Install Dependencies
 
-# Conventions
+```bash
+pnpm install
+```
 
-## Commits
+### 5) Environment Configuration
 
-For more informations please see [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/)
+Populate `.env` with required values (ask your team for the correct settings). Common values include auth provider keys and API endpoints like:
+- `BACKEND_URL`
+- `BASE_URL`
+- `MICROSOFT_ENTRA_CLIENT_ID`
+- `MICROSOFT_ENTRA_CLIENT_SECRET`
+- `MICROSOFT_ENTRA_ISSUER`
 
----
+### 6) Run the App
 
-# Base tech stack
+This starts Docker services and the Next.js dev server:
+```bash
+pnpm dev
+```
 
-## [State management]()
+Open `http://localhost:3000`.
 
-It is important to stay stateless in Next.js applications to achieve scalability and maintain reload-friendly functionality. To manage state effectively, we utilize `nuqs` to leverage the URL's search parameters for state storage and Next.js path parameters for contextual state, such as querying specific documents using IDs. This approach ensures that all application state is tied to the route parameters or query states, avoiding the pitfalls of classic React state management (`useState`). By embedding state in the URL through path or query parameters, we create applications that are inherently reload-friendly, scalable, and shareable, while fully utilizing Next.js's routing and dynamic capabilities.
+### 7) Backend and Database
 
-✔️ Do's:
+Most features require the backend API to be running (the frontend proxies requests via `BACKEND_URL`). Start the backend service before using authenticated or data-driven views.
+Backend repository: [FHH_VR-VISUALISIERUNGSPLATTFORM_BACKEND](https://github.com/csi-FOXBYTE/FHH_VR-VISUALISIERUNGSPLATTFORM_BACKEND)
 
-Use URL-based state management to maintain a fully reloadable and shareable application state:
+On first start (or after resetting the database), initialize the database:
+```bash
+pnpm prisma db push
+pnpm prisma db seed
+```
 
-❌ Dont's:
+## Scripts
 
-Avoid using React’s local state (`useState`) for managing application-critical state:
+Run via `pnpm <script>`.
 
-If you need more informations on how to use `nuqs` please follow this guide https://nuqs.47ng.com/
+| Script | Purpose |
+| --- | --- |
+| `dev` | Starts required Docker services and runs Next.js in dev mode (Turbopack). |
+| `build` | Creates a production build. |
+| `start` | Starts the production server from a build. |
+| `postinstall` | Copies the Cesium build into `public/cesium`. |
+| `lint` | Runs Next.js linting. |
+| `prepare` | Installs Git hooks via Husky. |
+| `generate-gateway-api` | Regenerates the OpenAPI client from `http://localhost:5000/docs/json` (local backend URL). |
+| `zenstack-generate` | Regenerates Prisma artifacts from `zmodel/schema.zmodel`. |
+| `preinstall` | Enforces pnpm usage. |
+| `db:reset` | Regenerates ZenStack artifacts and resets the database via `prisma db push --force-reset`. |
+| `db:eject` | Outputs a SQL migration script to `prisma/migration.sql`. |
+| `publish:docker` | Builds, tags, and pushes the Docker image (versioned). |
 
----
+## Architecture Overview
 
-## [tRPC](https://trpc.io/docs/quickstart)
+This frontend is a Next.js App Router application that combines server components, client components, and API routes. The key architectural pieces are:
 
-If you need more informations, than provided in the following chapters please read the guide under https://trpc.io/docs/quickstart
+- UI: React 19 + MUI, with centralized theming and locale-aware components.
+- Auth: NextAuth session for the frontend, plus a backend access token minted when calling the gateway.
+- Data: Prisma client with ZenStack-generated models and permissions.
+- APIs: tRPC for internal RPC calls and an OpenAPI client for backend services.
+- Gateway: A proxy endpoint that forwards requests to the backend with the correct headers and tokens.
+- 3D: Cesium/Resium-based viewer under `components/threeDViewer`.
 
-### Client usage
+## Project Structure
 
-Just import `trpc` from `@/trpc/client` and use it like the tRPC documentation suggests.
+```
+.
+|-- src/                              # App Router routes, layouts, API handlers
+|   |-- app/
+|   |   |-- (withAuth)/               # Authenticated area (layout enforces session)
+|   |   |   |-- api/                  # NextAuth + tRPC endpoints
+|   |   |   `-- [locale]/(app)/       # App views grouped by layout
+|   |   `-- (withoutAuth)/            # Public pages and API endpoints
+|   |       |-- api/                  # Unity auth + gateway proxy
+|   |       `-- [locale]/             # Landing, imprint, GDPR
+|   |-- components/                   # Feature and shared UI components
+|   |-- constants/                    # Theme + permission constants
+|   |-- hooks/                        # Shared hooks
+|   |-- permissions/                  # Permission guards and helpers
+|   `-- server/                       # Server-side modules (auth, tRPC, Prisma, i18n)
+|-- messages/                         # next-intl message catalogs
+|-- prisma/                           # Prisma schema + seed script
+|-- zmodel/                           # ZenStack models and permissions
+|-- public/                           # Static assets, Cesium bundle, help content
+|-- scripts/                          # Build utilities (e.g. Cesium copy)
+|-- stubs/                            # Runtime stubs for non-node contexts
+|-- docker-compose.yaml               # Local service dependencies
+|-- Dockerfile                        # Production container build
+`-- next.config.ts                    # Next.js, MDX, next-intl, and webpack config
+```
 
-For example:
+## Routing Model
 
+- `src/app/(withAuth)` enforces an authenticated session in its layout and hosts the main application.
+- `src/app/(withoutAuth)` contains the landing/legal pages and unauthenticated API routes.
+- `src/app/[locale]` drives localization via `next-intl`; messages live in `messages/*.json`.
+- Layout groups under `(app)` split pages into static and dynamic layout variants.
+- Feature routes live under `project-management`, `administration`, `collaboration`, `my-area`, and `profile`.
+
+## Authentication and Sessions
+
+Authentication uses NextAuth with Microsoft Entra ID. The authenticated layout (`src/app/(withAuth)/layout.tsx`) blocks access when no session exists and redirects to the sign-in redirect endpoint.
+
+Two tokens are used:
+- Frontend access: NextAuth session token stored in cookies.
+- Backend access: A separate bearer token minted by the frontend and attached to requests sent via the gateway (used by the Unity client as well).
+
+The session callback enriches the user with permissions and group assignments fetched from the database, which powers the permission helpers in `src/permissions`.
+
+## Localization (i18n)
+
+Localization is handled by `next-intl`. Messages live in `messages/*.json`, and locale routing is configured in `src/server/i18n`. The app uses a `[locale]` segment under both authenticated and public routes. Use `useTranslations()` in client components or `getMessages()` in server components.
+
+## Data Layer (Prisma + ZenStack)
+
+Prisma provides the database client, while ZenStack defines schema models and permission rules under `zmodel/`. The Prisma schema is generated from ZenStack, and the application uses Prisma extensions under `src/server/prisma/extensions`.
+
+The data model is duplicated in the backend as well. When you change the frontend data layer (ZenStack/Prisma models), you must apply the same change in the backend to keep the schemas aligned.
+
+Common tasks:
+- Generate Prisma artifacts: `pnpm zenstack-generate`
+- Sync schema to DB: `pnpm prisma db push`
+- Seed initial data: `pnpm prisma db seed`
+
+If you reset the database, rerun the generate and seed steps before starting the app.
+
+## tRPC
+
+tRPC powers internal APIs for authenticated views. Routers live in `src/server/trpc/routers`, and the client and server adapters are in `src/server/trpc`.
+
+Use the client in React components:
 ```tsx
-import { trpc } from "@/trpc/client";
+import { trpc } from "@/server/trpc/client";
 
-export function ClientComponent() {
-  // your other component stuff
-
-  const { data, isPending } = trpc.testRouter.test.useQuery();
-
-  // use your data
+export function Example() {
+  const { data, isPending } = trpc.profile.get.useQuery();
+  return <div>{isPending ? "Loading..." : data?.name}</div>;
 }
 ```
 
-### Server usage
-
-Just import `trpc` from `@/trpc/server` and use it like in the example.
-
-This prefetches the query on the server and hydrates it on the client. Be sure to wrap you client component in HydrateClient otherwise it won't work.
-
-For example:
-
+For server components, prefetch and hydrate:
 ```tsx
-// inside server component
+import { trpc, HydrateClient } from "@/server/trpc/server";
 
-const { trpc, HydrateClient } from "@/trpc/server";
-
-export async function ServerComponent({ children }: { children: ReactNode }) {
-  // your other component stuff
-
-  await trpc.testRouter.test.prefetch();
-
+export default async function Page() {
+  await trpc.profile.get.prefetch();
   return (
-    <HydrateClient> // this hydrates the data to the client
-      {children}
+    <HydrateClient>
+      {/* client components here */}
     </HydrateClient>
   );
 }
 ```
 
-### Routers
+## OpenAPI Client
 
-New routers are created inside `src/trpc/routers` they always have the following structure:
+The backend OpenAPI client is generated under `src/server/gatewayApi/generated`. Use the typed wrapper in `src/server/gatewayApi/client.ts`, which targets `/api/gateway` and injects cookies on the server.
 
-```tsx
-import { router, protectedProcedure } from "..";
+## Server-Side Modules
 
-const testRouter = router({
-  testQuery: protectedProcedure.query(async () => {
-    // your query logic -> should always return something
-  }),
-  testMutation: protectedProcedure.mutation(async () => {
-    // your mutation logic -> should also always return something
-  }),
-});
+- `src/server/auth` configures NextAuth (Microsoft Entra ID) and Unity token helpers.
+- `src/server/trpc` defines routers and tRPC client/server adapters.
+- `src/server/gatewayApi` hosts the OpenAPI-generated client and a typed gateway wrapper.
+- `src/server/prisma` provides Prisma client setup and custom extensions.
+- `src/server/i18n` contains locale routing and request helpers.
 
-export default testRouter;
-```
+## Gateway Proxy
 
-To connect a new router update the `index.ts` file as follows:
+The gateway endpoint lives at `src/app/(withoutAuth)/api/gateway/[...path]/route.ts`. It proxies frontend requests to the backend (`BACKEND_URL`) while handling headers and authentication:
 
-```tsx
-import "server-only";
+- Forwards all HTTP methods and query strings to the upstream API.
+- If no `Authorization` header is present, it mints a bearer token from the current session and attaches it.
+- Sanitizes hop-by-hop headers and handles empty-body requests safely for HTTP/2/Azure edges.
 
-import { router } from "..";
+There are two tokens in play: the NextAuth session token for accessing the frontend, and a separate backend access token minted by the frontend (the Unity client uses this backend token as well).
 
-// other router imports
-import testRouter from "./testRouter"; // this is your new router
+The OpenAPI client in `src/server/gatewayApi/client.ts` targets this proxy (via `/api/gateway`), so server and client components can call typed APIs without hardcoding the backend base URL.
 
-export const appRouter = router({
-  // other routers
-  testRouter, // only change this!
-});
+## 3D Viewer (Cesium/Resium)
 
-export type AppRouter = typeof appRouter;
-```
+Cesium is bundled into `public/cesium` during `postinstall`. The editor/viewer lives under `src/components/threeDViewer` and is mounted from the project editor route.
 
----
+Editor entry point:
+- `src/app/(withAuth)/[locale]/(app)/(withDynamicLayout)/project-management/[projectId]/page.tsx` loads the project via the gateway API, wraps it in `ViewerProvider`, and renders `Wrapper`.
+- `Wrapper` wires terrain/base layers through `BaseLayerProvider` and renders `ThreeDViewer`.
 
-## [i18n](https://next-intl-docs.vercel.app/docs/usage)
+UI shell vs. scene:
+- `src/components/threeDViewer/index.tsx` builds the editor shell (AppBar, Toolbar, RightDrawer, dialogs) and lazy-loads the Resium viewer.
+- `src/components/threeDViewer/Viewer.tsx` is the Cesium scene composition point (ProjectObjects, StartingPoints, ClippingPolygons, imagery, tilesets, overlays).
 
-Follow this guide if you need help https://next-intl-docs.vercel.app/docs/usage
+Global editor store:
+- `src/components/threeDViewer/ViewerProvider.tsx` defines a Zustand store and exports `useViewerStore`.
+- The store owns project data, layers, base/extension selections, objects, tools, selection, and history (undo/redo).
+- Use `useViewerStore((state) => ...)` in editor components to read or update state.
 
-The locale Provider is already setup, the only thing you should have to use is the `useTranslations` hook. Locale messages are present under `messages/*.json`.
+How to extend:
+- New scene primitives or overlays: add a component in `src/components/threeDViewer` and mount it in `Viewer.tsx`.
+- New editor UI: add a component in `src/components/threeDViewer` and wire it into `index.tsx`, `Toolbar.tsx`, or `RightDrawer.tsx`.
+- New state or actions: extend `ViewerStoreType` and the store implementation in `ViewerProvider.tsx`, then use `useViewerStore` in your UI or scene component.
+- If the feature should participate in undo/redo, capture snapshots via the history helpers in the store after state changes.
 
----
+When deploying, ensure static assets are included so Cesium can load its workers and static files.
 
-## [next-auth](https://next-auth.js.org/)
+## Configuration and Permissions
 
-You should only use the `useSession()` hook, and if you need the session inside of a server component. If you need more infos please read the following guide https://next-auth.js.org/
+Runtime configuration is built in `src/components/configuration` and provided via `ConfigurationProvider` in `src/appProviders.tsx`. Permission helpers in `src/permissions` read the session user permissions to gate UI and routes.
 
-> "Never roll your own auth!" (or suffer)
+## Environment Variables
 
----
+Common environment variables used by the app:
 
-## prisma
+| Variable | Purpose |
+| --- | --- |
+| `BACKEND_URL` | Backend base URL used by the gateway proxy. |
+| `BASE_URL` | Optional public base URL for API routing. |
+| `MICROSOFT_ENTRA_CLIENT_ID` | Microsoft Entra client ID for NextAuth. |
+| `MICROSOFT_ENTRA_CLIENT_SECRET` | Microsoft Entra client secret for NextAuth. |
+| `MICROSOFT_ENTRA_ISSUER` | Microsoft Entra issuer URL for NextAuth. |
+| `NEXTAUTH_SECRET` | NextAuth secret for session encryption. |
 
-For more informations on how to use prisma please follow this guide https://www.prisma.io/docs/orm
+## Deployment Notes
 
-### Transactions
+`next.config.ts` enables standalone output, which is compatible with containerized deployment. The provided `Dockerfile` and `docker-compose.yaml` are the recommended path for production builds and local services.
 
-Using Prisma dynamic transactions ensures that all database operations within a transaction are either fully completed or rolled back in case of an error, maintaining data integrity and preventing inconsistent states. This is critical for workflows involving multiple dependent actions, such as creating a user and associated records, where partial failures could lead to orphaned or conflicting data. Dynamic transactions also simplify error handling, allowing developers to manage edge cases and exceptions more effectively.
+## Notable Assets and Content
 
-```typescript
-import prisma from "<prisma instance>";
-
-async function createOrderWithItems(orderData, items) {
-  return await prisma.$transaction(async (tx) => {
-    const order = await tx.order.create({ data: orderData });
-    await Promise.all(
-      items.map((item) =>
-        tx.orderItem.create({
-          data: { ...item, orderId: order.id },
-        })
-      )
-    );
-    return order;
-  });
-}
-
-// Error during an item creation rolls back the entire operation
-```
-
-### Migration
-
-Todo
-
----
-
-## Material-UI
-
-For more informations on MaterialUI please follow this guide https://mui.com/material-ui/getting-started/usage/
-
----
-
-# VSCode extensions
-
-The following extensions should be used to make developing easier:
-
-- Mandatory:
-
-  - ESLint (for tracking warnings and possible errors)
-  - Prettier - Code formatter (for automatic codestyling)
-  - Prisma (for easier editing of prisma.schema file)
-  - Todo Tree (for tracking todos)
-  - i18n Ally (for internationalisation)
-  - Visual Studio Code Commitizen Support (for easier usage of conventional commits)
-
-- Optional:
-  - Pretty typescript errors (for better typescript error readability)
-
----
+- `public/cesium` is populated by `scripts/copyCesium.mjs` during install.
+- `public/help` and `src/components/help/translations` contain the help content (MDX + images).
+- `resources/` holds legacy documentation assets and is not used by the app runtime.
