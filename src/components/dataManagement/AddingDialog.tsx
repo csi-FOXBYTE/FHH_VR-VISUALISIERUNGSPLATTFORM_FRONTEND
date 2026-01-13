@@ -110,12 +110,6 @@ export default function AddingDialog({
               required
               fullWidth
               {...register("href")}
-              slotProps={{
-                htmlInput: {
-                  pattern: "https?://.+/[0-9]+/[0-9]+/[0-9]+(\\.(png|jpe?g|webp|pbf))?",
-                  title: "https://server.com/.../z/x/y.png (.png, .jpg, .jpeg, .webp, .pbf)"
-                }
-              }}
               label={t("data-management.href")}
             />
           </Grid>
