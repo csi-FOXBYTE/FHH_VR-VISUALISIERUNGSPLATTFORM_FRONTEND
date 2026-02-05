@@ -41,6 +41,7 @@ export const { auth, handlers, signIn, signOut, unstable_update } = NextAuth({
       },
     }),
   ],
+  debug: process.env.NEXTAUTH_DEBUG === "true",
   callbacks: {
     async signIn({ account, user, profile }) {
       try {
@@ -215,10 +216,10 @@ export const { auth, handlers, signIn, signOut, unstable_update } = NextAuth({
         new Set<Permissions>(
           assignedGroups.flatMap((assignedGroup) =>
             assignedGroup.assignedRoles.flatMap(
-              (assignedRole) => assignedRole.assignedPermissions
-            )
-          ) as Permissions[]
-        )
+              (assignedRole) => assignedRole.assignedPermissions,
+            ),
+          ) as Permissions[],
+        ),
       );
       session.user.assignedGroups = assignedGroups;
 

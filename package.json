@@ -1,6 +1,6 @@
 {
   "name": "fhhvr-webfrontend",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "private": true,
   "husky": {
     "hooks": {
@@ -12,7 +12,7 @@
   },
   "packageManager": "pnpm@9.5.0",
   "scripts": {
-    "dev": "docker compose up -d && next dev --turbopack",
+    "dev": "docker compose up -d && next dev",
     "build": "next build",
     "start": "next start",
     "postinstall": "node ./scripts/copyCesium.mjs",
@@ -23,7 +23,7 @@
     "preinstall": "npx only-allow pnpm",
     "db:reset": "pnpm zenstack generate --schema zmodel/schema.zmodel && pnpm prisma db push --force-reset",
     "db:eject": "pnpm prisma migrate diff --from-empty --to-schema-datamodel ./prisma/schema.prisma --script > ./prisma/migration.sql",
-    "publish:docker": "docker build -t fhhvr-webfrontend:0.2.3 . --secret id=env,src=.env && docker tag fhhvr-webfrontend:0.2.3 foxbytecsi/fhhvr-webfrontend:0.2.3 && docker push foxbytecsi/fhhvr-webfrontend:0.2.3"
+    "publish:docker": "docker build -t fhhvr-webfrontend:0.2.4 . --secret id=env,src=.env && docker tag fhhvr-webfrontend:0.2.4 foxbytecsi/fhhvr-webfrontend:0.2.4 && docker push foxbytecsi/fhhvr-webfrontend:0.2.4"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.7.4",
@@ -79,7 +79,7 @@
     "mui-rte": "^2.0.1",
     "next": "15.4.8",
     "next-absolute-url": "^1.2.2",
-    "next-auth": "5.0.0-beta.25",
+    "next-auth": "5.0.0-beta.30",
     "next-intl": "^4.3.4",
     "notistack": "^3.0.2",
     "nuqs": "^2.2.1",

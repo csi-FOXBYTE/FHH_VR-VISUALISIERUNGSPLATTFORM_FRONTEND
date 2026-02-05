@@ -1,5 +1,7 @@
 import { signIn } from "@/server/auth/auth";
+import { getLocale } from "next-intl/server";
 
-export function GET() {
-  return signIn("microsoft-entra-id");
+export async function GET() {
+  const locale = await getLocale();
+  return signIn("microsoft-entra-id", { redirectTo: `/${locale}/my-area` });
 }

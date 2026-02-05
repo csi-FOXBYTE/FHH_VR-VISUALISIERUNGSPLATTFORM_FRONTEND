@@ -1,6 +1,6 @@
 import { Prisma } from "@prisma/client";
 import { EventEmitter } from "events";
-import { createClient, RedisClientType } from "redis";
+import { createClient } from "redis";
 import { withNestedOperations } from "prisma-extension-nested-operations";
 
 type ChangeEmitters = EventEmitter<{
@@ -9,7 +9,7 @@ type ChangeEmitters = EventEmitter<{
 
 function throttle<T extends (...args: any[]) => void>(
   func: T,
-  delay: number
+  delay: number,
 ): (...args: Parameters<T>) => void {
   let lastCall = 0;
 
@@ -28,34 +28,47 @@ function uncapitalize(value: string) {
   return `${value.slice(0, 1).toLowerCase()}${value.slice(1)}`;
 }
 
-let pub: RedisClientType | null = null;
+type RedisClient = ReturnType<typeof createClient>;
+
+declare const globalThis: {
+  redisPub: RedisClient | undefined;
+  redisSub: RedisClient | undefined;
+} & typeof global;
+
 function getPub() {
-  if (!pub) {
-    pub = createClient({
-      url: process.env.REDIS_CONNECTION_STRING,
-      socket: {
-        reconnectStrategy(retries) {
-          return Math.min(retries * 50, 5_000);
-        },
-      },
-    });
-    pub.connect();
-  }
+  // Wenn bereits eine Verbindung existiert, nutze diese wieder!
+  if (globalThis.redisPub) return globalThis.redisPub;
+
+  const pub = createClient({
+    url: process.env.REDIS_CONNECTION_STRING || "redis://localhost:6379",
+    socket: {
+      reconnectStrategy: (retries) => Math.min(retries * 50, 5000),
+    },
+  });
+
+  pub.connect().catch(console.error); // Fehler abfangen
+
+  // Im Dev-Mode global speichern
+  if (process.env.NODE_ENV !== "production") globalThis.redisPub = pub;
+  if (process.env.NODE_ENV !== "production") globalThis.redisPub = pub;
+
   return pub;
 }
-let sub: RedisClientType | null = null;
+
 function getSub() {
-  if (!sub) {
-    sub = createClient({
-      url: process.env.REDIS_CONNECTION_STRING,
-      socket: {
-        reconnectStrategy(retries) {
-          return Math.min(retries * 50, 5_000);
-        },
-      },
-    });
-    sub.connect();
-  }
+  if (globalThis.redisSub) return globalThis.redisSub;
+
+  const sub = createClient({
+    url: process.env.REDIS_CONNECTION_STRING || "redis://localhost:6379",
+    socket: {
+      reconnectStrategy: (retries) => Math.min(retries * 50, 5000),
+    },
+  });
+
+  sub.connect().catch(console.error);
+
+  if (process.env.NODE_ENV !== "production") globalThis.redisSub = sub;
+
   return sub;
 }
 
@@ -72,7 +85,7 @@ export default function realtimeExtension() {
     async function emitChangeEvent(operation: OPERATIONS, model: string) {
       await pub.publish(
         `changeEvents:${model}`,
-        JSON.stringify({ operation, model })
+        JSON.stringify({ operation, model }),
       );
     }
 
