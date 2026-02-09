@@ -41,7 +41,7 @@ export default function ImportProjectObjectDialog() {
   const t = useTranslations();
 
   const importerOpen = useViewerStore(
-    (state) => state.projectObjects._importerOpen
+    (state) => state.projectObjects._importerOpen,
   );
 
   const params = useParams<{ projectId: string }>();
@@ -59,7 +59,7 @@ export default function ImportProjectObjectDialog() {
   const projectObjects = useViewerStore((state) => state.projectObjects.value);
 
   const toggleImport = useViewerStore(
-    (state) => state.projectObjects.toggleImport
+    (state) => state.projectObjects.toggleImport,
   );
 
   const { enqueueSnackbar } = useSnackbar();
@@ -121,7 +121,7 @@ export default function ImportProjectObjectDialog() {
 
   const reuseFile = useCallback(() => {
     const foundProjectObject = models.find(
-      (p) => p.id === selectedModelRows[0]
+      (p) => p.id === selectedModelRows[0],
     );
 
     if (!foundProjectObject)
@@ -186,8 +186,8 @@ export default function ImportProjectObjectDialog() {
               transferredBytes += end - start;
 
               setUploadProgress(transferredBytes / file.size);
-            })
-          )
+            }),
+          ),
         );
 
         await converter3DApi.converter3DCommitUploadPost({
@@ -242,7 +242,7 @@ export default function ImportProjectObjectDialog() {
 
         const translation = Matrix4.getTranslation(
           modelMatrix,
-          new Cartesian3()
+          new Cartesian3(),
         );
 
         const rotationMatrix = Matrix4.getRotation(modelMatrix, new Matrix3());

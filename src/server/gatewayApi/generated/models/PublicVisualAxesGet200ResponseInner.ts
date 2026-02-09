@@ -24,93 +24,84 @@ import {
 /**
  * 
  * @export
- * @interface ProjectIdUnityGet200ResponseStartingPointsInner
+ * @interface PublicVisualAxesGet200ResponseInner
  */
-export interface ProjectIdUnityGet200ResponseStartingPointsInner {
+export interface PublicVisualAxesGet200ResponseInner {
     /**
      * 
      * @type {string}
-     * @memberof ProjectIdUnityGet200ResponseStartingPointsInner
-     */
-    id: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof ProjectIdUnityGet200ResponseStartingPointsInner
+     * @memberof PublicVisualAxesGet200ResponseInner
      */
     name: string;
     /**
      * 
      * @type {string}
-     * @memberof ProjectIdUnityGet200ResponseStartingPointsInner
+     * @memberof PublicVisualAxesGet200ResponseInner
      */
-    img: string;
+    id: string;
     /**
      * 
      * @type {string}
-     * @memberof ProjectIdUnityGet200ResponseStartingPointsInner
+     * @memberof PublicVisualAxesGet200ResponseInner
      */
     description: string;
     /**
      * 
      * @type {ProjectIdGet200ResponseVisualAxesInnerStartPoint}
-     * @memberof ProjectIdUnityGet200ResponseStartingPointsInner
+     * @memberof PublicVisualAxesGet200ResponseInner
      */
     origin: ProjectIdGet200ResponseVisualAxesInnerStartPoint;
     /**
      * 
      * @type {ProjectIdGet200ResponseVisualAxesInnerStartPoint}
-     * @memberof ProjectIdUnityGet200ResponseStartingPointsInner
+     * @memberof PublicVisualAxesGet200ResponseInner
      */
     target: ProjectIdGet200ResponseVisualAxesInnerStartPoint;
 }
 
 /**
- * Check if a given object implements the ProjectIdUnityGet200ResponseStartingPointsInner interface.
+ * Check if a given object implements the PublicVisualAxesGet200ResponseInner interface.
  */
-export function instanceOfProjectIdUnityGet200ResponseStartingPointsInner(value: object): value is ProjectIdUnityGet200ResponseStartingPointsInner {
-    if (!('id' in value) || value['id'] === undefined) return false;
+export function instanceOfPublicVisualAxesGet200ResponseInner(value: object): value is PublicVisualAxesGet200ResponseInner {
     if (!('name' in value) || value['name'] === undefined) return false;
-    if (!('img' in value) || value['img'] === undefined) return false;
+    if (!('id' in value) || value['id'] === undefined) return false;
     if (!('description' in value) || value['description'] === undefined) return false;
     if (!('origin' in value) || value['origin'] === undefined) return false;
     if (!('target' in value) || value['target'] === undefined) return false;
     return true;
 }
 
-export function ProjectIdUnityGet200ResponseStartingPointsInnerFromJSON(json: any): ProjectIdUnityGet200ResponseStartingPointsInner {
-    return ProjectIdUnityGet200ResponseStartingPointsInnerFromJSONTyped(json, false);
+export function PublicVisualAxesGet200ResponseInnerFromJSON(json: any): PublicVisualAxesGet200ResponseInner {
+    return PublicVisualAxesGet200ResponseInnerFromJSONTyped(json, false);
 }
 
-export function ProjectIdUnityGet200ResponseStartingPointsInnerFromJSONTyped(json: any, ignoreDiscriminator: boolean): ProjectIdUnityGet200ResponseStartingPointsInner {
+export function PublicVisualAxesGet200ResponseInnerFromJSONTyped(json: any, ignoreDiscriminator: boolean): PublicVisualAxesGet200ResponseInner {
     if (json == null) {
         return json;
     }
     return {
         
-        'id': json['id'],
         'name': json['name'],
-        'img': json['img'],
+        'id': json['id'],
         'description': json['description'],
         'origin': ProjectIdGet200ResponseVisualAxesInnerStartPointFromJSON(json['origin']),
         'target': ProjectIdGet200ResponseVisualAxesInnerStartPointFromJSON(json['target']),
     };
 }
 
-export function ProjectIdUnityGet200ResponseStartingPointsInnerToJSON(json: any): ProjectIdUnityGet200ResponseStartingPointsInner {
-    return ProjectIdUnityGet200ResponseStartingPointsInnerToJSONTyped(json, false);
+export function PublicVisualAxesGet200ResponseInnerToJSON(json: any): PublicVisualAxesGet200ResponseInner {
+    return PublicVisualAxesGet200ResponseInnerToJSONTyped(json, false);
 }
 
-export function ProjectIdUnityGet200ResponseStartingPointsInnerToJSONTyped(value?: ProjectIdUnityGet200ResponseStartingPointsInner | null, ignoreDiscriminator: boolean = false): any {
+export function PublicVisualAxesGet200ResponseInnerToJSONTyped(value?: PublicVisualAxesGet200ResponseInner | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }
 
     return {
         
-        'id': value['id'],
         'name': value['name'],
-        'img': value['img'],
+        'id': value['id'],
         'description': value['description'],
         'origin': ProjectIdGet200ResponseVisualAxesInnerStartPointToJSON(value['origin']),
         'target': ProjectIdGet200ResponseVisualAxesInnerStartPointToJSON(value['target']),

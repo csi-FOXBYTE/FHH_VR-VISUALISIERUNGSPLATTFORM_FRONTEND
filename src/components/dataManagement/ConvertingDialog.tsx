@@ -1,5 +1,9 @@
+import { getApis } from "@/server/gatewayApi/client";
+import { trpc } from "@/server/trpc/client";
 import {
   Button,
+  Chip,
+  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
@@ -11,18 +15,25 @@ import {
   Select,
   Switch,
   TextField,
+  Typography,
 } from "@mui/material";
 import { useMutation } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 import { useSnackbar } from "notistack";
+import pLimit from "p-limit";
+import { Fragment, useMemo, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import DragAndDropzone from "../common/DragAndDropZone";
 import EPSGInput from "../common/EPSGInput";
+import MapLayerSelect from "../common/MapLayerSelect";
 import { useConfigurationProviderContext } from "../configuration/ConfigurationProvider";
-import { useTranslations } from "next-intl";
-import { trpc } from "@/server/trpc/client";
-import { getApis } from "@/server/gatewayApi/client";
-import { useState } from "react";
-import pLimit from "p-limit";
+import { BlobReader, ZipReader } from "@zip.js/zip.js";
+
+type ConversionType = "TILES3D" | "TERRAIN" | "IMAGERY";
+
+const worker = new Worker(
+  new URL("./findAppearanceInZippedCityGMLWorker.ts", import.meta.url),
+);
 
 export default function ConvertingDialog({
   open,
@@ -39,35 +50,64 @@ export default function ConvertingDialog({
 
   const { defaultEPSGLabelValue } = useConfigurationProviderContext();
 
-  const { handleSubmit, control, register } = useForm({
-    defaultValues: {
-      files: [] as File[],
-      srcSRS: defaultEPSGLabelValue,
-      type: "TILES3D" as "TILES3D" | "TERRAIN",
-      appearance: "rgbTexture",
-      name: "",
-      hasAlphaEnabled: false,
-    },
-  });
+  const { handleSubmit, control, register, watch, setValue, formState } =
+    useForm({
+      defaultValues: {
+        file: null as File | null,
+        terrainFile: null as File | null,
+        srcSRS: defaultEPSGLabelValue,
+        type: "TILES3D" as ConversionType,
+        appearance: "",
+        name: "",
+        zoomLevels: "10-18",
+        layer: "",
+        url: "",
+        hasAlphaEnabled: false,
+      },
+    });
+
+  const [appearanceSuggestions, setAppearanceSuggestions] = useState<string[]>(
+    [],
+  );
+  const [appearanceSuggestionsPending, setAppearanceSuggestionsPending] =
+    useState(false);
+
+  type FormValues = Parameters<Parameters<typeof handleSubmit>[0]>[0];
+
+  const type = watch("type");
 
   const [uploadProgress, setUploadProgress] = useState<null | number>(null);
 
   const { mutate, isPending } = useMutation({
-    mutationFn: async (values: {
-      files: File[];
-      srcSRS: { label: string; value: string };
-      type: "TILES3D" | "TERRAIN";
-      appearance: string;
-      name: string;
-      hasAlphaEnabled: boolean;
-    }) => {
-      setUploadProgress(null);
+    mutationFn: async (values: FormValues) => {
       const { converter3DApi } = await getApis();
+
+      if (values.type === "IMAGERY") {
+        const [startZoom, endZoom] = values.zoomLevels
+          .split("-")
+          .map((d) => parseInt(d));
+
+        return await converter3DApi.converter3DConvertWMSWMTSPost({
+          converter3DConvertWMSWMTSPostRequest: {
+            layer: values.layer,
+            name: values.name,
+            url: values.url,
+            endZoom,
+            startZoom,
+          },
+        });
+      }
+
+      const file = values.type === "TERRAIN" ? values.terrainFile : values.file;
+
+      if (!file) return;
+
+      setUploadProgress(null);
 
       const token = await converter3DApi.converter3DGetUploadTokenGet();
 
       const chunkSize = 4 * 1024 * 1024;
-      const total = Math.ceil(values.files[0].size / chunkSize);
+      const total = Math.ceil(file.size / chunkSize);
 
       const limit = pLimit(4);
 
@@ -77,8 +117,8 @@ export default function ConvertingDialog({
         Array.from({ length: total }).map((_, i) =>
           limit(async () => {
             const start = i * chunkSize;
-            const end = Math.min(start + chunkSize, values.files[0].size);
-            const chunk = values.files[0].slice(start, end);
+            const end = Math.min(start + chunkSize, file.size);
+            const chunk = file.slice(start, end);
 
             await converter3DApi.converter3DUploadBlockPost({
               block: chunk,
@@ -89,9 +129,9 @@ export default function ConvertingDialog({
 
             transferredBytes += end - start;
 
-            setUploadProgress(transferredBytes / values.files[0].size);
-          })
-        )
+            setUploadProgress(transferredBytes / file.size);
+          }),
+        ),
       );
 
       await converter3DApi.converter3DCommitUploadPost({
@@ -148,6 +188,210 @@ export default function ConvertingDialog({
     },
   });
 
+  console.log(formState.errors.file);
+
+  const controllers = useMemo(() => {
+    switch (type) {
+      case "TILES3D":
+        return (
+          <Fragment key={type}>
+            <Controller
+              control={control}
+              name="srcSRS"
+              render={({ field }) => (
+                <EPSGInput value={field.value} onChange={field.onChange} />
+              )}
+            />
+            <Select></Select>
+            <TextField
+              fullWidth
+              {...register("appearance")}
+              label={t("data-management.appearance")}
+            />
+            <Typography>
+              {t("converting-dialog.found-appearances")}{" "}
+              {appearanceSuggestions.length === 0
+                ? "-"
+                : appearanceSuggestions.map((a) => (
+                    <Chip
+                      key={a}
+                      onClick={() => setValue("appearance", a)}
+                      label={a}
+                    />
+                  ))}
+              {appearanceSuggestionsPending ? (
+                <>
+                  , <CircularProgress size="1rem" />
+                </>
+              ) : null}
+            </Typography>
+            <FormControlLabel
+              {...register("hasAlphaEnabled")}
+              control={<Switch />}
+              label={t("data-management.has-alpha-enabled")}
+            />
+            <Controller
+              control={control}
+              name="file"
+              rules={{
+                required: true,
+                validate: async (file) => {
+                  if (!file) return false;
+                  const reader = new ZipReader(new BlobReader(file));
+
+                  for await (const entry of reader.getEntriesGenerator()) {
+                    if (
+                      !entry.directory &&
+                      entry.filename.toLowerCase().endsWith(".gml")
+                    ) {
+                      return true;
+                    }
+                  }
+
+                  return t("converting-dialog.no-gml-files-found");
+                },
+              }}
+              render={({ field, formState }) => (
+                <DragAndDropzone
+                  name="file"
+                  required
+                  error={!!formState.errors?.file}
+                  helperText={formState.errors.file?.message?.toString()}
+                  value={field.value ? [field.value] : []}
+                  onChange={async (event) => {
+                    field.onChange(event[0] ?? null);
+                    setAppearanceSuggestionsPending(true);
+                    setAppearanceSuggestions([]);
+                    worker.onmessage = (event) => {
+                      if (typeof event.data.theme === "string")
+                        setAppearanceSuggestions((themes) => {
+                          const themesSet = new Set(themes);
+
+                          themesSet.add(event.data.theme);
+
+                          return Array.from(themesSet);
+                        });
+                      if (event.data.status === "finished")
+                        setAppearanceSuggestionsPending(false);
+                    };
+                    worker.onerror = () =>
+                      setAppearanceSuggestionsPending(false);
+                    worker.postMessage({ file: event[0] });
+                  }}
+                  accept={{ "application/zip": [".zip"] }}
+                />
+              )}
+            />
+          </Fragment>
+        );
+      case "IMAGERY":
+        return (
+          <Fragment key={type}>
+            <TextField
+              label={t("converting-dialog.zoom-levels")}
+              error={!!formState.errors.zoomLevels}
+              helperText={formState.errors.zoomLevels?.message}
+              {...register("zoomLevels", {
+                required: true,
+                validate: (value) => {
+                  const zoomLevelsRegexp = new RegExp(/^\d+-\d+$/);
+
+                  if (!zoomLevelsRegexp.test(value))
+                    return t(
+                      "converting-dialog.zoomlevels-must-be-of-form-10-18-for-example",
+                    );
+
+                  const [startZoom, endZoom] = value
+                    .split("-")
+                    .map((v) => parseInt(v));
+
+                  if (startZoom < 0)
+                    return t(
+                      "converting-dialog.start-zoom-level-must-be-greater-than-0",
+                    );
+
+                  if (startZoom > endZoom)
+                    return t(
+                      "converting-dialog.start-zoom-must-be-smaller-than-endzoom",
+                    );
+
+                  if (endZoom > 20)
+                    return t(
+                      "converting-dialog.end-zoom-cant-be-greater-than-20",
+                    );
+
+                  return true;
+                },
+              })}
+            />
+            <MapLayerSelect control={control} layerName="layer" urlName="url" />
+          </Fragment>
+        );
+      case "TERRAIN":
+        return (
+          <Fragment key={type}>
+            <Controller
+              control={control}
+              name="srcSRS"
+              render={({ field }) => (
+                <EPSGInput value={field.value} onChange={field.onChange} />
+              )}
+            />
+            <Controller
+              control={control}
+              name="terrainFile"
+              rules={{
+                required: true,
+                validate: async (file) => {
+                  if (!file) return false;
+                  const reader = new ZipReader(new BlobReader(file));
+
+                  const supportedExtensions = [
+                    ".dxf",
+                    ".dgn",
+                    ".shp",
+                    ".geojson",
+                    ".gpkg",
+                    ".gpx",
+                    ".kml",
+                    ".kmz",
+                    ".mvt",
+                    ".pbf",
+                    ".sqlite",
+                    ".svg",
+                  ];
+
+                  for await (const entry of reader.getEntriesGenerator()) {
+                    if (
+                      !entry.directory &&
+                      supportedExtensions.some((extension) =>
+                        entry.filename.toLowerCase().endsWith(extension),
+                      )
+                    ) {
+                      return true;
+                    }
+                  }
+
+                  return t("converting-dialog.no-dgm-files-found");
+                },
+              }}
+              render={({ field }) => (
+                <DragAndDropzone
+                  name="terrainFile"
+                  required
+                  error={!!formState.errors?.terrainFile}
+                  helperText={formState.errors.terrainFile?.message?.toString()}
+                  value={field.value ? [field.value] : []}
+                  onChange={(event) => field.onChange(event[0] ?? null)}
+                  accept={{ "application/zip": [".zip"] }}
+                />
+              )}
+            />
+          </Fragment>
+        );
+    }
+  }, [control, register, t, type, formState]);
+
   return (
     <Dialog open={open} onClose={close} fullWidth>
       <DialogTitle>{t("actions.converting")}</DialogTitle>
@@ -177,40 +421,11 @@ export default function ConvertingDialog({
                   <MenuItem value={"TERRAIN"}>
                     DGM ({t("data-management.terrain")})
                   </MenuItem>
+                  <MenuItem value={"IMAGERY"}>Imagery (WMS, WMTS)</MenuItem>
                 </Select>
               )}
             />
-            <Controller
-              control={control}
-              name="srcSRS"
-              render={({ field }) => (
-                <EPSGInput value={field.value} onChange={field.onChange} />
-              )}
-            />
-            <TextField
-              required
-              fullWidth
-              {...register("appearance")}
-              label={t("data-management.appearance")}
-            />
-            <FormControlLabel
-              {...register("hasAlphaEnabled")}
-              control={<Switch />}
-              label={t("data-management.has-alpha-enabled")}
-            />
-            <Controller
-              control={control}
-              name="files"
-              render={({ field }) => (
-                <DragAndDropzone
-                  name="file"
-                  required
-                  value={field.value}
-                  onChange={field.onChange}
-                  accept={{ "application/zip": [".zip"] }}
-                />
-              )}
-            />
+            {controllers}
           </Grid>
         </DialogContent>
         <DialogActions>

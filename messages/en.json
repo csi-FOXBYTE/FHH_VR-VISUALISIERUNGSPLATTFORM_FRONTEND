@@ -358,5 +358,27 @@
   "drag-and-dropzone": {
     "drop-here": "Drop files here, or",
     "browse-files": "Browse files"
+  },
+  "map-layer-select": {
+    "is-tms": "Is TMS",
+    "select-a-layer": "Select a layer!",
+    "layer": "Layer",
+    "url": "URL",
+    "must-start-with-http-or-https": "Must start with http:// or https://!",
+    "connection-failed-server-responded-with-response-status": "Connection failed: Server responded with {status}!",
+    "the-map-server-reported-an-error-serviceexception": "The map server reported an error (ServiceException).",
+    "endpoint-returned-a-webpage-not-a-map-service-xml": "Endpoint returned a webpage, not a map service XML.",
+    "valid-link-but-not-a-recognized-wms-wmts-capabilities-document": "Valid link, but not a recognized WMS/WMTS capabilities document.",
+    "network-error-could-not-reach-the-service-via-proxy": "Network error: Could not reach the service via proxy."
+  },
+  "converting-dialog": {
+    "zoom-levels": "Zoom levels",
+    "found-appearances": "Found appearances",
+    "zoomlevels-must-be-of-form-10-18-for-example": "Zoomlevels must be of form 10-18 for example!",
+    "start-zoom-level-must-be-greater-than-0": "Start zoom level must be greater than 0!",
+    "start-zoom-must-be-smaller-than-endzoom": "Start zoom must be smaller than endzoom!",
+    "end-zoom-cant-be-greater-than-20": "End zoom can't be greater than 20!",
+    "no-gml-files-found": "No GML files in zip!",
+    "no-dgm-files-found": "No suitable DEM formats in ZIP! (Allowed formats are .dxf, .dgn, .shp, .geojson, .gpkg, .gpx, .kml, .kmz, .mvt, .pbf, .sqlite, .svg)"
   }
 }

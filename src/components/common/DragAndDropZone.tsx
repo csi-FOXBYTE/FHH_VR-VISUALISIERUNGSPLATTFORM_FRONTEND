@@ -1,5 +1,12 @@
 import { DropzoneOptions, useDropzone } from "react-dropzone";
-import { Button, Grid, List, ListItem, ListItemText, Typography } from "@mui/material";
+import {
+  Button,
+  Grid,
+  List,
+  ListItem,
+  ListItemText,
+  Typography,
+} from "@mui/material";
 import { UploadFile } from "@mui/icons-material";
 import { useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
@@ -9,8 +16,10 @@ export default function DragAndDropzone(
     name: string;
     required?: boolean;
     value?: File[];
+    error?: boolean;
+    helperText?: string;
     onChange?: (value: File[]) => void;
-  }
+  },
 ) {
   const hiddenInputRef = useRef<HTMLInputElement>(null);
 
@@ -24,8 +33,6 @@ export default function DragAndDropzone(
     useDropzone({
       onDrop: (incomingFiles) => {
         if (hiddenInputRef.current) {
-          // Note the specific way we need to munge the file into the hidden input
-          // https://stackoverflow.com/a/68182158/1068446
           const dataTransfer = new DataTransfer();
           incomingFiles.forEach((v) => {
             dataTransfer.items.add(v);
@@ -50,6 +57,7 @@ export default function DragAndDropzone(
           border: isDragActive
             ? `2px dotted ${theme.palette.secondary.main}`
             : `2px dotted ${theme.palette.divider}`,
+          borderColor: props.error ? "red" : undefined,
           background: isDragActive ? theme.palette.secondary.light : undefined,
           color: isDragActive
             ? theme.palette.secondary.contrastText
@@ -60,7 +68,14 @@ export default function DragAndDropzone(
           type="file"
           name={props.name}
           ref={hiddenInputRef}
-          style={{ display: "none" }}
+          style={{
+            width: 1,
+            height: 1,
+            opacity: 0,
+            position: "absolute",
+            zIndex: -1,
+            pointerEvents: "none",
+          }}
           required={props.required}
         />
         <input {...getInputProps()} />
@@ -68,9 +83,7 @@ export default function DragAndDropzone(
         <Typography component="p">
           {t("drag-and-dropzone.drop-here")}
         </Typography>
-        <Button>
-          {t("drag-and-dropzone.browse-files")}
-        </Button>
+        <Button>{t("drag-and-dropzone.browse-files")}</Button>
         <Typography sx={{ marginTop: 2 }} variant="caption">
           {getInputProps().accept?.split(",").join(", ")}
         </Typography>
@@ -82,6 +95,9 @@ export default function DragAndDropzone(
           ))}
         </List>
       </Grid>
+      <Typography variant="caption" color="error">
+        {props.helperText}
+      </Typography>
     </>
   );
 }

@@ -358,5 +358,27 @@
   "drag-and-dropzone": {
     "drop-here": "Dateien hier ablegen, oder",
     "browse-files": "Dateien durchsuchen"
+  },
+  "map-layer-select": {
+    "is-tms": "Ist TMS",
+    "select-a-layer": "Bitte Ebene auswählen!",
+    "layer": "Ebene",
+    "url": "URL",
+    "must-start-with-http-or-https": "Muss mit http:// oder https:// beginnen!",
+    "connection-failed-server-responded-with-response-status": "Verbindung fehlgeschlagen: Server antwortete mit {status}!",
+    "the-map-server-reported-an-error-serviceexception": "Der Kartenserver meldete einen Fehler (ServiceException).",
+    "endpoint-returned-a-webpage-not-a-map-service-xml": "Endpunkt lieferte eine Webseite, kein Kartendienst-XML.",
+    "valid-link-but-not-a-recognized-wms-wmts-capabilities-document": "Gültiger Link, aber kein erkanntes WMS/WMTS-Capabilities-Dokument.",
+    "network-error-could-not-reach-the-service-via-proxy": "Netzwerkfehler: Konnte den Dienst nicht über den Proxy erreichen."
+  },
+  "converting-dialog": {
+    "zoom-levels": "Zoomstufen",
+    "zoomlevels-must-be-of-form-10-18-for-example": "Zoomstufen müssen als Zahl-Zahl angegeben werden (z.B. 10-18)!",
+    "start-zoom-level-must-be-greater-than-0": "Der Startzoom muss größer als 0 sein!",
+    "start-zoom-must-be-smaller-than-endzoom": "Der Startzoom muss größer als der Endzoom sein!",
+    "end-zoom-cant-be-greater-than-20": "Der Endzoom kann nicht größer als 20 sein!",
+    "found-appearances": "Gefundene Appearances:",
+    "no-gml-files-found": "Keine GML Dateien in ZIP!",
+    "no-dgm-files-found": "Keine passenden DGM Formate in ZIP! (Erlaubt sind .dxf, .dgn, .shp, .geojson, .gpkg, .gpx, .kml, .kmz, .mvt, .pbf, .sqlite, .svg)"
   }
 }

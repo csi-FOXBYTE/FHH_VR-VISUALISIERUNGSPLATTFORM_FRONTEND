@@ -6,6 +6,7 @@ apis/EventsApi.ts
 apis/ProjectApi.ts
 apis/PublicApi.ts
 apis/StatsApi.ts
+apis/TestApi.ts
 apis/UserApi.ts
 apis/index.ts
 index.ts
@@ -20,6 +21,7 @@ models/Converter3DConvertProjectModelPost200Response.ts
 models/Converter3DConvertProjectModelPostRequest.ts
 models/Converter3DConvertTerrainPost200Response.ts
 models/Converter3DConvertTerrainPostRequest.ts
+models/Converter3DConvertWMSWMTSPostRequest.ts
 models/Converter3DDownloadProjectModelPost200Response.ts
 models/Converter3DDownloadProjectModelPostRequest.ts
 models/Converter3DGetProjectModelStatusPost200Response.ts
@@ -30,6 +32,8 @@ models/Def1.ts
 models/Def2.ts
 models/Def3.ts
 models/Def4.ts
+models/EventsGet200ResponseInner.ts
+models/EventsGet200ResponseInnerOwner.ts
 models/EventsIdHostPostRequest.ts
 models/EventsIdPatchRequest.ts
 models/EventsPutRequest.ts
@@ -52,8 +56,11 @@ models/ProjectIdUnityGet200ResponseVariantsInnerBaseLayersInnerType.ts
 models/ProjectIdUnityGet200ResponseVariantsInnerClippingPolygonsInner.ts
 models/ProjectIdUnityGet200ResponseVariantsInnerModelsInner.ts
 models/ProjectListGet200ResponseInner.ts
+models/PublicVisualAxesGet200ResponseInner.ts
 models/StatsGet200Response.ts
 models/StatsGet200ResponseMemoryUsage.ts
+models/TestDoSomethingPost200Response.ts
+models/TestDoSomethingPostRequest.ts
 models/UserInfoGet200Response.ts
 models/index.ts
 runtime.ts

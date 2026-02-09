@@ -7,4 +7,5 @@ export * from './EventsApi';
 export * from './ProjectApi';
 export * from './PublicApi';
 export * from './StatsApi';
+export * from './TestApi';
 export * from './UserApi';
