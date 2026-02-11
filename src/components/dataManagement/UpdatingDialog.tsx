@@ -45,9 +45,8 @@ export default function UpdatingDialog({
   const { handleSubmit, reset } = form;
 
   useEffect(() => {
-    console.log({row});
     if (!row) return;
-    
+
     reset({
       href: row.href ?? undefined,
       id: row.id,
@@ -57,7 +56,7 @@ export default function UpdatingDialog({
         value: v.id,
       })),
     });
-  }, [row?.href, row?.id, row?.visibleForGroups, row?.isPublic]);
+  }, [row?.href, row?.id, row?.visibleForGroups, row?.isPublic, row, reset]);
 
   const utils = trpc.useUtils();
 
@@ -71,8 +70,6 @@ export default function UpdatingDialog({
       visibleForGroups: { label: string; value: string }[];
     }) => {
       if (!values.id) throw new Error("No id supplied!");
-
-      console.log(values);
 
       const apis = await getApis();
 
@@ -129,6 +126,7 @@ export default function UpdatingDialog({
                   type: "text",
                   props: {
                     disabled: row?.href === null || row?.href === undefined,
+                    label: t("data-management.href"),
                   },
                 },
                 {

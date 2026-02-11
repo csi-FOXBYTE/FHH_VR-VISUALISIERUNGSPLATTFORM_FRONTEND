@@ -8,6 +8,11 @@ overrides:
   '@types/react': 19.1.8
   '@types/react-dom': 19.1.6
 
+patchedDependencies:
+  '@cesium/engine@17.0.0':
+    hash: h63crv5gdvaztgum2wso3dbjw4
+    path: patches/@cesium__engine@17.0.0.patch
+
 importers:
 
   .:
@@ -6130,7 +6135,7 @@ snapshots:
       '@babel/helper-string-parser': 7.25.9
       '@babel/helper-validator-identifier': 7.25.9
 
-  '@cesium/engine@17.0.0':
+  '@cesium/engine@17.0.0(patch_hash=h63crv5gdvaztgum2wso3dbjw4)':
     dependencies:
       '@tweenjs/tween.js': 25.0.0
       '@zip.js/zip.js': 2.8.17
@@ -6154,7 +6159,7 @@ snapshots:
 
   '@cesium/widgets@12.0.0':
     dependencies:
-      '@cesium/engine': 17.0.0
+      '@cesium/engine': 17.0.0(patch_hash=h63crv5gdvaztgum2wso3dbjw4)
       nosleep.js: 0.12.0
 
   '@chevrotain/cst-dts-gen@10.4.2':
@@ -8316,7 +8321,7 @@ snapshots:
 
   cesium@1.129.0:
     dependencies:
-      '@cesium/engine': 17.0.0
+      '@cesium/engine': 17.0.0(patch_hash=h63crv5gdvaztgum2wso3dbjw4)
       '@cesium/widgets': 12.0.0
 
   chainsaw@0.1.0:

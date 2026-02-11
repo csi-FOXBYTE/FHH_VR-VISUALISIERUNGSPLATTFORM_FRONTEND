@@ -8,8 +8,10 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  FormControl,
   FormControlLabel,
   Grid,
+  InputLabel,
   LinearProgress,
   MenuItem,
   Select,
@@ -202,7 +204,6 @@ export default function ConvertingDialog({
                 <EPSGInput value={field.value} onChange={field.onChange} />
               )}
             />
-            <Select></Select>
             <TextField
               fullWidth
               {...register("appearance")}
@@ -390,7 +391,17 @@ export default function ConvertingDialog({
           </Fragment>
         );
     }
-  }, [control, register, t, type, formState]);
+  }, [
+    type,
+    control,
+    register,
+    t,
+    appearanceSuggestions,
+    appearanceSuggestionsPending,
+    formState.errors.zoomLevels,
+    formState.errors.terrainFile,
+    setValue,
+  ]);
 
   return (
     <Dialog open={open} onClose={close} fullWidth>
@@ -408,21 +419,27 @@ export default function ConvertingDialog({
               control={control}
               name="type"
               render={({ field }) => (
-                <Select
-                  label={t("data-management.type")}
-                  fullWidth
-                  required
-                  value={field.value}
-                  onChange={field.onChange}
-                >
-                  <MenuItem value={"TILES3D"}>
-                    CityGML ({t("data-management.3d-tiles")})
-                  </MenuItem>
-                  <MenuItem value={"TERRAIN"}>
-                    DGM ({t("data-management.terrain")})
-                  </MenuItem>
-                  <MenuItem value={"IMAGERY"}>Imagery (WMS, WMTS)</MenuItem>
-                </Select>
+                <FormControl>
+                  <InputLabel id="data-management-type-label">
+                    {t("data-management.type")}
+                  </InputLabel>
+                  <Select
+                    label={t("data-management.type")}
+                    fullWidth
+                    labelId="data-management-type-label"
+                    required
+                    value={field.value}
+                    onChange={field.onChange}
+                  >
+                    <MenuItem value={"TILES3D"}>
+                      CityGML ({t("data-management.3d-tiles")})
+                    </MenuItem>
+                    <MenuItem value={"TERRAIN"}>
+                      DGM ({t("data-management.terrain")})
+                    </MenuItem>
+                    <MenuItem value={"IMAGERY"}>Imagery (WMS, WMTS)</MenuItem>
+                  </Select>
+                </FormControl>
               )}
             />
             {controllers}

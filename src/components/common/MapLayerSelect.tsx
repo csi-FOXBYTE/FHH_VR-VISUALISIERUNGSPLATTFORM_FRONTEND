@@ -84,10 +84,10 @@ async function fetchMapLayer(
         layer.getElementsByTagName("Title")[0]?.textContent ??
         layer.getElementsByTagName("Identifier")[0]?.textContent;
 
-      if (!layerValueSet.has(name))
-        layers.push({ label: title ?? name, value: name });
+      if (!layerValueSet.has(name ?? "-"))
+        layers.push({ label: title ?? name ?? "-", value: name ?? "-" });
 
-      layerValueSet.add(name);
+      layerValueSet.add(name ?? "-");
     }
 
     if (isXMLError) {

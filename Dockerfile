@@ -16,6 +16,7 @@ RUN apk add --no-cache libc6-compat
 WORKDIR /app
 # ENV COREPACK_INTEGRITY_KEYS=0
 # Install dependencies based on the preferred package manager
+COPY patches ./patches
 COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* .npmrc ./
 COPY ./scripts ./scripts
 RUN --mount=type=secret,id=npmrc,target=/root/.npmrc \

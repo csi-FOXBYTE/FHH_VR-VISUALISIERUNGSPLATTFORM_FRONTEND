@@ -15,7 +15,7 @@ const nextConfig: NextConfig = {
         ...config.resolve.alias,
         "@azure/monitor-opentelemetry-exporter": path.resolve(
           __dirname,
-          "stubs/azure-exporter.ts"
+          "stubs/azure-exporter.ts",
         ),
       };
     }
@@ -37,9 +37,7 @@ const withMDX = createMDX({
         },
       ],
     ],
-    rehypePlugins: [
-      "rehype-slug"
-    ]
+    rehypePlugins: ["rehype-slug"],
   },
   extension: /\.(md|mdx)$/,
 });

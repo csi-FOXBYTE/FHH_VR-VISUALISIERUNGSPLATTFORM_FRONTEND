@@ -1,0 +1,26 @@
+diff --git a/Source/DataSources/KmlDataSource.js b/Source/DataSources/KmlDataSource.js
+index e3765b087c702127fbdfc64f75027cf5f55b708c..622f31c0cc8266f8b8d27cfa2bbd166a23240aad 100644
+--- a/Source/DataSources/KmlDataSource.js
++++ b/Source/DataSources/KmlDataSource.js
+@@ -42,7 +42,7 @@ import LabelStyle from "../Scene/LabelStyle.js";
+ import SceneMode from "../Scene/SceneMode.js";
+ import Autolinker from "autolinker";
+ import Uri from "urijs";
+-import * as zip from "@zip.js/zip.js/lib/zip-no-worker.js";
++import * as zip from "@zip.js/zip.js";
+ import getElement from "./getElement.js";
+ import BillboardGraphics from "./BillboardGraphics.js";
+ import CompositePositionProperty from "./CompositePositionProperty.js";
+diff --git a/Source/DataSources/exportKml.js b/Source/DataSources/exportKml.js
+index af64fac5af37c399dce6f5313d89c8ff8242f071..a6928d497b1d5bd512dae21f0765134574253f0b 100644
+--- a/Source/DataSources/exportKml.js
++++ b/Source/DataSources/exportKml.js
+@@ -20,7 +20,7 @@ import TimeIntervalCollection from "../Core/TimeIntervalCollection.js";
+ import HeightReference from "../Scene/HeightReference.js";
+ import HorizontalOrigin from "../Scene/HorizontalOrigin.js";
+ import VerticalOrigin from "../Scene/VerticalOrigin.js";
+-import * as zip from "@zip.js/zip.js/lib/zip-no-worker.js";
++import * as zip from "@zip.js/zip.js";
+ import BillboardGraphics from "./BillboardGraphics.js";
+ import CompositePositionProperty from "./CompositePositionProperty.js";
+ import ModelGraphics from "./ModelGraphics.js";
