@@ -1,5 +1,9 @@
 import { trpc } from "@/server/trpc/client";
-import { skipToken, useMutation } from "@tanstack/react-query";
+import {
+  keepPreviousData,
+  skipToken,
+  useMutation,
+} from "@tanstack/react-query";
 import dayjs from "dayjs";
 import { useSnackbar } from "notistack";
 import { useState } from "react";
@@ -27,24 +31,40 @@ export default function EventCUDialog() {
 
   const { data: possibleAttendees = [] } =
     trpc.eventsRouter.getPossibleAttendees.useQuery(
-      state.open ? { search: searchAttendees } : skipToken
+      state.open ? { search: searchAttendees } : skipToken,
+      {
+        refetchInterval: 5_000,
+        placeholderData: keepPreviousData,
+      },
     );
 
   const { data: possibleModerators = [] } =
     trpc.eventsRouter.getPossibleModerators.useQuery(
-      state.open ? { search: searchModerators } : skipToken
+      state.open ? { search: searchModerators } : skipToken,
+      {
+        refetchInterval: 5_000,
+        placeholderData: keepPreviousData,
+      },
     );
 
   const { data: possibleProjects = [] } =
     trpc.eventsRouter.getPossibleProjects.useQuery(
-      state.open ? { search: searchProjects } : skipToken
+      state.open ? { search: searchProjects } : skipToken,
+      {
+        refetchInterval: 5_000,
+        placeholderData: keepPreviousData,
+      },
     );
 
   const { data: initialEvent = null } =
     trpc.eventsRouter.getEventDetails.useQuery(
       state.open && state.mode === "UPDATE" && state.id !== undefined
         ? { id: state.id }
-        : skipToken
+        : skipToken,
+      {
+        refetchInterval: 5_000,
+        placeholderData: keepPreviousData,
+      },
     );
 
   const { enqueueSnackbar } = useSnackbar();

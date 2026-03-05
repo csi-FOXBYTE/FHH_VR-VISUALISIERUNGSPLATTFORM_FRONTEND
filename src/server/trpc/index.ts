@@ -4,7 +4,6 @@ import { cache } from "react";
 import prisma from "@/server/prisma";
 import { createOTelPlugin } from "./otelMiddleware";
 import { enhance } from "@zenstackhq/runtime";
-import realtimeExtension from "../prisma/extensions/realtimeExtension";
 import SuperJSON from "./superJSON";
 
 export const { createCallerFactory, router, procedure } = initTRPC
@@ -43,8 +42,7 @@ export const protectedProcedure = procedure
       ctx: {
         ...ctx,
         session: session,
-        db: enhance(prisma, session).$extends(realtimeExtension()),
-        subscriberDb: prisma,
+        db: enhance(prisma, session),
       },
     });
   })

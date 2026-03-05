@@ -4,7 +4,6 @@ import PageContainer from "@/components/common/PageContainer";
 import EventCUDialog, {
   useEventCUDialogState,
 } from "@/components/events/EventCUDialog";
-import { useEventSubscriber } from "@/hooks";
 import usePermissions from "@/permissions/usePermissions";
 import { getApis } from "@/server/gatewayApi/client";
 import { Link } from "@/server/i18n/routing";
@@ -61,8 +60,6 @@ function stringAvatar(name: string) {
 }
 
 export default function CollaborationPage() {
-  useEventSubscriber();
-
   const t = useTranslations();
 
   const formatter = useFormatter();
@@ -156,7 +153,7 @@ export default function CollaborationPage() {
                                 {
                                   onSuccess: () => popupState.close(),
                                   onError: () => popupState.close(),
-                                }
+                                },
                               );
                             }}
                           >
@@ -218,7 +215,7 @@ export default function CollaborationPage() {
                       hour: "2-digit",
                       timeZone,
                       minute: "2-digit",
-                    }
+                    },
                   )}
                 />
                 <ListItemText>
@@ -241,7 +238,7 @@ export default function CollaborationPage() {
                             {...stringAvatar(attendee.user?.name ?? "-")}
                           />
                         );
-                      }
+                      },
                     )}
                   </AvatarGroup>
                 </ListItemAvatar>
