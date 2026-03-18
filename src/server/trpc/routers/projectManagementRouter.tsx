@@ -1,7 +1,6 @@
 import { dataGridZod } from "@/components/dataGridServerSide/zodTypes";
 import { protectedProcedure, router } from "..";
 import { z } from "zod";
-import { Prisma } from "@prisma/client";
 
 const projectManagementRouter = router({
   listMyProjects: protectedProcedure.input(dataGridZod).query(
@@ -32,8 +31,8 @@ const projectManagementRouter = router({
             },
           },
         },
-        opts.input
-      )
+        opts.input,
+      ),
   ),
   update: protectedProcedure
     .input(
@@ -44,7 +43,7 @@ const projectManagementRouter = router({
         visibleForUsers: z.array(z.string()),
         visibleForGroups: z.array(z.string()),
         owner: z.string(),
-      })
+      }),
     )
     .mutation(async (opts) => {
       return await opts.ctx.db.project.update({
@@ -77,7 +76,7 @@ const projectManagementRouter = router({
         visibleForUsers: z.array(z.string()),
         visibleForGroups: z.array(z.string()),
         owner: z.string(),
-      })
+      }),
     )
     .mutation(async (opts) => {
       return await opts.ctx.db.project.create({
@@ -263,7 +262,7 @@ const projectManagementRouter = router({
             },
           },
         },
-        opts.input
+        opts.input,
       );
     }),
 });

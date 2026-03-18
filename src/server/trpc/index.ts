@@ -5,6 +5,7 @@ import prisma from "@/server/prisma";
 import { createOTelPlugin } from "./otelMiddleware";
 import { enhance } from "@zenstackhq/runtime";
 import SuperJSON from "./superJSON";
+import { Permissions } from "@/constants/permissions";
 
 export const { createCallerFactory, router, procedure } = initTRPC
   .context<typeof createTRPCContext>()
@@ -47,3 +48,23 @@ export const protectedProcedure = procedure
     });
   })
   .concat(otelPlugin.pluginProc);
+
+export const generatePermissionProtectedProcedure = (
+  requiredPermissions: Permissions[],
+) =>
+  protectedProcedure.use(async ({ next, ctx }) => {
+    const session = ctx.session;
+
+    const permissionsSet = new Set(session.user.permissions);
+
+    for (const requiredPermission of requiredPermissions) {
+      if (!permissionsSet.has(requiredPermission))
+        throw new TRPCError({ code: "UNAUTHORIZED" });
+    }
+
+    return next({
+      ctx: {
+        ...ctx,
+      },
+    });
+  });

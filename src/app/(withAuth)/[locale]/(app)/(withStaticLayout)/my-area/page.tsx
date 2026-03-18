@@ -33,7 +33,7 @@ export default function MyAreaPage() {
   const { data: todaysEvents = [] } =
     trpc.myAreaRouter.getTodaysEvents.useQuery();
 
-  const permissions = usePermissions();
+  const permissions = new Set(usePermissions());
 
   return (
     <PageContainer>
@@ -59,7 +59,7 @@ export default function MyAreaPage() {
           },
           {
             key: "project-management",
-            visible: permissions.includes("PROJECT_OWNER"),
+            visible: permissions.has("PROJECT_OWNER"),
             content: (
               <Typography textAlign="justify" whiteSpace="break-spaces">
                 {t("index.project-management-description")}
@@ -80,7 +80,7 @@ export default function MyAreaPage() {
                   {t("index.events-text", {
                     date: formatter.dateTime(dayjs().toDate(), {
                       dateStyle: "medium",
-                      timeZone
+                      timeZone,
                     }),
                   })}
                 </span>
@@ -95,8 +95,8 @@ export default function MyAreaPage() {
                               new Date(event.endTime),
                               {
                                 timeStyle: "short",
-                                timeZone
-                              }
+                                timeZone,
+                              },
                             )}
                           </span>
                         </TimelineOppositeContent>
@@ -132,10 +132,10 @@ export default function MyAreaPage() {
           {
             key: "administration",
             visible:
-              permissions.includes("USER_ADMINISTRATOR") ||
-              permissions.includes("DATA_MANAGEMENT_ADMINISTRATOR") ||
-              permissions.includes("CONFIGURATION_ADMINISTRATOR") ||
-              permissions.includes("BASE_LAYER_OWNER"),
+              permissions.has("USER_ADMINISTRATOR") ||
+              permissions.has("DATA_MANAGEMENT_ADMINISTRATOR") ||
+              permissions.has("CONFIGURATION_ADMINISTRATOR") ||
+              permissions.has("BASE_LAYER_OWNER"),
             content: (
               <Typography textAlign="justify" whiteSpace="break-spaces">
                 {t("index.administration-description")}

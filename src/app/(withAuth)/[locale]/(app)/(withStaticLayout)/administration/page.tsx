@@ -3,11 +3,15 @@
 import Cards from "@/components/common/Cards";
 import PageContainer from "@/components/common/PageContainer";
 import { useConfigurationProviderContext } from "@/components/configuration/ConfigurationProvider";
+import { useIsPermitted } from "@/permissions/useIsPermitted";
+import usePermissions from "@/permissions/usePermissions";
 import { Typography } from "@mui/material";
 import { useTranslations } from "next-intl";
 
 export default function AdministrationPage() {
   const t = useTranslations();
+
+  const permissions = new Set(usePermissions());
 
   const configuration = useConfigurationProviderContext();
 
@@ -21,6 +25,7 @@ export default function AdministrationPage() {
                 {t("administration.data-management-description")}
               </Typography>
             ),
+            visible: permissions.has("DATA_MANAGEMENT_ADMINISTRATOR"),
             key: "data-management",
             link: {
               href: "/administration/data-management",
@@ -34,6 +39,7 @@ export default function AdministrationPage() {
                 {t("administration.configuration-description")}
               </Typography>
             ),
+            visible: permissions.has("CONFIGURATION_ADMINISTRATOR"),
             key: "configuration",
             link: {
               href: "/administration/configuration",
@@ -61,6 +67,7 @@ export default function AdministrationPage() {
               </Typography>
             ),
             key: "user-management",
+            visible: permissions.has("USER_ADMINISTRATOR"),
             link: {
               href: "/administration/user-management",
               label: t("administration.go-to-user-management"),

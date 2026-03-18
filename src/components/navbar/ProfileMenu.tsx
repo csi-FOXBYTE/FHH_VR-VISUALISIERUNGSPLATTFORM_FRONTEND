@@ -18,6 +18,8 @@ import {
 import { signOut, useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
 import UserAvatar from "../common/UserAvatar";
+import usePermissions from "@/permissions/usePermissions";
+import { PermissionsBlocker } from "@/permissions/PermissionsBlocker";
 
 export default function ProfileMenu({
   anchorEl,
@@ -30,7 +32,7 @@ export default function ProfileMenu({
 
   const handleLogout = () => {
     signOut({
-      redirectTo: "/"
+      redirectTo: "/",
     });
   };
 
@@ -69,24 +71,37 @@ export default function ProfileMenu({
         </ListItemIcon>
         {t("navbar.profile")}
       </MenuItem>
-      <MenuItem component={Link} href="/project-management">
-        <ListItemIcon>
-          <AssignmentOutlined />
-        </ListItemIcon>
-        {t("navbar.project-management")}
-      </MenuItem>
+      <PermissionsBlocker neededPermissions={["PROJECT_OWNER"]}>
+        <MenuItem component={Link} href="/project-management">
+          <ListItemIcon>
+            <AssignmentOutlined />
+          </ListItemIcon>
+          {t("navbar.project-management")}
+        </MenuItem>
+      </PermissionsBlocker>
       <MenuItem component={Link} href="/collaboration">
         <ListItemIcon>
           <GroupWorkOutlined />
         </ListItemIcon>
         {t("navbar.collaboration")}
       </MenuItem>
-      <MenuItem component={Link} href="/administration">
-        <ListItemIcon>
-          <AdminPanelSettingsOutlined />
-        </ListItemIcon>
-        {t("navbar.administration")}
-      </MenuItem>
+      <PermissionsBlocker
+        neededPermissions={[]}
+        isPermitted={(permissions) => {
+          return (
+            permissions.has("CONFIGURATION_ADMINISTRATOR") ||
+            permissions.has("DATA_MANAGEMENT_ADMINISTRATOR") ||
+            permissions.has("USER_ADMINISTRATOR")
+          );
+        }}
+      >
+        <MenuItem component={Link} href="/administration">
+          <ListItemIcon>
+            <AdminPanelSettingsOutlined />
+          </ListItemIcon>
+          {t("navbar.administration")}
+        </MenuItem>
+      </PermissionsBlocker>
       <Divider />
       <MenuItem onClick={handleLogout}>
         <ListItemIcon>

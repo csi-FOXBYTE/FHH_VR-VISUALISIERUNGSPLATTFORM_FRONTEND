@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { protectedProcedure, router } from "..";
+import { generatePermissionProtectedProcedure, router } from "..";
 
 const safeTransformNumber = (v: string | undefined): number | undefined => {
   if (v === undefined) return v;
@@ -12,8 +12,12 @@ const safeTransformNumber = (v: string | undefined): number | undefined => {
   return parsedNumber;
 };
 
+const configurationProcedure = generatePermissionProtectedProcedure([
+  "CONFIGURATION_ADMINISTRATOR",
+]);
+
 const configurationRouter = router({
-  update: protectedProcedure
+  update: configurationProcedure
     .input(
       z.object({
         id: z.string(),
@@ -55,7 +59,7 @@ const configurationRouter = router({
           .string()
           .optional()
           .transform(safeTransformNumber),
-      })
+      }),
     )
     .mutation(async (opts) => {
       const { id, ...data } = opts.input;
@@ -66,7 +70,7 @@ const configurationRouter = router({
         data,
       });
     }),
-  getFull: protectedProcedure.query(async (opts) => {
+  getFull: configurationProcedure.query(async (opts) => {
     return await opts.ctx.db.configuration.findFirstOrThrow({});
   }),
 });

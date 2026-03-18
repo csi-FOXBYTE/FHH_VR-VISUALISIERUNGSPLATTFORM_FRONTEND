@@ -1,11 +1,15 @@
 import { z } from "zod";
-import { protectedProcedure, router } from "..";
+import { generatePermissionProtectedProcedure, router } from "..";
 import { dataGridZod } from "@/components/dataGridServerSide/zodTypes";
 import { $Enums } from "@prisma/client";
 
+const userManagementProcedure = generatePermissionProtectedProcedure([
+  "USER_ADMINISTRATOR",
+]);
+
 const userManagementRouter = router({
   users: {
-    getFullUser: protectedProcedure
+    getFullUser: userManagementProcedure
       .input(z.object({ id: z.string() }))
       .query(async (opts) => {
         const user = await opts.ctx.db.user.findFirstOrThrow({
@@ -30,7 +34,7 @@ const userManagementRouter = router({
           email: "",
         };
       }),
-    getPossibleGroups: protectedProcedure
+    getPossibleGroups: userManagementProcedure
       .input(z.object({ search: z.string() }))
       .query(async (opts) => {
         return (
@@ -48,7 +52,7 @@ const userManagementRouter = router({
           })
         ).map((group) => ({ label: group.name, value: group.id }));
       }),
-    list: protectedProcedure.input(dataGridZod).query(
+    list: userManagementProcedure.input(dataGridZod).query(
       async (opts) =>
         await opts.ctx.db.user.paginate(
           {
@@ -66,12 +70,12 @@ const userManagementRouter = router({
             },
           },
           opts.input,
-          ["name", "email"]
-        )
+          ["name", "email"],
+        ),
     ),
-    create: protectedProcedure
+    create: userManagementProcedure
       .input(
-        z.object({ email: z.string(), assignedGroups: z.array(z.string()) })
+        z.object({ email: z.string(), assignedGroups: z.array(z.string()) }),
       )
       .mutation(async (opts) => {
         return await opts.ctx.db.user.create({
@@ -85,7 +89,7 @@ const userManagementRouter = router({
           },
         });
       }),
-    update: protectedProcedure
+    update: userManagementProcedure
       .input(z.object({ id: z.string(), assignedGroups: z.array(z.string()) }))
       .mutation(async (opts) => {
         return await opts.ctx.db.user.update({
@@ -101,14 +105,14 @@ const userManagementRouter = router({
           },
         });
       }),
-    delete: protectedProcedure
+    delete: userManagementProcedure
       .input(z.object({ id: z.string() }))
       .mutation(async (opts) => {
         return await opts.ctx.db.user.delete({ where: { id: opts.input.id } });
       }),
   },
   groups: {
-    list: protectedProcedure.input(dataGridZod).query(
+    list: userManagementProcedure.input(dataGridZod).query(
       async (opts) =>
         await opts.ctx.db.group.paginate(
           {
@@ -122,16 +126,16 @@ const userManagementRouter = router({
               },
             },
           },
-          opts.input
-        )
+          opts.input,
+        ),
     ),
-    create: protectedProcedure
+    create: userManagementProcedure
       .input(
         z.object({
           name: z.string(),
           assignedRoles: z.array(z.string()),
           defaultFor: z.string(),
-        })
+        }),
       )
       .mutation(async (opts) => {
         return await opts.ctx.db.group.create({
@@ -146,14 +150,14 @@ const userManagementRouter = router({
           },
         });
       }),
-    update: protectedProcedure
+    update: userManagementProcedure
       .input(
         z.object({
           name: z.string(),
           assignedRoles: z.array(z.string()),
           id: z.string(),
           defaultFor: z.string(),
-        })
+        }),
       )
       .mutation(async (opts) => {
         return await opts.ctx.db.group.update({
@@ -171,7 +175,7 @@ const userManagementRouter = router({
           },
         });
       }),
-    delete: protectedProcedure
+    delete: userManagementProcedure
       .input(z.object({ id: z.string() }))
       .mutation(async (opts) => {
         return await opts.ctx.db.group.delete({
@@ -180,7 +184,7 @@ const userManagementRouter = router({
           },
         });
       }),
-    getFullEntry: protectedProcedure
+    getFullEntry: userManagementProcedure
       .input(z.object({ id: z.string() }))
       .query(async (opts) => {
         const group = await opts.ctx.db.group.findFirstOrThrow({
@@ -208,7 +212,7 @@ const userManagementRouter = router({
           })),
         };
       }),
-    getPossibleRoles: protectedProcedure
+    getPossibleRoles: userManagementProcedure
       .input(z.object({ search: z.string() }))
       .query(async (opts) => {
         return (
@@ -228,7 +232,7 @@ const userManagementRouter = router({
       }),
   },
   roles: {
-    list: protectedProcedure.query(async (opts) => {
+    list: userManagementProcedure.query(async (opts) => {
       const roles = await opts.ctx.db.role.findMany({
         select: {
           name: true,
@@ -240,7 +244,7 @@ const userManagementRouter = router({
 
       return roles;
     }),
-    delete: protectedProcedure
+    delete: userManagementProcedure
       .input(z.object({ id: z.string() }))
       .mutation(async (opts) => {
         return await opts.ctx.db.role.delete({
@@ -252,7 +256,7 @@ const userManagementRouter = router({
           },
         });
       }),
-    getPermissionsForRole: protectedProcedure
+    getPermissionsForRole: userManagementProcedure
       .input(z.object({ roleId: z.string() }))
       .query(async (opts) => {
         const role = await opts.ctx.db.role.findFirstOrThrow({
@@ -266,7 +270,7 @@ const userManagementRouter = router({
 
         return role.assignedPermissions;
       }),
-    create: protectedProcedure
+    create: userManagementProcedure
       .input(z.object({ name: z.string() }))
       .mutation(async (opts) => {
         return await opts.ctx.db.role.create({
@@ -275,15 +279,15 @@ const userManagementRouter = router({
           },
         });
       }),
-    update: protectedProcedure
+    update: userManagementProcedure
       .input(
         z.object({
           id: z.string(),
           name: z.string(),
           permissions: z.array(
-            z.enum(["BASE_LAYER_OWNER", ...Object.values($Enums.PERMISSIONS)])
+            z.enum(["BASE_LAYER_OWNER", ...Object.values($Enums.PERMISSIONS)]),
           ),
-        })
+        }),
       )
       .mutation(async (opts) => {
         return await opts.ctx.db.role.update({

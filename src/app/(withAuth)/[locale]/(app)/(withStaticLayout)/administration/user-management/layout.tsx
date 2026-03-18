@@ -1,5 +1,6 @@
 "use server";
 
+import { PermissionsBlocker } from "@/permissions/PermissionsBlocker";
 import { HydrateClient } from "@/server/trpc/server";
 import { getTranslations } from "next-intl/server";
 import { ReactNode } from "react";
@@ -15,5 +16,11 @@ export default async function UserManagementLayout({
 }: {
   children: ReactNode;
 }) {
-  return <HydrateClient>{children}</HydrateClient>;
+  return (
+    <HydrateClient>
+      <PermissionsBlocker neededPermissions={["USER_ADMINISTRATOR"]}>
+        {children}
+      </PermissionsBlocker>
+    </HydrateClient>
+  );
 }

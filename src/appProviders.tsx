@@ -11,7 +11,7 @@ import { routing } from "./server/i18n/routing";
 import { deDE, enUS } from "@mui/material/locale";
 import { deDE as xdeDE, enUS as xenUS } from "@mui/x-data-grid/locales";
 import { deDE as tdeDE, enUS as tdenUS } from "@mui/x-date-pickers/locales";
-import { SnackbarKey, SnackbarProvider, closeSnackbar } from "notistack";
+import { SnackbarProvider, closeSnackbar } from "notistack";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import "dayjs/locale/de";
@@ -40,7 +40,7 @@ export default function AppProviders({
 }) {
   const themeWithLocale = createTheme(
     supportedLocales[locale as "en"] ?? supportedLocales.en,
-    theme
+    theme,
   );
 
   return (

@@ -1,9 +1,13 @@
 import { dataGridZod } from "@/components/dataGridServerSide/zodTypes";
 import { z } from "zod";
-import { protectedProcedure, router } from "..";
+import { generatePermissionProtectedProcedure, router } from "..";
+
+const dataManagementProcedure = generatePermissionProtectedProcedure([
+  "DATA_MANAGEMENT_ADMINISTRATOR",
+]);
 
 const dataManagementRouter = router({
-  getVisibleForGroups: protectedProcedure
+  getVisibleForGroups: dataManagementProcedure
     .input(z.object({ search: z.string() }))
     .query(async (opts) => {
       const possibleVisibleForGroups = await opts.ctx.db.group.findMany({
@@ -19,7 +23,7 @@ const dataManagementRouter = router({
         value: v.id,
       }));
     }),
-  listBaseLayers: protectedProcedure.input(dataGridZod).query(
+  listBaseLayers: dataManagementProcedure.input(dataGridZod).query(
     async (opts) =>
       await opts.ctx.db.baseLayer.paginate(
         {
@@ -47,11 +51,11 @@ const dataManagementRouter = router({
             type: true,
           },
         },
-        opts.input
-      )
+        opts.input,
+      ),
   ),
   visualAxis: {
-    create: protectedProcedure
+    create: dataManagementProcedure
       .input(
         z.object({
           endPointX: z.number(),
@@ -70,7 +74,7 @@ const dataManagementRouter = router({
           uiStartPointEpsg: z.string(),
           name: z.string(),
           description: z.string().optional(),
-        })
+        }),
       )
       .mutation(async (opts) => {
         return await opts.ctx.db.visualAxis.create({
@@ -84,7 +88,7 @@ const dataManagementRouter = router({
           },
         });
       }),
-    update: protectedProcedure
+    update: dataManagementProcedure
       .input(
         z.object({
           endPointX: z.number(),
@@ -104,7 +108,7 @@ const dataManagementRouter = router({
           name: z.string(),
           description: z.string().optional(),
           id: z.string(),
-        })
+        }),
       )
       .mutation(async (opts) => {
         const { id, ...rest } = opts.input;
@@ -117,7 +121,7 @@ const dataManagementRouter = router({
           },
         });
       }),
-    list: protectedProcedure.input(dataGridZod).query(
+    list: dataManagementProcedure.input(dataGridZod).query(
       async (opts) =>
         await opts.ctx.db.visualAxis.paginate(
           {
@@ -134,17 +138,17 @@ const dataManagementRouter = router({
               startPointZ: true,
             },
           },
-          opts.input
-        )
+          opts.input,
+        ),
     ),
-    delete: protectedProcedure
+    delete: dataManagementProcedure
       .input(z.object({ id: z.string() }))
       .mutation(async (opts) => {
         return await opts.ctx.db.visualAxis.delete({
           where: { id: opts.input.id },
         });
       }),
-    getFullEntry: protectedProcedure
+    getFullEntry: dataManagementProcedure
       .input(z.object({ id: z.string() }))
       .query(async (opts) => {
         const visualAxis = await opts.ctx.db.visualAxis.findFirstOrThrow({
