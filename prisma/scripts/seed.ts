@@ -3,6 +3,15 @@ import { readFileSync } from "fs";
 
 const prisma = new PrismaClient();
 
+const seedAdminEmail = process.env.SEED_ADMIN_EMAIL;
+const seedAdminName = process.env.SEED_ADMIN_NAME ?? null;
+
+if (!seedAdminEmail) {
+  throw new Error(
+    "SEED_ADMIN_EMAIL is not set. Add it to .env before seeding, e.g. SEED_ADMIN_EMAIL=admin@example.org"
+  );
+}
+
 (async () => {
   await prisma.configuration.create({
     data: {
@@ -77,7 +86,10 @@ const prisma = new PrismaClient();
   const { id: adminGroupId } = await prisma.group.create({
     data: {
       name: "Super Administrator",
-      defaultFor: ["*"],
+      // Never assigned automatically. The initial admin is connected explicitly
+      // below, so a catch-all pattern here would only grant admin rights to
+      // whoever signs in first.
+      defaultFor: [],
       isAdminGroup: true,
       assignedRoles: {
         connect: {
@@ -90,7 +102,8 @@ const prisma = new PrismaClient();
   const { id: guestGroupId } = await prisma.group.create({
     data: {
       name: "Guest",
-      defaultFor: [""],
+      // Catch-all for new sign-ups. An empty pattern would match no address.
+      defaultFor: ["*"],
       isAdminGroup: false,
       assignedRoles: {
         connect: {
@@ -102,8 +115,8 @@ const prisma = new PrismaClient();
 
   const { id } = await prisma.user.create({
     data: {
-      email: "admin@foxbyte.de",
-      name: "Admin Foxbyte",
+      email: seedAdminEmail,
+      name: seedAdminName,
       assignedGroups: { connect: { id: adminGroupId } },
     },
     select: {

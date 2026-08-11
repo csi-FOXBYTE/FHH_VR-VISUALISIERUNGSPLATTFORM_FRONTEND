@@ -2,10 +2,16 @@ import { signIn } from "@/server/auth/auth";
 import { createCode } from "@/server/auth/unityHelpers";
 import { NextRequest, NextResponse } from "next/server";
 
+// Additional URIs (e.g. "https://oauth.pstmn.io/v1/callback" for Postman) can be
+// added via UNITY_DEV_REDIRECT_URIS, but never take effect in production builds.
 const validRedirectUris = [
   "http://localhost:48152/callback",
   "http://localhost:48153/callback",
-  "https://oauth.pstmn.io/v1/callback",
+  ...(process.env.NODE_ENV === "production"
+    ? []
+    : (process.env.UNITY_DEV_REDIRECT_URIS?.split(",")
+        .map((uri) => uri.trim())
+        .filter(Boolean) ?? [])),
 ];
 
 export async function GET(request: NextRequest) {

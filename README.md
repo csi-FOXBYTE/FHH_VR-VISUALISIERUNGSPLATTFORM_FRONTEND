@@ -81,6 +81,7 @@ Populate `.env` with required values (ask your team for the correct settings). C
 - `MICROSOFT_ENTRA_CLIENT_ID`
 - `MICROSOFT_ENTRA_CLIENT_SECRET`
 - `MICROSOFT_ENTRA_ISSUER`
+- `SEED_ADMIN_EMAIL` (required before seeding the database, see step 7)
 
 ### 6) Run the App
 
@@ -101,6 +102,11 @@ On first start (or after resetting the database), initialize the database:
 pnpm prisma db push
 pnpm prisma db seed
 ```
+
+`pnpm prisma db seed` requires `SEED_ADMIN_EMAIL` in `.env` and aborts without it. It creates the initial
+Super Administrator account for that address; `SEED_ADMIN_NAME` is optional, as the display name is taken
+from the identity provider on first sign-in. Use the address of the actual platform administrator — the
+account is a real, privileged user, not a placeholder.
 
 ## Scripts
 
@@ -287,7 +293,10 @@ Common environment variables used by the app:
 | `MICROSOFT_ENTRA_CLIENT_ID` | Microsoft Entra client ID for NextAuth. |
 | `MICROSOFT_ENTRA_CLIENT_SECRET` | Microsoft Entra client secret for NextAuth. |
 | `MICROSOFT_ENTRA_ISSUER` | Microsoft Entra issuer URL for NextAuth. |
-| `NEXTAUTH_SECRET` | NextAuth secret for session encryption. |
+| `NEXTAUTH_SECRET` | NextAuth secret for session encryption. Must match the backend's `AUTH_SECRET`, since Unity and gateway tokens are encrypted here and decrypted there. |
+| `UNITY_DEV_REDIRECT_URIS` | Optional, development only. Comma-separated extra redirect URIs accepted by `/api/auth/unity/authorize` (e.g. a Postman callback). Ignored when `NODE_ENV=production`. |
+| `SEED_ADMIN_EMAIL` | Email address of the initial Super Administrator created by `prisma db seed`. Required for seeding; the seed aborts if unset. |
+| `SEED_ADMIN_NAME` | Optional display name for the seeded administrator. Overwritten with the identity provider's name on first sign-in. |
 
 ## Deployment Notes
 
