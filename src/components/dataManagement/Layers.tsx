@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { keepPreviousData, useMutation } from "@tanstack/react-query";
-import { useTranslations } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 import { useState } from "react";
 import useCreateEditDeleteActions from "../dataGridServerSide/useCreateEditDeleteActions";
 import useDataGridServerSideHelper from "../dataGridServerSide/useDataGridServerSideOptions";
@@ -50,6 +50,7 @@ function CircularProgressWithLabel(
 
 export default function Layers() {
   const t = useTranslations();
+  const formatter = useFormatter();
 
   const [convertingDialogOpen, setConvertingDialogOpen] = useState(false);
   const [addingDialogOpen, setAddingDialogOpen] = useState(false);
@@ -274,7 +275,18 @@ export default function Layers() {
             headerName: t("data-management.size-in-gb"),
             field: "sizeGB",
             type: "number",
-            valueFormatter: (value) => `${value} GB`,
+            valueFormatter: (value: number) => {
+              if (value > 0 && value < 0.001) {
+                return `< ${formatter.number(0.001, {
+                  minimumFractionDigits: 3,
+                  maximumFractionDigits: 3,
+                })} GB`;
+              }
+
+              return `${formatter.number(value, {
+                maximumFractionDigits: 3,
+              })} GB`;
+            },
           },
           {
             headerName: t("data-management.create-at"),
