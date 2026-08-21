@@ -1,0 +1,2 @@
+# Shared ZenStack sources are compared byte-for-byte across repositories.
+zmodel/*.zmodel text eol=lf
