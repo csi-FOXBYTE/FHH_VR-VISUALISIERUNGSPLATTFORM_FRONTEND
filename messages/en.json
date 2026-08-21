@@ -51,6 +51,7 @@
     "gdpr": "Data protection"
   },
   "profile": {
+    "delete-owned-content-guidance": "Your account still owns projects or other content. Contact user administration so ownership can be transferred before deletion.",
     "profile": "Profile",
     "name": "Name",
     "email": "Email address",
@@ -150,6 +151,7 @@
     "public": "Public"
   },
   "project-management": {
+    "owner-required": "Please select a valid owner.",
     "title": "Project management",
     "my-projects": "My projects",
     "shared-projects": "Projects shared with me",
@@ -329,6 +331,28 @@
     "grid-load-failed": "The table could not be refreshed. The previously loaded data remains visible.",
     "reference-id": "Reference",
     "retry": "Try again"
+  },
+  "ownership": {
+    "delete-title": "Transfer ownership and delete user",
+    "delete-description": "Before deleting {user}, all owned content must be transferred to eligible successors.",
+    "loading": "Checking deletion impact…",
+    "load-failed": "The deletion impact could not be loaded.",
+    "no-owned-content": "This user owns no content and can be deleted.",
+    "successor-PROJECT": "Successor for projects ({count})",
+    "successor-BASE_LAYER": "Successor for base layers ({count})",
+    "successor-VISUAL_AXIS": "Successor for visual axes ({count})",
+    "successor-EVENT": "Successor for events ({count})",
+    "no-successor": "No eligible successor is available.",
+    "delete-failed": "Transfer and deletion failed. No partial changes were saved.",
+    "repair-title": "Repair orphaned ownership",
+    "repair-description": "The preflight finds content without an owner. An eligible successor must be selected for every affected type.",
+    "preflight-ready": "No ownerless content was found. Release B can be prepared from a functional perspective.",
+    "invalid-owner-references": "{count} invalid owner references were found. They must be investigated in the database before Release B.",
+    "repair-failed": "The repair failed. No partial changes were saved.",
+    "repair": "Repair ownership",
+    "repair-success": "Ownership data was repaired",
+    "transfer-and-delete": "Transfer and delete",
+    "cancel": "Cancel"
   },
   "cookie-consent": {
     "banner": {

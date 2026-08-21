@@ -51,6 +51,7 @@
     "gdpr": "Datenschutz"
   },
   "profile": {
+    "delete-owned-content-guidance": "Dein Konto besitzt noch Projekte oder andere Inhalte. Bitte wende dich an die Benutzeradministration, damit das Eigentum vor der Löschung übertragen wird.",
     "profile": "Profil",
     "name": "Name",
     "email": "E-Mail-Adresse",
@@ -150,6 +151,7 @@
     "public": "Öffentlich"
   },
   "project-management": {
+    "owner-required": "Bitte wähle einen gültigen Eigentümer aus.",
     "title": "Projektverwaltung",
     "my-projects": "Meine Projekte",
     "shared-projects": "Mit mir geteilte Projekte",
@@ -329,6 +331,28 @@
     "grid-load-failed": "Die Tabelle konnte nicht aktualisiert werden. Die zuletzt geladenen Daten bleiben sichtbar.",
     "reference-id": "Referenz",
     "retry": "Erneut versuchen"
+  },
+  "ownership": {
+    "delete-title": "Benutzer und Eigentum übergeben",
+    "delete-description": "Vor dem Löschen von {user} müssen alle eigenen Inhalte an geeignete Nachfolger übergeben werden.",
+    "loading": "Auswirkungen werden geprüft…",
+    "load-failed": "Die Auswirkungen der Löschung konnten nicht geladen werden.",
+    "no-owned-content": "Dieser Benutzer besitzt keine Inhalte und kann gelöscht werden.",
+    "successor-PROJECT": "Nachfolger für Projekte ({count})",
+    "successor-BASE_LAYER": "Nachfolger für Basis-Layer ({count})",
+    "successor-VISUAL_AXIS": "Nachfolger für visuelle Achsen ({count})",
+    "successor-EVENT": "Nachfolger für Veranstaltungen ({count})",
+    "no-successor": "Es ist kein berechtigter Nachfolger verfügbar.",
+    "delete-failed": "Übertragung und Löschung sind fehlgeschlagen. Es wurden keine Teiländerungen gespeichert.",
+    "repair-title": "Verwaiste Eigentümerdaten reparieren",
+    "repair-description": "Die Prüfung ermittelt Inhalte ohne Eigentümer. Für jeden betroffenen Typ muss ein berechtigter Nachfolger gewählt werden.",
+    "preflight-ready": "Es wurden keine Inhalte ohne Eigentümer gefunden. Release B kann aus fachlicher Sicht vorbereitet werden.",
+    "invalid-owner-references": "Es wurden {count} ungültige Eigentümerreferenzen gefunden. Diese müssen vor Release B direkt in der Datenbank geprüft werden.",
+    "repair-failed": "Die Reparatur ist fehlgeschlagen. Es wurden keine Teiländerungen gespeichert.",
+    "repair": "Eigentümer reparieren",
+    "repair-success": "Eigentümerdaten wurden repariert",
+    "transfer-and-delete": "Übertragen und löschen",
+    "cancel": "Abbrechen"
   },
   "cookie-consent": {
     "banner": {

@@ -21,6 +21,7 @@ declare module "next-auth" {
         assignedRoles: {
           name: string;
           id: string;
+          isAdminRole: boolean;
           assignedPermissions: Permissions[];
         }[];
       }[];

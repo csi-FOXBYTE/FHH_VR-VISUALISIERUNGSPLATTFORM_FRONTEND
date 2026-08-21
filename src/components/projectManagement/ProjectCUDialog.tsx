@@ -29,13 +29,13 @@ export default function ProjectCUDialog() {
     );
 
   const { data: possibleOwners = [] } =
-    trpc.projectManagementRouter.getPossibleUsers.useQuery(
+    trpc.projectManagementRouter.getPossibleOwners.useQuery(
       state.open ? { search: searchOwners } : skipToken
     );
 
   const { data: possibleGroups = [] } =
     trpc.projectManagementRouter.getPossibleGroups.useQuery(
-      state.open ? { search: searchUsers } : skipToken
+      state.open ? { search: searchGroups } : skipToken
     );
 
   const { data: initialProject = null } =
@@ -106,6 +106,13 @@ export default function ProjectCUDialog() {
         },
       }}
       onCreate={(values) => {
+        if (!values.owner?.value) {
+          enqueueSnackbar({
+            variant: "error",
+            message: t("project-management.owner-required"),
+          });
+          return;
+        }
         createMutation({
           description: values.description,
           title: values.title,
@@ -116,6 +123,13 @@ export default function ProjectCUDialog() {
       }}
       onUpdate={(values) => {
         if (!state.id) throw new Error("No id supplied!");
+        if (!values.owner?.value) {
+          enqueueSnackbar({
+            variant: "error",
+            message: t("project-management.owner-required"),
+          });
+          return;
+        }
 
         updateMutation({
           id: state.id,
@@ -153,6 +167,7 @@ export default function ProjectCUDialog() {
             search: searchOwners,
             options: possibleOwners,
             multiple: false,
+            required: true,
             label: t("project-management.owner"),
           },
         },

@@ -110,11 +110,6 @@ const userManagementRouter = router({
           },
         });
       }),
-    delete: userManagementProcedure
-      .input(z.object({ id: z.string() }))
-      .mutation(async (opts) => {
-        return await opts.ctx.db.user.delete({ where: { id: opts.input.id } });
-      }),
   },
   groups: {
     list: userManagementProcedure.input(dataGridZod).query(

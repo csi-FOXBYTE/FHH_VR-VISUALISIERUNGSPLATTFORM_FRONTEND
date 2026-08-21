@@ -1,21 +1,25 @@
 "use client";
 
 import { trpc } from "@/server/trpc/client";
-import { Add } from "@mui/icons-material";
+import { Add, Build } from "@mui/icons-material";
 import { Chip, Grid, Typography } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
-import { keepPreviousData, useMutation } from "@tanstack/react-query";
+import { keepPreviousData } from "@tanstack/react-query";
 import UserAvatar from "../common/UserAvatar";
 import useDataGridServerSideHelper from "../dataGridServerSide/useDataGridServerSideOptions";
 import UserCUDialog, { useUserCUDialogState } from "./UserCUDialog";
 import { useSnackbar } from "notistack";
 import { useTranslations } from "next-intl";
 import useCreateEditDeleteActions from "../dataGridServerSide/useCreateEditDeleteActions";
-import { getApis } from "@/server/gatewayApi/client";
 import GridQueryError from "../dataGridServerSide/GridQueryError";
+import UserOwnershipDeleteDialog from "./UserOwnershipDeleteDialog";
+import { useState } from "react";
+import OwnershipRepairDialog from "./OwnershipRepairDialog";
 
 export default function Users() {
   const [, { openCreate, openUpdate }] = useUserCUDialogState();
+  const [deleteUserId, setDeleteUserId] = useState<string | null>(null);
+  const [repairOpen, setRepairOpen] = useState(false);
 
   const t = useTranslations();
 
@@ -26,6 +30,12 @@ export default function Users() {
         key: "create",
         label: t("actions.invite"),
         onClick: () => openCreate(),
+      },
+      {
+        icon: <Build />,
+        key: "repair-ownership",
+        label: t("ownership.repair"),
+        onClick: () => setRepairOpen(true),
       },
     ],
   });
@@ -48,43 +58,47 @@ export default function Users() {
 
   const utils = trpc.useUtils();
 
-  const { mutate: deleteMutation, isPending: isDeleteMutationPending } =
-    useMutation({
-      mutationFn: async (variables: { id: string }) => {
-        const apis = await getApis();
-
-        return await apis.userApi.userIdDelete({
-          id: variables.id,
-        });
-      },
-      onSuccess: () => {
-        utils.userManagementRouter.invalidate();
-        enqueueSnackbar({
-          variant: "success",
-          message: t("generic.crud-notifications.delete-success", {
-            entity: t("entities.user"),
-          }),
-        });
-        close();
-      },
-      onError: () =>
-        enqueueSnackbar({
-          variant: "error",
-          message: t("generic.crud-notifications.delete-failed", {
-            entity: t("entities.user"),
-          }),
-        }),
+  const handleDeleted = (correlationId: string) => {
+    setDeleteUserId(null);
+    utils.userManagementRouter.invalidate();
+    enqueueSnackbar({
+      variant: "success",
+      message: `${t("generic.crud-notifications.delete-success", {
+        entity: t("entities.user"),
+      })} (${correlationId})`,
     });
+  };
 
   const createEditDeleteActions = useCreateEditDeleteActions({
-    handleDelete: (id) => deleteMutation({ id }),
+    handleDelete: setDeleteUserId,
     handleEdit: openUpdate,
-    loading: isDeleteMutationPending,
+    loading: false,
   });
 
   return (
     <>
       <UserCUDialog />
+      <UserOwnershipDeleteDialog
+        userId={deleteUserId}
+        userLabel={
+          data.find((user) => user.id === deleteUserId)?.name ??
+          data.find((user) => user.id === deleteUserId)?.email
+        }
+        onClose={() => setDeleteUserId(null)}
+        onDeleted={handleDeleted}
+      />
+      <OwnershipRepairDialog
+        open={repairOpen}
+        onClose={() => setRepairOpen(false)}
+        onRepaired={(correlationId) => {
+          setRepairOpen(false);
+          utils.userManagementRouter.invalidate();
+          enqueueSnackbar({
+            variant: "success",
+            message: `${t("ownership.repair-success")} (${correlationId})`,
+          });
+        }}
+      />
       {isError ? <GridQueryError error={error} onRetry={() => refetch()} /> : null}
       <DataGrid
         {...props}

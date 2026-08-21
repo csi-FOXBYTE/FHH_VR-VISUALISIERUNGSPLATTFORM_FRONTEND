@@ -12,6 +12,7 @@ import { useMutation } from "@tanstack/react-query";
 import { getApis } from "@/server/gatewayApi/client";
 import { useSnackbar } from "notistack";
 import { useConfigurationProviderContext } from "@/components/configuration/ConfigurationProvider";
+import { ResponseError } from "@/server/gatewayApi/generated";
 
 export default function ProfilePage() {
   const session = useSession();
@@ -37,12 +38,14 @@ export default function ProfilePage() {
       signOut({ redirectTo: "/", redirect: true });
     },
     onError: (error) => {
-      console.error(error);
       enqueueSnackbar({
         variant: "error",
-        message: t("generic.crud-notifications.delete-failed", {
-          entity: t("entities.user"),
-        }),
+        message:
+          error instanceof ResponseError && error.response.status === 400
+            ? t("profile.delete-owned-content-guidance")
+            : t("generic.crud-notifications.delete-failed", {
+                entity: t("entities.user"),
+              }),
       });
     },
   });

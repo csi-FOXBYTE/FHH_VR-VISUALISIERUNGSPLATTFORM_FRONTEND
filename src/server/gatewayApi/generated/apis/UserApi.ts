@@ -37,10 +37,6 @@ import {
     UserInfoGet200ResponseToJSON,
 } from '../models/index';
 
-export interface UserIdDeleteRequest {
-    id: string;
-}
-
 /**
  * 
  */
@@ -74,45 +70,6 @@ export class UserApi extends runtime.BaseAPI {
      */
     async userDelete(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<boolean> {
         const response = await this.userDeleteRaw(initOverrides);
-        return await response.value();
-    }
-
-    /**
-     */
-    async userIdDeleteRaw(requestParameters: UserIdDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<boolean>> {
-        if (requestParameters['id'] == null) {
-            throw new runtime.RequiredError(
-                'id',
-                'Required parameter "id" was null or undefined when calling userIdDelete().'
-            );
-        }
-
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-
-        let urlPath = `/user/{id}`;
-        urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
-
-        const response = await this.request({
-            path: urlPath,
-            method: 'DELETE',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        if (this.isJsonMime(response.headers.get('content-type'))) {
-            return new runtime.JSONApiResponse<boolean>(response);
-        } else {
-            return new runtime.TextApiResponse(response) as any;
-        }
-    }
-
-    /**
-     */
-    async userIdDelete(requestParameters: UserIdDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<boolean> {
-        const response = await this.userIdDeleteRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
