@@ -17,6 +17,8 @@
     "start": "next start",
     "postinstall": "node ./scripts/copyCesium.mjs",
     "lint": "next lint",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
     "prepare": "husky",
     "generate-gateway-api": "pnpm rimraf ./src/server/gatewayApi/generated && pnpm openapi-generator-cli generate -i http://localhost:5000/docs/json -g typescript-fetch -o ./src/server/gatewayApi/generated --skip-validate-spec",
     "zenstack-generate": "pnpm zenstack generate --schema zmodel/schema.zmodel",
@@ -116,6 +118,8 @@
   "devDependencies": {
     "@commitlint/cli": "^19.6.0",
     "@commitlint/config-conventional": "^19.6.0",
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/react": "^16.3.2",
     "@types/node": "^20",
     "@types/react": "19.1.8",
     "@types/react-dom": "19.1.6",
@@ -126,9 +130,11 @@
     "eslint": "^8",
     "eslint-config-next": "15.4.3",
     "husky": "^9.1.7",
+    "jsdom": "^30.0.1",
     "license-checker": "^25.0.1",
     "rimraf": "^6.1.2",
     "typescript": "^5",
+    "vitest": "^4.1.11",
     "zenstack": "2.14.2"
   },
   "config": {

@@ -7,12 +7,19 @@ import {
   CardContent,
   CardActions,
   Button,
+  Typography,
 } from "@mui/material";
 import Link from "next/link";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 
-export default function ErrorView() {
+export default function ErrorView({
+  error,
+  reset,
+}: {
+  error: Error & { digest?: string };
+  reset: () => void;
+}) {
   const t = useTranslations();
 
   return (
@@ -30,6 +37,11 @@ export default function ErrorView() {
           title={t("error.500-oooops-something-went-wrong-on-our-side")}
         />
         <CardContent>
+          {error.digest ? (
+            <Typography>
+              {t("error.reference-id")}: {error.digest}
+            </Typography>
+          ) : null}
           <Image
             alt="Error"
             src="/error.jpg"
@@ -39,6 +51,9 @@ export default function ErrorView() {
           />
         </CardContent>
         <CardActions>
+          <Button onClick={reset} color="primary" variant="outlined">
+            {t("error.retry")}
+          </Button>
           <Button
             href="/my-area"
             LinkComponent={Link}

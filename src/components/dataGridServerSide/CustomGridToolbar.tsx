@@ -158,6 +158,7 @@ export const CustomGridToolbar = ({
       </div>
       {showQuickFilter ? (
         <GridToolbarQuickFilter
+          debounceMs={0}
           sx={{ paddingBottom: 0 }}
           variant="outlined"
           size="small"

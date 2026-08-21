@@ -297,6 +297,13 @@ Common environment variables used by the app:
 | `UNITY_DEV_REDIRECT_URIS` | Optional, development only. Comma-separated extra redirect URIs accepted by `/api/auth/unity/authorize` (e.g. a Postman callback). Ignored when `NODE_ENV=production`. |
 | `SEED_ADMIN_EMAIL` | Email address of the initial Super Administrator created by `prisma db seed`. Required for seeding; the seed aborts if unset. |
 | `SEED_ADMIN_NAME` | Optional display name for the seeded administrator. Overwritten with the identity provider's name on first sign-in. |
+| `APPLICATIONINSIGHTS_CONNECTION_STRING` | Azure Application Insights connection string used by the App Service for server-side traces and diagnostic reference IDs. |
+
+For an Azure App Service, configure
+`APPLICATIONINSIGHTS_CONNECTION_STRING` as an explicit application setting and
+restart the App Service after changing it. Azure platform logging by itself does
+not activate the application's OpenTelemetry exporter. Production starts without
+the setting emit the structured warning `application_insights_not_configured`.
 
 ## Deployment Notes
 

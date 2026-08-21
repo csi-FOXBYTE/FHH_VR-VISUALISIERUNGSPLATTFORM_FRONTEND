@@ -16,6 +16,12 @@ export async function register() {
       traceExporter
     });
   } else {
+    if (process.env.NODE_ENV === "production") {
+      console.warn({
+        event: "application_insights_not_configured",
+        requiredSetting: "APPLICATIONINSIGHTS_CONNECTION_STRING",
+      });
+    }
     registerOTel({
       serviceName: 'fhhvr.frontend',
     });

@@ -325,7 +325,10 @@
   },
   "error": {
     "go-home": "Zur Startseite",
-    "500-oooops-something-went-wrong-on-our-side": "500: Uuuuups, da ist was schiefgelaufen!"
+    "500-oooops-something-went-wrong-on-our-side": "500: Uuuuups, da ist was schiefgelaufen!",
+    "grid-load-failed": "Die Tabelle konnte nicht aktualisiert werden. Die zuletzt geladenen Daten bleiben sichtbar.",
+    "reference-id": "Referenz",
+    "retry": "Erneut versuchen"
   },
   "cookie-consent": {
     "banner": {

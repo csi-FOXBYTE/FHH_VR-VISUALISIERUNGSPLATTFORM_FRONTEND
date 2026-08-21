@@ -325,7 +325,10 @@
   },
   "error": {
     "go-home": "Go to homepage",
-    "500-oooops-something-went-wrong-on-our-side": "500: Oops, something went wrong!"
+    "500-oooops-something-went-wrong-on-our-side": "500: Oops, something went wrong!",
+    "grid-load-failed": "The table could not be refreshed. The previously loaded data remains visible.",
+    "reference-id": "Reference",
+    "retry": "Try again"
   },
   "cookie-consent": {
     "banner": {

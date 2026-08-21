@@ -11,6 +11,17 @@ export const { createCallerFactory, router, procedure } = initTRPC
   .context<typeof createTRPCContext>()
   .create({
     transformer: SuperJSON,
+    errorFormatter({ shape, error }) {
+      return {
+        ...shape,
+        data: {
+          ...shape.data,
+          referenceId: (
+            error as TRPCError & { referenceId?: string }
+          ).referenceId,
+        },
+      };
+    },
     sse: {
       enabled: true,
       client: {

@@ -1,11 +1,16 @@
 import { dataGridZod } from "@/components/dataGridServerSide/zodTypes";
+import {
+  projectGridDefinition,
+  sharedProjectGridDefinition,
+} from "@/components/dataGridServerSide/gridDefinitions";
 import { protectedProcedure, router } from "..";
 import { z } from "zod";
+import { gridTransactionOptions } from "@/server/prisma/gridTransactionOptions";
 
 const projectManagementRouter = router({
   listMyProjects: protectedProcedure.input(dataGridZod).query(
     async (opts) =>
-      await opts.ctx.db.project.paginate(
+      await opts.ctx.db.$transaction((tx) => tx.project.paginate(
         {
           where: {
             ownerId: opts.ctx.session.user.id,
@@ -32,7 +37,8 @@ const projectManagementRouter = router({
           },
         },
         opts.input,
-      ),
+        projectGridDefinition,
+      ), gridTransactionOptions),
   ),
   update: protectedProcedure
     .input(
@@ -208,7 +214,7 @@ const projectManagementRouter = router({
   listSharedProjects: protectedProcedure
     .input(dataGridZod)
     .query(async (opts) => {
-      return await opts.ctx.db.project.paginate(
+      return await opts.ctx.db.$transaction((tx) => tx.project.paginate(
         {
           where: {
             AND: [
@@ -250,20 +256,11 @@ const projectManagementRouter = router({
                 name: true,
               },
             },
-            visibleForUsers: {
-              select: {
-                name: true,
-              },
-            },
-            visibleForGroups: {
-              select: {
-                name: true,
-              },
-            },
           },
         },
         opts.input,
-      );
+        sharedProjectGridDefinition,
+      ), gridTransactionOptions);
     }),
 });
 

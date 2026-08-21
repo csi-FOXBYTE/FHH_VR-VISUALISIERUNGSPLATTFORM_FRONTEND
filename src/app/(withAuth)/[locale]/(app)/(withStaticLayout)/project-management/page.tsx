@@ -18,6 +18,7 @@ import { keepPreviousData, useMutation } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { useSnackbar } from "notistack";
 import { parseAsInteger, useQueryState } from "nuqs";
+import GridQueryError from "@/components/dataGridServerSide/GridQueryError";
 
 function ProjectManagementPage() {
   const t = useTranslations();
@@ -29,7 +30,7 @@ function ProjectManagementPage() {
 
   const [, { openCreate, openUpdate }] = useProjectCUDialogState();
 
-  const { props } = useDataGridServerSideHelper("project-management", {
+  const ownedGrid = useDataGridServerSideHelper("project-management-owned", {
     extraActions: [
       {
         icon: <Add />,
@@ -42,40 +43,41 @@ function ProjectManagementPage() {
       },
     ],
   });
+  const sharedGrid = useDataGridServerSideHelper("project-management-shared");
+  const activeGrid = selectedTab === 0 ? ownedGrid : sharedGrid;
 
   const utils = trpc.useUtils();
 
+  const myProjectsQuery = trpc.projectManagementRouter.listMyProjects.useQuery(
+    ownedGrid.query,
+    {
+      enabled: selectedTab === 0,
+      placeholderData: keepPreviousData,
+    },
+  );
   const {
     data: { data: myProjectsData, count: myProjectsCount } = {
       data: [],
       count: 0,
     },
-  } = trpc.projectManagementRouter.listMyProjects.useQuery(
-    {
-      filterModel: props.filterModel,
-      paginationModel: props.paginationModel,
-      sortModel: props.sortModel,
-    },
-    {
-      placeholderData: keepPreviousData,
-    }
-  );
+  } = myProjectsQuery;
 
+  const sharedProjectsQuery =
+    trpc.projectManagementRouter.listSharedProjects.useQuery(
+      sharedGrid.query,
+      {
+        enabled: selectedTab === 1,
+        placeholderData: keepPreviousData,
+      },
+    );
   const {
     data: { data: sharedProjectsData, count: sharedProjectsCount } = {
       data: [],
       count: 0,
     },
-  } = trpc.projectManagementRouter.listSharedProjects.useQuery(
-    {
-      filterModel: props.filterModel,
-      paginationModel: props.paginationModel,
-      sortModel: props.sortModel,
-    },
-    {
-      placeholderData: keepPreviousData,
-    }
-  );
+  } = sharedProjectsQuery;
+  const activeQuery =
+    selectedTab === 0 ? myProjectsQuery : sharedProjectsQuery;
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -150,8 +152,15 @@ function ProjectManagementPage() {
           value={1}
         />
       </Tabs>
+      {activeQuery.isError ? (
+        <GridQueryError
+          error={activeQuery.error}
+          onRetry={() => activeQuery.refetch()}
+        />
+      ) : null}
       <DataGrid
-        {...props}
+        {...activeGrid.props}
+        loading={activeQuery.isLoading}
         rows={selectedTab === 0 ? myProjectsData : sharedProjectsData}
         style={{ maxWidth: "100%" }}
         rowCount={selectedTab === 0 ? myProjectsCount : sharedProjectsCount}
@@ -180,7 +189,7 @@ function ProjectManagementPage() {
             filterable: true,
             headerName: t("project-management.owner"),
             renderCell({ row }) {
-              return row.owner.name;
+              return row.owner?.name ?? "-";
             },
           },
           {
@@ -212,6 +221,8 @@ function ProjectManagementPage() {
             : [
                 {
                   field: "visibleForUsers",
+                  sortable: false,
+                  filterable: true,
                   headerName: t("project-management.visible-for-users"),
                   flex: 1,
                   valueGetter(value: { id: string; name: string }[]) {
@@ -220,6 +231,8 @@ function ProjectManagementPage() {
                 },
                 {
                   field: "visibleForGroups",
+                  sortable: false,
+                  filterable: true,
                   headerName: t("project-management.visible-for-groups"),
                   flex: 1,
                   valueGetter(value: { id: string; name: string }[]) {

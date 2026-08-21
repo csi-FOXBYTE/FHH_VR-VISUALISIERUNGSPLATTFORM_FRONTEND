@@ -1,9 +1,27 @@
 import {
   createFilters,
   createSort,
+  GridDefinition,
 } from "@/components/dataGridServerSide/helpers";
 import { DataGridZodType } from "@/components/dataGridServerSide/zodTypes";
 import { Prisma } from "@prisma/client";
+
+export function createPaginationArguments<T extends Record<string, unknown>>(
+  args: T,
+  dataGrid: DataGridZodType,
+  definition: GridDefinition,
+) {
+  const where = {
+    AND: [args.where ?? {}, createFilters(definition, dataGrid.filterModel)],
+  };
+  return {
+    ...args,
+    take: dataGrid.paginationModel.pageSize,
+    skip: dataGrid.paginationModel.page * dataGrid.paginationModel.pageSize,
+    where,
+    orderBy: createSort(definition, dataGrid.sortModel),
+  };
+}
 
 export default function paginationExtension() {
   return Prisma.defineExtension((prisma) => {
@@ -14,47 +32,31 @@ export default function paginationExtension() {
             this: T,
             args: Prisma.Exact<A, Prisma.Args<T, "findMany">>,
             dataGridZod: DataGridZodType,
-            quickFilterableValues: string[] = []
+            definition: GridDefinition
           ): Promise<{ data: Prisma.Result<T, A, "findMany">; count: number }> {
             const context = Prisma.getExtensionContext(this) as unknown as {
               $name: Prisma.ModelName;
               findMany: (
-                args: Prisma.Args<T, "findMany">
+                args: Record<string, unknown>
               ) => Promise<Prisma.Result<T, A, "findMany">>;
-              count: (args: Prisma.Args<T, "count">) => Promise<number>;
+              count: (args: Record<string, unknown>) => Promise<number>;
             };
 
-            const modelName = context.$name;
+            const queryArgs = args as Record<string, unknown>;
+            const paginationArgs = createPaginationArguments(
+              queryArgs,
+              dataGridZod,
+              definition,
+            );
 
-            const where = {
-              //@ts-expect-error wrong type here
-              ...args.where,
-              ...createFilters(
-                modelName,
-                quickFilterableValues,
-                dataGridZod.filterModel
-              ),
-            };
-            const orderBy = createSort(modelName, dataGridZod.sortModel);
-
-            const result = {
-              data: await context.findMany({
-                take: dataGridZod.paginationModel.pageSize,
-                skip:
-                  dataGridZod.paginationModel.page *
-                  dataGridZod.paginationModel.pageSize,
-                where,
-                orderBy,
-                // @ts-expect-error wrong types
-                ...args,
+            const [data, count] = await Promise.all([
+              context.findMany(paginationArgs),
+              context.count({
+                where: paginationArgs.where,
               }),
-              // @ts-expect-error wrong types
-              count: await context.count({
-                where,
-              }),
-            };
+            ]);
 
-            return result;
+            return { data, count };
           },
         },
       },

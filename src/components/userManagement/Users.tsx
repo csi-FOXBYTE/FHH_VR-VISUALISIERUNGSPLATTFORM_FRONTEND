@@ -12,13 +12,14 @@ import { useSnackbar } from "notistack";
 import { useTranslations } from "next-intl";
 import useCreateEditDeleteActions from "../dataGridServerSide/useCreateEditDeleteActions";
 import { getApis } from "@/server/gatewayApi/client";
+import GridQueryError from "../dataGridServerSide/GridQueryError";
 
 export default function Users() {
   const [, { openCreate, openUpdate }] = useUserCUDialogState();
 
   const t = useTranslations();
 
-  const { props } = useDataGridServerSideHelper("user-management/permissions", {
+  const { props, query } = useDataGridServerSideHelper("user-management/users", {
     extraActions: [
       {
         icon: <Add />,
@@ -29,13 +30,15 @@ export default function Users() {
     ],
   });
 
-  const { data: { data, count } = { data: [], count: 0 }, isLoading } =
+  const {
+    data: { data, count } = { data: [], count: 0 },
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } =
     trpc.userManagementRouter.users.list.useQuery(
-      {
-        filterModel: props.filterModel,
-        paginationModel: props.paginationModel,
-        sortModel: props.sortModel,
-      },
+      query,
       {
         placeholderData: keepPreviousData,
       }
@@ -82,6 +85,7 @@ export default function Users() {
   return (
     <>
       <UserCUDialog />
+      {isError ? <GridQueryError error={error} onRetry={() => refetch()} /> : null}
       <DataGrid
         {...props}
         loading={isLoading}
@@ -105,7 +109,7 @@ export default function Users() {
           },
           {
             field: "assignedGroups",
-            filterable: false,
+            filterable: true,
             sortable: false,
             headerName: t("user-management.assigned-groups"),
             flex: 1,

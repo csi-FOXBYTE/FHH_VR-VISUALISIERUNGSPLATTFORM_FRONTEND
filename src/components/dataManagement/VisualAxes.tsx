@@ -11,13 +11,14 @@ import useDataGridServerSideHelper from "../dataGridServerSide/useDataGridServer
 import VisualAxisCUDialog, {
   useVisualAxisCUDialogState,
 } from "./VisualAxisCUDialog";
+import GridQueryError from "../dataGridServerSide/GridQueryError";
 
 export default function VisualAxes() {
   const t = useTranslations();
 
   const [, { openCreate, openUpdate }] = useVisualAxisCUDialogState();
 
-  const { props } = useDataGridServerSideHelper("data-management-visual-axes", {
+  const { props, query } = useDataGridServerSideHelper("data-management-visual-axes", {
     extraActions: [
       {
         icon: <Add />,
@@ -53,13 +54,15 @@ export default function VisualAxes() {
         }),
     });
 
-  const { data: { data, count } = { data: [], count: 0 }, isLoading } =
+  const {
+    data: { data, count } = { data: [], count: 0 },
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } =
     trpc.dataManagementRouter.visualAxis.list.useQuery(
-      {
-        filterModel: props.filterModel,
-        paginationModel: props.paginationModel,
-        sortModel: props.sortModel,
-      },
+      query,
       {
         placeholderData: keepPreviousData,
       }
@@ -76,6 +79,7 @@ export default function VisualAxes() {
   return (
     <>
       <VisualAxisCUDialog />
+      {isError ? <GridQueryError error={error} onRetry={() => refetch()} /> : null}
       <DataGrid
         {...props}
         loading={isLoading}
@@ -94,6 +98,8 @@ export default function VisualAxes() {
           },
           {
             field: "startPoint",
+            filterable: false,
+            sortable: false,
             headerName: t("data-management.start-point"),
             renderCell({ row }) {
               return `(${row.startPointX}, ${row.startPointY}, ${row.startPointZ})`;
@@ -101,9 +107,11 @@ export default function VisualAxes() {
           },
           {
             field: "endPoint",
+            filterable: false,
+            sortable: false,
             headerName: t("data-management.end-point"),
             renderCell({ row }) {
-              return `(${row.startPointX}, ${row.startPointY}, ${row.startPointZ})`;
+              return `(${row.endPointX}, ${row.endPointY}, ${row.endPointZ})`;
             },
           },
           createDeleteActions

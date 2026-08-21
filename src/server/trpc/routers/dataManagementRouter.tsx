@@ -1,6 +1,11 @@
 import { dataGridZod } from "@/components/dataGridServerSide/zodTypes";
+import {
+  baseLayerGridDefinition,
+  visualAxisGridDefinition,
+} from "@/components/dataGridServerSide/gridDefinitions";
 import { z } from "zod";
 import { generatePermissionProtectedProcedure, router } from "..";
+import { gridTransactionOptions } from "@/server/prisma/gridTransactionOptions";
 
 const dataManagementProcedure = generatePermissionProtectedProcedure([
   "DATA_MANAGEMENT_ADMINISTRATOR",
@@ -25,7 +30,7 @@ const dataManagementRouter = router({
     }),
   listBaseLayers: dataManagementProcedure.input(dataGridZod).query(
     async (opts) =>
-      await opts.ctx.db.baseLayer.paginate(
+      await opts.ctx.db.$transaction((tx) => tx.baseLayer.paginate(
         {
           select: {
             id: true,
@@ -52,7 +57,8 @@ const dataManagementRouter = router({
           },
         },
         opts.input,
-      ),
+        baseLayerGridDefinition,
+      ), gridTransactionOptions),
   ),
   visualAxis: {
     create: dataManagementProcedure
@@ -123,7 +129,7 @@ const dataManagementRouter = router({
       }),
     list: dataManagementProcedure.input(dataGridZod).query(
       async (opts) =>
-        await opts.ctx.db.visualAxis.paginate(
+        await opts.ctx.db.$transaction((tx) => tx.visualAxis.paginate(
           {
             select: {
               id: true,
@@ -139,7 +145,8 @@ const dataManagementRouter = router({
             },
           },
           opts.input,
-        ),
+          visualAxisGridDefinition,
+        ), gridTransactionOptions),
     ),
     delete: dataManagementProcedure
       .input(z.object({ id: z.string() }))

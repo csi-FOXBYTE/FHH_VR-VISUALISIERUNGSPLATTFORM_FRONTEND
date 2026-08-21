@@ -19,6 +19,7 @@ import AddingDialog from "./AddingDialog";
 import { useSnackbar } from "notistack";
 import { getApis } from "@/server/gatewayApi/client";
 import UpdatingDialog from "./UpdatingDialog";
+import GridQueryError from "../dataGridServerSide/GridQueryError";
 
 function CircularProgressWithLabel(
   props: CircularProgressProps & { value: number }
@@ -62,7 +63,7 @@ export default function Layers() {
     visibleForGroups: { id: string; name: string }[];
   }>(null);
 
-  const { props } = useDataGridServerSideHelper("data-management-layers", {
+  const { props, query } = useDataGridServerSideHelper("data-management-layers", {
     extraActions: [
       {
         icon: <Add />,
@@ -128,13 +129,15 @@ export default function Layers() {
     isDisabled: () => ({ delete: false, edit: false }),
   });
 
-  const { data: { data, count } = { count: 0, data: [] }, isLoading } =
+  const {
+    data: { data, count } = { count: 0, data: [] },
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } =
     trpc.dataManagementRouter.listBaseLayers.useQuery(
-      {
-        filterModel: props.filterModel,
-        paginationModel: props.paginationModel,
-        sortModel: props.sortModel,
-      },
+      query,
       {
         placeholderData: keepPreviousData,
       }
@@ -155,6 +158,7 @@ export default function Layers() {
         row={updatingDialogRow}
         close={() => setUpdatingDialogOpen(false)}
       />
+      {isError ? <GridQueryError error={error} onRetry={() => refetch()} /> : null}
       <DataGrid
         {...props}
         loading={isLoading}
@@ -246,17 +250,17 @@ export default function Layers() {
           },
           {
             headerName: t("data-management.owner"),
-            field: "owner.name",
+            field: "owner",
             valueGetter: (_, row) => row.owner?.name,
             type: "string",
             filterable: true,
-            sortable: false,
+            sortable: true,
             flex: 1,
           },
           {
             headerName: t("data-management.visible-for-groups"),
             field: "visibleForGroups",
-            filterable: false,
+            filterable: true,
             sortable: false,
             renderCell: ({
               row: { visibleForGroups },

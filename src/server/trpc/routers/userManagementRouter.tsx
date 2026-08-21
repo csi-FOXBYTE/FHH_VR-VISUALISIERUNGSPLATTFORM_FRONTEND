@@ -2,6 +2,11 @@ import { z } from "zod";
 import { generatePermissionProtectedProcedure, router } from "..";
 import { dataGridZod } from "@/components/dataGridServerSide/zodTypes";
 import { $Enums } from "@prisma/client";
+import {
+  groupGridDefinition,
+  userGridDefinition,
+} from "@/components/dataGridServerSide/gridDefinitions";
+import { gridTransactionOptions } from "@/server/prisma/gridTransactionOptions";
 
 const userManagementProcedure = generatePermissionProtectedProcedure([
   "USER_ADMINISTRATOR",
@@ -54,7 +59,7 @@ const userManagementRouter = router({
       }),
     list: userManagementProcedure.input(dataGridZod).query(
       async (opts) =>
-        await opts.ctx.db.user.paginate(
+        await opts.ctx.db.$transaction((tx) => tx.user.paginate(
           {
             select: {
               name: true,
@@ -70,8 +75,8 @@ const userManagementRouter = router({
             },
           },
           opts.input,
-          ["name", "email"],
-        ),
+          userGridDefinition,
+        ), gridTransactionOptions),
     ),
     create: userManagementProcedure
       .input(
@@ -114,7 +119,7 @@ const userManagementRouter = router({
   groups: {
     list: userManagementProcedure.input(dataGridZod).query(
       async (opts) =>
-        await opts.ctx.db.group.paginate(
+        await opts.ctx.db.$transaction((tx) => tx.group.paginate(
           {
             select: {
               name: true,
@@ -127,7 +132,8 @@ const userManagementRouter = router({
             },
           },
           opts.input,
-        ),
+          groupGridDefinition,
+        ), gridTransactionOptions),
     ),
     create: userManagementProcedure
       .input(
