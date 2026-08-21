@@ -17,6 +17,7 @@ integrationDescribe("grid query PostgreSQL integration", () => {
   const prefix = `grid-test-${Date.now()}`;
   let ownerId = "";
   let sharedUserId = "";
+  let alphaProjectId = "";
 
   beforeAll(async () => {
     const owner = await db.user.create({
@@ -33,13 +34,14 @@ integrationDescribe("grid query PostgreSQL integration", () => {
     });
     ownerId = owner.id;
     sharedUserId = sharedUser.id;
-    await db.project.create({
+    const alphaProject = await db.project.create({
       data: {
         ownerId,
         title: `${prefix} Alpha`,
         description: "First",
       },
     });
+    alphaProjectId = alphaProject.id;
     await db.project.create({
       data: {
         ownerId,
@@ -223,6 +225,19 @@ integrationDescribe("grid query PostgreSQL integration", () => {
     } finally {
       await db.baseLayer.delete({ where: { id: layer.id } });
     }
+  it("persists and reloads a project edit as a regression smoke test", async () => {
+    const description = `saved-${Date.now()}`;
+    await db.project.update({
+      where: { id: alphaProjectId },
+      data: { description },
+    });
+
+    await expect(
+      db.project.findUniqueOrThrow({
+        where: { id: alphaProjectId },
+        select: { description: true },
+      }),
+    ).resolves.toEqual({ description });
   });
 
   it("executes numeric, date and nullable-empty operators in PostgreSQL", async () => {

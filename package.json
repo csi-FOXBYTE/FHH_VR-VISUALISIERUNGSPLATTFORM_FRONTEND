@@ -18,6 +18,7 @@
     "postinstall": "node ./scripts/copyCesium.mjs",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
+    "schema:check-parity": "node scripts/checkZmodelParity.mjs",
     "test": "vitest run",
     "prepare": "husky",
     "generate-gateway-api": "pnpm rimraf ./src/server/gatewayApi/generated && pnpm openapi-generator-cli generate -i http://localhost:5000/docs/json -g typescript-fetch -o ./src/server/gatewayApi/generated --skip-validate-spec",

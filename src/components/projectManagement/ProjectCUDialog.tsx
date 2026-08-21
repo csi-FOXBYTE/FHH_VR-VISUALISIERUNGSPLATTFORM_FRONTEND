@@ -6,6 +6,7 @@ import { EasyCUDialog, useEasyCUDialogState } from "../common/EasyCUDialog";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/server/i18n/routing";
 import { useSession } from "next-auth/react";
+import { selectedOwnerId } from "./ownerSelection";
 
 export const useProjectCUDialogState = () =>
   useEasyCUDialogState("project-management-project-cu-state");
@@ -106,7 +107,8 @@ export default function ProjectCUDialog() {
         },
       }}
       onCreate={(values) => {
-        if (!values.owner?.value) {
+        const ownerId = selectedOwnerId(values.owner);
+        if (!ownerId) {
           enqueueSnackbar({
             variant: "error",
             message: t("project-management.owner-required"),
@@ -118,12 +120,13 @@ export default function ProjectCUDialog() {
           title: values.title,
           visibleForGroups: values.visibleForGroups.map((v) => v.value),
           visibleForUsers: values.visibleForUsers.map((v) => v.value),
-          owner: values.owner.value,
+          owner: ownerId,
         });
       }}
       onUpdate={(values) => {
         if (!state.id) throw new Error("No id supplied!");
-        if (!values.owner?.value) {
+        const ownerId = selectedOwnerId(values.owner);
+        if (!ownerId) {
           enqueueSnackbar({
             variant: "error",
             message: t("project-management.owner-required"),
@@ -137,7 +140,7 @@ export default function ProjectCUDialog() {
           title: values.title,
           visibleForGroups: values.visibleForGroups.map((v) => v.value),
           visibleForUsers: values.visibleForUsers.map((v) => v.value),
-          owner: values.owner.value,
+          owner: ownerId,
         });
       }}
       close={close}

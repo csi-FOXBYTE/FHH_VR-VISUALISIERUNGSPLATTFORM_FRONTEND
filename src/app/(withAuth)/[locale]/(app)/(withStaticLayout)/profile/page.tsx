@@ -41,7 +41,8 @@ export default function ProfilePage() {
       enqueueSnackbar({
         variant: "error",
         message:
-          error instanceof ResponseError && error.response.status === 400
+          error instanceof ResponseError &&
+          [400, 409].includes(error.response.status)
             ? t("profile.delete-owned-content-guidance")
             : t("generic.crud-notifications.delete-failed", {
                 entity: t("entities.user"),
