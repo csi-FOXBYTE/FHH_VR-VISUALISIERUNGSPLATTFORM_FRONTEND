@@ -1,7 +1,10 @@
 import { PrismaClient } from "@prisma/client";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import paginationExtension from "@/server/prisma/extensions/paginationExtension";
-import { projectGridDefinition } from "@/components/dataGridServerSide/gridDefinitions";
+import {
+  baseLayerGridDefinition,
+  projectGridDefinition,
+} from "@/components/dataGridServerSide/gridDefinitions";
 
 const databaseUrl = process.env.TEST_DATABASE_URL;
 const integrationDescribe = databaseUrl ? describe : describe.skip;
@@ -106,5 +109,83 @@ integrationDescribe("grid query PostgreSQL integration", () => {
 
     expect(result.count).toBe(1);
     expect(result.data[0]?.title).toBe(`${prefix} Alpha`);
+  });
+
+  it("treats LIKE metacharacters as literals in PostgreSQL", async () => {
+    const literalTitle = `${prefix} 50%_done`;
+    const [literal, wildcardDecoy] = await Promise.all([
+      db.project.create({
+        data: { ownerId, title: literalTitle, description: "literal" },
+      }),
+      db.project.create({
+        data: {
+          ownerId,
+          title: `${prefix} 50-manyXdone`,
+          description: "wildcard decoy",
+        },
+      }),
+    ]);
+
+    try {
+      for (const operator of ["contains", "equals"] as const) {
+        const result = await db.$transaction((tx) =>
+          tx.project.paginate(
+            {
+              where: { id: { in: [literal.id, wildcardDecoy.id] } },
+              select: { id: true },
+            },
+            {
+              filterModel: {
+                items: [{ field: "title", operator, value: literalTitle }],
+                quickFilterValues: [],
+              },
+              paginationModel: { page: 0, pageSize: 50 },
+              sortModel: [],
+            },
+            projectGridDefinition,
+          ),
+        );
+        expect(result.count).toBe(1);
+        expect(result.data).toEqual([{ id: literal.id }]);
+      }
+    } finally {
+      await db.project.deleteMany({
+        where: { id: { in: [literal.id, wildcardDecoy.id] } },
+      });
+    }
+  });
+
+  it("executes validated enum filters without Prisma text options", async () => {
+    const layer = await db.baseLayer.create({
+      data: {
+        ownerId,
+        name: `${prefix} terrain`,
+        type: "TERRAIN",
+        sizeGB: 0,
+      },
+    });
+
+    try {
+      const result = await db.$transaction((tx) =>
+        tx.baseLayer.paginate(
+          { where: { id: layer.id }, select: { id: true, type: true } },
+          {
+            filterModel: {
+              items: [{ field: "type", operator: "is", value: "TERRAIN" }],
+              quickFilterValues: [],
+            },
+            paginationModel: { page: 0, pageSize: 50 },
+            sortModel: [{ field: "type", sort: "asc" }],
+          },
+          baseLayerGridDefinition,
+        ),
+      );
+      expect(result).toEqual({
+        count: 1,
+        data: [{ id: layer.id, type: "TERRAIN" }],
+      });
+    } finally {
+      await db.baseLayer.delete({ where: { id: layer.id } });
+    }
   });
 });
