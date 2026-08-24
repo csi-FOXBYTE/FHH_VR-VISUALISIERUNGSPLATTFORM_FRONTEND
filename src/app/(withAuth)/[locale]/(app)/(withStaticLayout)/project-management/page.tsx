@@ -19,6 +19,7 @@ import { useTranslations } from "next-intl";
 import { useSnackbar } from "notistack";
 import { parseAsInteger, useQueryState } from "nuqs";
 import GridQueryError from "@/components/dataGridServerSide/GridQueryError";
+import { getProjectTabQueryEnablement } from "@/components/projectManagement/projectTabQueries";
 
 function ProjectManagementPage() {
   const t = useTranslations();
@@ -45,13 +46,14 @@ function ProjectManagementPage() {
   });
   const sharedGrid = useDataGridServerSideHelper("project-management-shared");
   const activeGrid = selectedTab === 0 ? ownedGrid : sharedGrid;
+  const queryEnablement = getProjectTabQueryEnablement(selectedTab);
 
   const utils = trpc.useUtils();
 
   const myProjectsQuery = trpc.projectManagementRouter.listMyProjects.useQuery(
     ownedGrid.query,
     {
-      enabled: selectedTab === 0,
+      enabled: queryEnablement.owned,
       placeholderData: keepPreviousData,
     },
   );
@@ -66,7 +68,7 @@ function ProjectManagementPage() {
     trpc.projectManagementRouter.listSharedProjects.useQuery(
       sharedGrid.query,
       {
-        enabled: selectedTab === 1,
+        enabled: queryEnablement.shared,
         placeholderData: keepPreviousData,
       },
     );
