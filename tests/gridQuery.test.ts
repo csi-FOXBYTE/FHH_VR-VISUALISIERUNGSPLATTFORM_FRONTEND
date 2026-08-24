@@ -134,6 +134,18 @@ describe("grid query validation", () => {
     );
   });
 
+  it("rejects null and blank numeric values instead of coercing them to zero", () => {
+    for (const value of [null, "   "]) {
+      expect(() =>
+        createFilters(baseLayerGridDefinition, {
+          items: [{ field: "sizeGB", operator: "=", value }],
+        }),
+      ).toThrowError(
+        expect.objectContaining<Partial<TRPCError>>({ code: "BAD_REQUEST" }),
+      );
+    }
+  });
+
   it("ignores MUI filter rows that are not filled in yet", () => {
     expect(
       createFilters(projectGridDefinition, {

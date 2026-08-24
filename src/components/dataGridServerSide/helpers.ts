@@ -109,6 +109,12 @@ function patternText(value: unknown): string {
 }
 
 function numberValue(value: unknown): number {
+  if (
+    typeof value !== "number" &&
+    (typeof value !== "string" || value.trim().length === 0)
+  ) {
+    badRequest("A number filter requires a finite value.");
+  }
   const parsed = typeof value === "number" ? value : Number(value);
   if (!Number.isFinite(parsed)) {
     badRequest("A number filter requires a finite value.");
