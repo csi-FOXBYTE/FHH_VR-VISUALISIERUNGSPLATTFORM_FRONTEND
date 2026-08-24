@@ -95,7 +95,51 @@ describe("grid query validation", () => {
     ).toEqual({
       OR: [
         {
-          title: { equals: "50%_done", mode: "insensitive" },
+          title: { equals: "50\\%\\_done", mode: "insensitive" },
+        },
+      ],
+    });
+  });
+
+  it("keeps case-insensitive negation at the Prisma string-filter level", () => {
+    expect(
+      createFilters(projectGridDefinition, {
+        items: [
+          {
+            field: "title",
+            operator: "doesNotContain",
+            value: "50%_done",
+          },
+        ],
+      }),
+    ).toEqual({
+      OR: [
+        {
+          title: {
+            not: { contains: "50\\%\\_done" },
+            mode: "insensitive",
+          },
+        },
+      ],
+    });
+
+    expect(
+      createFilters(projectGridDefinition, {
+        items: [
+          {
+            field: "title",
+            operator: "doesNotEqual",
+            value: "50%_done",
+          },
+        ],
+      }),
+    ).toEqual({
+      OR: [
+        {
+          title: {
+            not: { equals: "50\\%\\_done" },
+            mode: "insensitive",
+          },
         },
       ],
     });

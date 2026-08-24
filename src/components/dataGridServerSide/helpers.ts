@@ -159,13 +159,13 @@ function stringFilter(filter: FilterItem): QueryObject {
     case "contains":
       return { contains: patternText(filter.value), mode };
     case "doesNotContain":
-      return { not: { contains: patternText(filter.value), mode } };
+      return { not: { contains: patternText(filter.value) }, mode };
     case "equals":
     case "is":
-      return { equals: textValue(filter.value), mode };
+      return { equals: patternText(filter.value), mode };
     case "doesNotEqual":
     case "not":
-      return { not: { equals: textValue(filter.value), mode } };
+      return { not: { equals: patternText(filter.value) }, mode };
     case "startsWith":
       return { startsWith: patternText(filter.value), mode };
     case "endsWith":

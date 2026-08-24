@@ -127,7 +127,42 @@ integrationDescribe("grid query PostgreSQL integration", () => {
     ]);
 
     try {
-      for (const operator of ["contains", "equals"] as const) {
+      const positiveCases = [
+        { operator: "contains", value: literalTitle },
+        { operator: "equals", value: literalTitle },
+        { operator: "is", value: literalTitle },
+        { operator: "startsWith", value: literalTitle },
+        { operator: "endsWith", value: literalTitle },
+        { operator: "isAnyOf", value: [literalTitle] },
+      ];
+
+      for (const { operator, value } of positiveCases) {
+        const result = await db.$transaction((tx) =>
+          tx.project.paginate(
+            {
+              where: { id: { in: [literal.id, wildcardDecoy.id] } },
+              select: { id: true },
+            },
+            {
+              filterModel: {
+                items: [{ field: "title", operator, value }],
+                quickFilterValues: [],
+              },
+              paginationModel: { page: 0, pageSize: 50 },
+              sortModel: [],
+            },
+            projectGridDefinition,
+          ),
+        );
+        expect(result.count, operator).toBe(1);
+        expect(result.data, operator).toEqual([{ id: literal.id }]);
+      }
+
+      for (const operator of [
+        "doesNotContain",
+        "doesNotEqual",
+        "not",
+      ] as const) {
         const result = await db.$transaction((tx) =>
           tx.project.paginate(
             {
@@ -145,8 +180,8 @@ integrationDescribe("grid query PostgreSQL integration", () => {
             projectGridDefinition,
           ),
         );
-        expect(result.count).toBe(1);
-        expect(result.data).toEqual([{ id: literal.id }]);
+        expect(result.count, operator).toBe(1);
+        expect(result.data, operator).toEqual([{ id: wildcardDecoy.id }]);
       }
     } finally {
       await db.project.deleteMany({
