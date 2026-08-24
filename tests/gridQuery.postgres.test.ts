@@ -4,6 +4,7 @@ import paginationExtension from "@/server/prisma/extensions/paginationExtension"
 import {
   baseLayerGridDefinition,
   projectGridDefinition,
+  userGridDefinition,
 } from "@/components/dataGridServerSide/gridDefinitions";
 
 const databaseUrl = process.env.TEST_DATABASE_URL;
@@ -221,6 +222,108 @@ integrationDescribe("grid query PostgreSQL integration", () => {
       });
     } finally {
       await db.baseLayer.delete({ where: { id: layer.id } });
+    }
+  });
+
+  it("executes numeric, date and nullable-empty operators in PostgreSQL", async () => {
+    const emptyNameUser = await db.user.create({
+      data: { email: `${prefix}-empty-name@example.invalid`, name: null },
+    });
+    const [olderLayer, newerLayer] = await Promise.all([
+      db.baseLayer.create({
+        data: {
+          ownerId,
+          name: `${prefix} older layer`,
+          type: "TERRAIN",
+          sizeGB: 2.5,
+          progress: 25,
+          createdAt: new Date("2026-08-24T12:00:00.000Z"),
+        },
+      }),
+      db.baseLayer.create({
+        data: {
+          ownerId,
+          name: `${prefix} newer layer`,
+          type: "TERRAIN",
+          sizeGB: 7.5,
+          progress: 75,
+          createdAt: new Date("2026-08-25T12:00:00.000Z"),
+        },
+      }),
+    ]);
+    const layerIds = [olderLayer.id, newerLayer.id];
+
+    try {
+      const numericResult = await db.$transaction((tx) =>
+        tx.baseLayer.paginate(
+          { where: { id: { in: layerIds } }, select: { id: true } },
+          {
+            filterModel: {
+              items: [{ field: "progress", operator: ">=", value: 50 }],
+              quickFilterValues: [],
+            },
+            paginationModel: { page: 0, pageSize: 50 },
+            sortModel: [],
+          },
+          baseLayerGridDefinition,
+        ),
+      );
+      expect(numericResult).toEqual({
+        count: 1,
+        data: [{ id: newerLayer.id }],
+      });
+
+      for (const [operator, expectedId] of [
+        ["is", olderLayer.id],
+        ["not", newerLayer.id],
+      ] as const) {
+        const dateResult = await db.$transaction((tx) =>
+          tx.baseLayer.paginate(
+            { where: { id: { in: layerIds } }, select: { id: true } },
+            {
+              filterModel: {
+                items: [
+                  {
+                    field: "createdAt",
+                    operator,
+                    value: "2026-08-24T00:00:00.000Z",
+                  },
+                ],
+                quickFilterValues: [],
+              },
+              paginationModel: { page: 0, pageSize: 50 },
+              sortModel: [],
+            },
+            baseLayerGridDefinition,
+          ),
+        );
+        expect(dateResult, operator).toEqual({
+          count: 1,
+          data: [{ id: expectedId }],
+        });
+      }
+
+      const emptyResult = await db.$transaction((tx) =>
+        tx.user.paginate(
+          { where: { id: emptyNameUser.id }, select: { id: true } },
+          {
+            filterModel: {
+              items: [{ field: "name", operator: "isEmpty" }],
+              quickFilterValues: [],
+            },
+            paginationModel: { page: 0, pageSize: 50 },
+            sortModel: [],
+          },
+          userGridDefinition,
+        ),
+      );
+      expect(emptyResult).toEqual({
+        count: 1,
+        data: [{ id: emptyNameUser.id }],
+      });
+    } finally {
+      await db.baseLayer.deleteMany({ where: { id: { in: layerIds } } });
+      await db.user.delete({ where: { id: emptyNameUser.id } });
     }
   });
 });

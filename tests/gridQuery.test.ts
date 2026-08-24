@@ -8,6 +8,7 @@ import {
   baseLayerGridDefinition,
   projectGridDefinition,
   sharedProjectGridDefinition,
+  userGridDefinition,
 } from "@/components/dataGridServerSide/gridDefinitions";
 import { dataGridZod } from "@/components/dataGridServerSide/zodTypes";
 import { createPaginationArguments } from "@/server/prisma/extensions/paginationExtension";
@@ -188,6 +189,66 @@ describe("grid query validation", () => {
         expect.objectContaining<Partial<TRPCError>>({ code: "BAD_REQUEST" }),
       );
     }
+  });
+
+  it("compiles numeric and UTC-day date operators without boundary drift", () => {
+    expect(
+      createFilters(baseLayerGridDefinition, {
+        items: [{ field: "sizeGB", operator: ">=", value: "2.5" }],
+      }),
+    ).toEqual({ OR: [{ sizeGB: { gte: 2.5 } }] });
+
+    const day = "2026-08-24T00:00:00.000Z";
+    const start = new Date(day);
+    const end = new Date("2026-08-25T00:00:00.000Z");
+    expect(
+      createFilters(baseLayerGridDefinition, {
+        items: [{ field: "createdAt", operator: "is", value: day }],
+      }),
+    ).toEqual({ OR: [{ createdAt: { gte: start, lt: end } }] });
+    expect(
+      createFilters(baseLayerGridDefinition, {
+        items: [{ field: "createdAt", operator: "not", value: day }],
+      }),
+    ).toEqual({
+      OR: [
+        {
+          OR: [{ createdAt: { lt: start } }, { createdAt: { gte: end } }],
+        },
+      ],
+    });
+    expect(
+      createFilters(baseLayerGridDefinition, {
+        items: [{ field: "createdAt", operator: "onOrBefore", value: day }],
+      }),
+    ).toEqual({ OR: [{ createdAt: { lt: end } }] });
+  });
+
+  it("treats null and empty strings consistently for nullable text", () => {
+    expect(
+      createFilters(userGridDefinition, {
+        items: [{ field: "name", operator: "isEmpty" }],
+      }),
+    ).toEqual({
+      OR: [
+        {
+          OR: [{ name: { equals: null } }, { name: { equals: "" } }],
+        },
+      ],
+    });
+    expect(
+      createFilters(userGridDefinition, {
+        items: [{ field: "name", operator: "isNotEmpty" }],
+      }),
+    ).toEqual({
+      OR: [
+        {
+          NOT: {
+            OR: [{ name: { equals: null } }, { name: { equals: "" } }],
+          },
+        },
+      ],
+    });
   });
 
   it("ignores MUI filter rows that are not filled in yet", () => {

@@ -214,12 +214,8 @@ function dateFilter(filter: FilterItem): QueryObject {
       end.setUTCDate(end.getUTCDate() + 1);
       return { gte: start, lt: end };
     }
-    case "not": {
-      const start = dateValue(filter.value);
-      const end = new Date(start);
-      end.setUTCDate(end.getUTCDate() + 1);
-      return { not: { gte: start, lt: end } };
-    }
+    case "not":
+      return badRequest("Date 'not' must be compiled at field level.");
     case "after":
       return { gt: dateValue(filter.value) };
     case "onOrAfter":
@@ -374,6 +370,15 @@ function compileFieldFilter(
     return filter.operator === "isEmpty"
       ? { OR: emptyClauses }
       : { NOT: { OR: emptyClauses } };
+  }
+
+  if (field.type === "dateTime" && filter.operator === "not") {
+    const start = dateValue(filter.value);
+    const end = new Date(start);
+    end.setUTCDate(end.getUTCDate() + 1);
+    return {
+      OR: [nest(field.path, { lt: start }), nest(field.path, { gte: end })],
+    };
   }
 
   if (field.type === "stringArray") {
