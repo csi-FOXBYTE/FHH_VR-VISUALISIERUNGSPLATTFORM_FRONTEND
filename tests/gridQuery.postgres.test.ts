@@ -225,6 +225,8 @@ integrationDescribe("grid query PostgreSQL integration", () => {
     } finally {
       await db.baseLayer.delete({ where: { id: layer.id } });
     }
+  });
+
   it("persists and reloads a project edit as a regression smoke test", async () => {
     const description = `saved-${Date.now()}`;
     await db.project.update({
