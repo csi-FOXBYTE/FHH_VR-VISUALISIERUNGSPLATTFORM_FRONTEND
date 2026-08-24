@@ -94,3 +94,29 @@ export function transferAndDeleteUser(
     { method: "POST", body: JSON.stringify(successors) },
   );
 }
+
+export function transferOwnership(
+  type: OwnershipEntityType,
+  entityId: string,
+  successorId: string,
+) {
+  return request<{
+    correlationId: string;
+    entityType: OwnershipEntityType;
+    entityId: string;
+    previousOwnerId: string | null;
+    newOwnerId: string;
+  }>(
+    `/user/ownership/${type}/${encodeURIComponent(entityId)}/transfer`,
+    { method: "POST", body: JSON.stringify({ successorId }) },
+  );
+}
+
+export function getTransferSuccessors(
+  type: OwnershipEntityType,
+  entityId: string,
+) {
+  return request<OwnershipSuccessor[]>(
+    `/user/ownership/${type}/${encodeURIComponent(entityId)}/successors`,
+  );
+}
