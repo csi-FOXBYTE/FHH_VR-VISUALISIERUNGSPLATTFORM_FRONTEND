@@ -94,11 +94,15 @@ function getField(
   return field;
 }
 
-function escapedText(value: unknown): string {
+function textValue(value: unknown): string {
   if (typeof value !== "string") {
     badRequest("A text filter requires a string value.");
   }
-  return value.replace(/[\\%_]/g, "\\$&");
+  return value;
+}
+
+function patternText(value: unknown): string {
+  return textValue(value).replace(/[\\%_]/g, "\\$&");
 }
 
 function numberValue(value: unknown): number {
@@ -144,25 +148,25 @@ function stringFilter(filter: FilterItem): QueryObject {
   const mode = "insensitive" as const;
   switch (filter.operator) {
     case "contains":
-      return { contains: escapedText(filter.value), mode };
+      return { contains: patternText(filter.value), mode };
     case "doesNotContain":
-      return { not: { contains: escapedText(filter.value), mode } };
+      return { not: { contains: patternText(filter.value), mode } };
     case "equals":
     case "is":
-      return { equals: escapedText(filter.value), mode };
+      return { equals: textValue(filter.value), mode };
     case "doesNotEqual":
     case "not":
-      return { not: { equals: escapedText(filter.value), mode } };
+      return { not: { equals: textValue(filter.value), mode } };
     case "startsWith":
-      return { startsWith: escapedText(filter.value), mode };
+      return { startsWith: patternText(filter.value), mode };
     case "endsWith":
-      return { endsWith: escapedText(filter.value), mode };
+      return { endsWith: patternText(filter.value), mode };
     case "isEmpty":
       return { equals: "" };
     case "isNotEmpty":
       return { not: { equals: "" } };
     case "isAnyOf":
-      return { in: arrayValue(filter.value).map(escapedText), mode };
+      return { in: arrayValue(filter.value).map(textValue), mode };
     default:
       return badRequest(`Operator '${filter.operator}' is not valid for text.`);
   }
@@ -242,17 +246,17 @@ function scalarListClause(fieldName: string, filter: FilterItem): QueryObject {
   switch (filter.operator) {
     case "contains":
     case "equals":
-      return { [fieldName]: { has: escapedText(filter.value) } };
+      return { [fieldName]: { has: textValue(filter.value) } };
     case "doesNotContain":
     case "doesNotEqual":
-      return { NOT: { [fieldName]: { has: escapedText(filter.value) } } };
+      return { NOT: { [fieldName]: { has: textValue(filter.value) } } };
     case "isEmpty":
       return { [fieldName]: { isEmpty: true } };
     case "isNotEmpty":
       return { NOT: { [fieldName]: { isEmpty: true } } };
     case "isAnyOf":
       return {
-        [fieldName]: { hasSome: arrayValue(filter.value).map(escapedText) },
+        [fieldName]: { hasSome: arrayValue(filter.value).map(textValue) },
       };
     default:
       return badRequest(`Operator '${filter.operator}' is not valid for lists.`);

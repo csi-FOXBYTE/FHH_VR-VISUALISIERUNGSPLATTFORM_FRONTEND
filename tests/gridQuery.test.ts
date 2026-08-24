@@ -75,6 +75,31 @@ describe("grid query validation", () => {
     ).toEqual([{ owner: { name: "asc" } }, { id: "asc" }]);
   });
 
+  it("treats percent and underscore as literals for patterns and equality", () => {
+    expect(
+      createFilters(projectGridDefinition, {
+        items: [{ field: "title", operator: "contains", value: "50%_done" }],
+      }),
+    ).toEqual({
+      OR: [
+        {
+          title: { contains: "50\\%\\_done", mode: "insensitive" },
+        },
+      ],
+    });
+    expect(
+      createFilters(projectGridDefinition, {
+        items: [{ field: "title", operator: "equals", value: "50%_done" }],
+      }),
+    ).toEqual({
+      OR: [
+        {
+          title: { equals: "50%_done", mode: "insensitive" },
+        },
+      ],
+    });
+  });
+
   it("ignores MUI filter rows that are not filled in yet", () => {
     expect(
       createFilters(projectGridDefinition, {
