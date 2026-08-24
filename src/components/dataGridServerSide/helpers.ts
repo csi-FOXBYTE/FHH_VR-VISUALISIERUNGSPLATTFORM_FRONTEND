@@ -7,6 +7,7 @@ import type {
 export type GridFieldType =
   | "string"
   | "stringArray"
+  | "enum"
   | "number"
   | "dateTime"
   | "boolean";
@@ -19,6 +20,7 @@ export type GridFieldDefinition = {
   quickFilter?: boolean;
   nullable?: boolean;
   relation?: "toOne" | "toMany";
+  values?: readonly string[];
 };
 
 export type GridDefinition = {
@@ -52,6 +54,7 @@ const FILTER_OPERATORS: Record<GridFieldType, ReadonlySet<string>> = {
     "isNotEmpty",
     "isAnyOf",
   ]),
+  enum: new Set(["equals", "doesNotEqual", "isAnyOf", "is", "not"]),
   number: new Set([
     "=",
     "!=",
@@ -242,6 +245,36 @@ function booleanFilter(filter: FilterItem): QueryObject {
   return { equals };
 }
 
+function enumValue(field: GridFieldDefinition, value: unknown): string {
+  const parsed = textValue(value);
+  if (!field.values?.includes(parsed)) {
+    badRequest(
+      `Value '${parsed}' is not valid for enum field '${field.path.join(".")}'.`,
+    );
+  }
+  return parsed;
+}
+
+function enumFilter(
+  field: GridFieldDefinition,
+  filter: FilterItem,
+): QueryObject {
+  switch (filter.operator) {
+    case "equals":
+    case "is":
+      return { equals: enumValue(field, filter.value) };
+    case "doesNotEqual":
+    case "not":
+      return { not: { equals: enumValue(field, filter.value) } };
+    case "isAnyOf":
+      return {
+        in: arrayValue(filter.value).map((value) => enumValue(field, value)),
+      };
+    default:
+      return badRequest(`Operator '${filter.operator}' is not valid for enums.`);
+  }
+}
+
 function scalarListClause(fieldName: string, filter: FilterItem): QueryObject {
   switch (filter.operator) {
     case "contains":
@@ -289,6 +322,8 @@ function scalarFilter(
       return dateFilter(filter);
     case "boolean":
       return booleanFilter(filter);
+    case "enum":
+      return enumFilter(field, filter);
     case "stringArray":
       return badRequest("Scalar list filters are compiled at field level.");
   }

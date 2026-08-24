@@ -110,10 +110,10 @@ export const baseLayerGridDefinition = {
   fields: {
     type: {
       path: ["type"],
-      type: "string",
+      type: "enum",
+      values: ["TILES3D", "TERRAIN", "IMAGERY", "WMS"],
       filterable: true,
       sortable: true,
-      quickFilter: true,
     },
     isPublic: {
       path: ["isPublic"],

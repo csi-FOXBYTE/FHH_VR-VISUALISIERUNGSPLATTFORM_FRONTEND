@@ -5,6 +5,7 @@ import {
   createSort,
 } from "@/components/dataGridServerSide/helpers";
 import {
+  baseLayerGridDefinition,
   projectGridDefinition,
   sharedProjectGridDefinition,
 } from "@/components/dataGridServerSide/gridDefinitions";
@@ -98,6 +99,39 @@ describe("grid query validation", () => {
         },
       ],
     });
+  });
+
+  it("compiles and validates enum filters without text-only Prisma options", () => {
+    expect(
+      createFilters(baseLayerGridDefinition, {
+        items: [{ field: "type", operator: "is", value: "TERRAIN" }],
+      }),
+    ).toEqual({ OR: [{ type: { equals: "TERRAIN" } }] });
+    expect(
+      createFilters(baseLayerGridDefinition, {
+        items: [
+          {
+            field: "type",
+            operator: "isAnyOf",
+            value: ["IMAGERY", "WMS"],
+          },
+        ],
+      }),
+    ).toEqual({ OR: [{ type: { in: ["IMAGERY", "WMS"] } }] });
+    expect(() =>
+      createFilters(baseLayerGridDefinition, {
+        items: [{ field: "type", operator: "is", value: "UNKNOWN" }],
+      }),
+    ).toThrowError(
+      expect.objectContaining<Partial<TRPCError>>({ code: "BAD_REQUEST" }),
+    );
+    expect(() =>
+      createFilters(baseLayerGridDefinition, {
+        items: [{ field: "type", operator: "contains", value: "TERR" }],
+      }),
+    ).toThrowError(
+      expect.objectContaining<Partial<TRPCError>>({ code: "BAD_REQUEST" }),
+    );
   });
 
   it("ignores MUI filter rows that are not filled in yet", () => {
