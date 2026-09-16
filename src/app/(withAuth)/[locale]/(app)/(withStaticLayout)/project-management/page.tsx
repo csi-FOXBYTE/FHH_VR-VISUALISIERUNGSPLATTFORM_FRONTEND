@@ -180,7 +180,7 @@ function ProjectManagementPage() {
             filterable: true,
             headerName: t("project-management.owner"),
             renderCell({ row }) {
-              return row.owner.name;
+              return row.owner?.name ?? "-";
             },
           },
           {
