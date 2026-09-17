@@ -61,7 +61,8 @@ RUN chown nextjs:nodejs .next
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
-RUN rm .env
+# Breaks deployment and not necessary with the new workflow
+# RUN rm .env
 
 USER nextjs
 
