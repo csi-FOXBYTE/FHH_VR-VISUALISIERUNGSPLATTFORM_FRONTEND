@@ -29,6 +29,9 @@ WORKDIR /app
 COPY . .
 COPY --from=deps /app/node_modules ./node_modules
 
+# public/cesium is gitignored and must be regenerated from node_modules.
+RUN node ./scripts/copyCesium.mjs
+
 
 # Next.js collects completely anonymous telemetry data about general usage.
 # Learn more here: https://nextjs.org/telemetry
