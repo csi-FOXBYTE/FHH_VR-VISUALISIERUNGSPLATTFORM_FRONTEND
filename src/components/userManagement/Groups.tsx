@@ -16,7 +16,7 @@ export default function Groups() {
 
   const t = useTranslations();
 
-  const { props } = useDataGridServerSideHelper("user-management/permissions", {
+  const { props } = useDataGridServerSideHelper("user-management/groups", {
     extraActions: [
       {
         icon: <Add />,

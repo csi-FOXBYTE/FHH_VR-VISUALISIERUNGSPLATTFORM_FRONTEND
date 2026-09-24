@@ -29,7 +29,7 @@ function ProjectManagementPage() {
 
   const [, { openCreate, openUpdate }] = useProjectCUDialogState();
 
-  const { props } = useDataGridServerSideHelper("project-management", {
+  const { props, setters } = useDataGridServerSideHelper("project-management", {
     extraActions: [
       {
         icon: <Add />,
@@ -57,6 +57,7 @@ function ProjectManagementPage() {
       sortModel: props.sortModel,
     },
     {
+      enabled: selectedTab === 0,
       placeholderData: keepPreviousData,
     }
   );
@@ -73,6 +74,7 @@ function ProjectManagementPage() {
       sortModel: props.sortModel,
     },
     {
+      enabled: selectedTab === 1,
       placeholderData: keepPreviousData,
     }
   );
@@ -135,17 +137,23 @@ function ProjectManagementPage() {
     }),
   });
 
+  const selectTab = (tab: number) => {
+    if (tab === selectedTab) return;
+    setters.setPaginationModel((current) => ({ ...current!, page: 0 }));
+    setSelectedTab(tab);
+  };
+
   return (
     <PageContainer>
       <ProjectCUDialog />
       <Tabs value={selectedTab}>
         <Tab
-          onClick={() => setSelectedTab(0)}
+          onClick={() => selectTab(0)}
           label={t("project-management.my-projects")}
           value={0}
         />
         <Tab
-          onClick={() => setSelectedTab(1)}
+          onClick={() => selectTab(1)}
           label={t("project-management.shared-projects")}
           value={1}
         />
@@ -176,8 +184,10 @@ function ProjectManagementPage() {
           },
           {
             field: "owner",
-            sortable: true,
-            filterable: true,
+            // Relation field: the server-side sort/filter helpers only support
+            // scalar fields and answer with an error for it.
+            sortable: false,
+            filterable: false,
             headerName: t("project-management.owner"),
             renderCell({ row }) {
               return row.owner?.name ?? "-";
@@ -212,6 +222,8 @@ function ProjectManagementPage() {
             : [
                 {
                   field: "visibleForUsers",
+                  sortable: false,
+                  filterable: false,
                   headerName: t("project-management.visible-for-users"),
                   flex: 1,
                   valueGetter(value: { id: string; name: string }[]) {
@@ -220,6 +232,8 @@ function ProjectManagementPage() {
                 },
                 {
                   field: "visibleForGroups",
+                  sortable: false,
+                  filterable: false,
                   headerName: t("project-management.visible-for-groups"),
                   flex: 1,
                   valueGetter(value: { id: string; name: string }[]) {

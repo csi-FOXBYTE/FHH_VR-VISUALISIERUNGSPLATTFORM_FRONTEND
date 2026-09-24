@@ -1,6 +1,11 @@
 "use client";
 
-import { DataGridProps, GridApi } from "@mui/x-data-grid";
+import {
+  DataGridProps,
+  GridApi,
+  GridInitialState,
+  GridSortModel,
+} from "@mui/x-data-grid";
 import { ReactNode, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { CustomGridToolbar } from "./CustomGridToolbar";
 
@@ -66,22 +71,59 @@ export default function useDataGridServerSideHelper(
   useLayoutEffect(() => {
     if (!apiRef.current) return;
 
-    if (localStorage.getItem(name)) {
-      try {
-        apiRef.current.restoreState(
-          JSON.parse(localStorage.getItem(name) ?? "")
-        );
-      } catch {}
-    }
+    // Earlier versions stored the complete grid state (including filters and
+    // the page) under the plain name. Restoring that into the controlled grid
+    // could replay filters or sort items the server cannot handle, so it is
+    // discarded and only a reduced state is kept under a versioned key.
+    const storageKey = `${name}:v2`;
+
+    try {
+      localStorage.removeItem(name);
+
+      const stored = JSON.parse(localStorage.getItem(storageKey) ?? "null") as {
+        columns?: GridInitialState["columns"];
+        sortModel?: GridSortModel;
+        pageSize?: number;
+      } | null;
+
+      if (stored) {
+        if (stored.columns && typeof stored.columns === "object") {
+          apiRef.current.restoreState({ columns: stored.columns });
+        }
+
+        if (Array.isArray(stored.sortModel)) {
+          setSortModel(
+            stored.sortModel.filter(
+              (item) =>
+                (item?.sort === "asc" || item?.sort === "desc") &&
+                apiRef.current?.getColumn(item.field)?.sortable === true
+            )
+          );
+        }
+
+        if (
+          Number.isInteger(stored.pageSize) &&
+          stored.pageSize! >= 1 &&
+          stored.pageSize! <= 100
+        ) {
+          setPaginationModel({ page: 0, pageSize: stored.pageSize! });
+        }
+      }
+    } catch {}
 
     const abortController = new AbortController();
 
     function saveSnapshot() {
       try {
         if (!apiRef.current) return;
+        const exportedState = apiRef.current.exportState();
         localStorage.setItem(
-          name,
-          JSON.stringify(apiRef.current.exportState())
+          storageKey,
+          JSON.stringify({
+            columns: exportedState.columns,
+            sortModel: exportedState.sorting?.sortModel ?? [],
+            pageSize: exportedState.pagination?.paginationModel?.pageSize,
+          })
         );
       } catch {}
     }
